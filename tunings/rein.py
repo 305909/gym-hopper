@@ -10,7 +10,7 @@ sys.path.append(
 	os.path.abspath(
 		os.path.join(os.path.dirname(__file__), '..')))
 
-from agents.reinforce import RF, RFPolicy
+from agents.rein import RF, RFPolicy
 from env.custom_hopper import *
 
 
