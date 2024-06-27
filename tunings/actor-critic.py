@@ -5,7 +5,7 @@ import warnings
 import itertools
 import numpy as np
 
-from agents.actor_critic import A2C, A2CPolicy
+from .agents.actor_critic import A2C, A2CPolicy
 from env.custom_hopper import *
 
 
