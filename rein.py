@@ -162,7 +162,7 @@ def train(args, train_env, test_env):
         agent.update_policy()
         callback._on_step(num_episodes)
 
-    torch.save(agent.policy.state_dict(), f'{args.directory}/model-RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
+    torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
@@ -200,7 +200,7 @@ def train(args, train_env, test_env):
         plt.title(f'average episode {metric} over training iterations', loc = 'left')
         plt.legend()
         
-        plt.savefig(f'{args.directory}/model-RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
+        plt.savefig(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
         plt.close()
     
     env.close()
@@ -224,7 +224,7 @@ def test(args, test_env):
     model = None
 
     if args.train:
-        model = f'{args.directory}/model-RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl'
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     else:
@@ -264,7 +264,7 @@ def test(args, test_env):
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/model-RF-{args.baseline}-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
 
     env.close()
 
