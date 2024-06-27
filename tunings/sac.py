@@ -37,16 +37,13 @@ def parse_args():
                                    'target-wide-randomization'],
                         help = 'Testing environment')
     parser.add_argument('--train-timesteps', 
-                        default = 19750, 
-                        type = int, 
+                        default = 19750, type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 250, 
-                        type = int, 
+                        default = 250, type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--device', 
-                        default = 'cpu', 
-                        type = str, 
+                        default = 'cpu', type = str, 
                         choices = ['cpu', 
                                    'cuda'], 
                         help = 'Network device [cpu, cuda]')
@@ -139,7 +136,6 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {                                           # | source -> source | source -> target | target -> target
-        'batch_size': [64, 128, 256],                    # | ...              | ...              | ...
         'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | ...              | ...              | ...
         }
     
