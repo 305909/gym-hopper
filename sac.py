@@ -67,14 +67,6 @@ def parse_args():
                         default = 100, 
                         type = int, 
                         help = 'Number of testing episodes')
-    parser.add_argument('--batch-size', 
-                        default = 256, 
-                        type = int, 
-                        help = 'Batch size for gradient update (timesteps)')
-    parser.add_argument('--gamma', 
-                        default = 0.99, 
-                        type = float, 
-                        help = 'Discount factor')
     parser.add_argument('--learning-rate', 
                         default = 3e-4, 
                         type = float, 
@@ -159,9 +151,8 @@ def train(args, train_env, test_env):
                     env = env, 
                     device = args.device, 
                     learning_rate = args.learning_rate,
-                    batch_size = args.batch_size, 
-                    gamma = args.gamma,  
-                    verbose = False)
+                    batch_size = 256, 
+                    gamma = 0.99)
 
     print("---------------------------------------------")
     print('Model to train:', model)
@@ -172,7 +163,7 @@ def train(args, train_env, test_env):
     start = time.time()
     agent.learn(total_timesteps = args.train_timesteps, callback = callback)
     
-    agent.save(f'{args.directory}/model-SAC-({args.train_env} to {args.test_env}).mdl')
+    agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
@@ -210,7 +201,7 @@ def train(args, train_env, test_env):
         plt.title(f'average episode {metric} over training iterations', loc = 'left')
         plt.legend()
         
-        plt.savefig(f'{args.directory}/model-SAC-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
+        plt.savefig(f'{args.directory}/SAC-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
         plt.close()
         
     env.close()
@@ -234,7 +225,7 @@ def test(args, test_env):
     model = None
 
     if args.train:
-        model = f'{args.directory}/model-SAC-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl'
         agent = SAC.load(model, 
                          env = env, 
                          device = args.device)
@@ -273,7 +264,7 @@ def test(args, test_env):
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/model-SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
 
     env.close()
 
