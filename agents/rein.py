@@ -63,7 +63,6 @@ class RF:
         self.device = device
         self.policy = policy.to(self.device)
 
-        # clipping coefficient to clip the gradient
         self.max_grad_norm = max_grad_norm
         # entropy coefficient to balance exploration/exploitation
         self.entropy_coef = entropy_coef
