@@ -64,7 +64,7 @@ def train(device = 'cpu',
     """ Training """
               
     policy = 'MlpPolicy'
-    agent = SAC(policy = policy, env = env, device = device, **kwargs, verbose = False)
+    agent = SAC(policy = policy, env = env, device = device, **kwargs)
     
     agent.learn(total_timesteps = train_timesteps)
       
