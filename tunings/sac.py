@@ -19,7 +19,8 @@ from env.custom_hopper import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train-env', 
-                        default = 'source', type = str,
+                        default = 'source', 
+			type = str,
                         choices = ['source', 
                                    'target',
                                    'source-moderate-randomization', 
@@ -28,7 +29,8 @@ def parse_args():
                                    'target-wide-randomization'],
                         help = 'Training environment')
     parser.add_argument('--test-env', 
-                        default = 'target', type = str,
+                        default = 'target', 
+			type = str,
                         choices = ['source', 
                                    'target',
                                    'source-moderate-randomization', 
@@ -37,13 +39,16 @@ def parse_args():
                                    'target-wide-randomization'],
                         help = 'Testing environment')
     parser.add_argument('--train-timesteps', 
-                        default = 19750, type = int, 
+                        default = 19750, 
+			type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 250, type = int, 
+                        default = 250, 
+			type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--device', 
-                        default = 'cpu', type = str, 
+                        default = 'cpu', 
+			type = str, 
                         choices = ['cpu', 
                                    'cuda'], 
                         help = 'Network device [cpu, cuda]')
