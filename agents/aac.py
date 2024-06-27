@@ -7,14 +7,14 @@ from torch.distributions import Normal
 
 class Policy(torch.nn.Module):
     
-    def __init__(self, state_space, action_space, hidden, actor = True, **kwargs):
+    def __init__(self, state_space, action_space, actor = True, **kwargs):
         super().__init__()
         
         self.action_space = action_space
         self.state_space = state_space
         self.tanh = torch.nn.Tanh()
-        self.hidden = hidden
         self.actor = actor
+        self.hidden = 64
 
         """ Actor/Critic network """
         self.fc1 = torch.nn.Linear(state_space, self.hidden)
@@ -45,7 +45,6 @@ class Policy(torch.nn.Module):
             sigma = self.sigma_activation(self.sigma)
             normal_dist = Normal(action_mean, sigma)
             return normal_dist
-            
         else:
             return action_mean
 
@@ -60,10 +59,9 @@ class A2CPolicy:
     
     def __init__(self, state_space, action_space, **kwargs):
 
-        self.hidden = 64
         self.policies = OrderedDict()
-        self.policies['actor'] = Policy(state_space, action_space, self.hidden)
-        self.policies['critic'] = Policy(state_space, 1, self.hidden, actor = False)
+        self.policies['actor'] = Policy(state_space, action_space)
+        self.policies['critic'] = Policy(state_space, 1, actor = False)
 
     def to(self, device):
         # move parameters to device
@@ -97,7 +95,6 @@ class A2C:
         self.device = device
         self.policy = policy.to(self.device)
 
-        # clipping coefficient to clip the gradient
         self.max_grad_norm = max_grad_norm
         # entropy coefficient to balance exploration/exploitation
         self.entropy_coef = entropy_coef
