@@ -17,7 +17,7 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
-from agents import A2C, A2CPolicy
+from agents.actor-critic import A2C, A2CPolicy
 from stable_baselines3.common.evaluation import evaluate_policy
 
 
