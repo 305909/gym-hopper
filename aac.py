@@ -58,10 +58,6 @@ def parse_args():
                         default = 100, 
                         type = int, 
                         help = 'Number of testing episodes')
-    parser.add_argument('--batch-size', 
-                        default = 32, 
-                        type = int, 
-                        help = 'Batch size for gradient update (timesteps)')
     parser.add_argument('--input-model', 
                         default = None, 
                         type = str, 
@@ -136,8 +132,7 @@ def train(args, train_env, test_env):
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     agent = A2C(policy, 
-                device = args.device, 
-                batch_size = args.batch_size)
+                device = args.device)
     
     print("---------------------------------------------")
     print('Model to train:', model)
@@ -162,7 +157,7 @@ def train(args, train_env, test_env):
         num_episodes += 1   
         callback._on_step(num_episodes)
     
-    torch.save(agent.policy.state_dict(), f'{args.directory}/model-A2C{args.batch_size}-({args.train_env} to {args.test_env}).mdl')  
+    torch.save(agent.policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')  
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
@@ -192,7 +187,7 @@ def train(args, train_env, test_env):
                   '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
         plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
     
-        plt.plot(x, smooth(y), alpha = 1, label = f'A2C{args.batch_size}')
+        plt.plot(x, smooth(y), alpha = 1, label = f'A2C')
         plt.fill_between(x, smooth(lowers), smooth(uppers), alpha = 0.5)
         
         plt.xlabel('episodes')
@@ -200,7 +195,7 @@ def train(args, train_env, test_env):
         plt.title(f'average episode {metric} over training iterations', loc = 'left')
         plt.legend()
         
-        plt.savefig(f'{args.directory}/model-A2C{args.batch_size}-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
+        plt.savefig(f'{args.directory}/A2C-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
         plt.close()
         
     env.close()
@@ -224,7 +219,7 @@ def test(args, test_env):
     model = None
 
     if args.train:
-        model = f'{args.directory}/model-A2C{args.batch_size}-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl'
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     else:
@@ -233,8 +228,7 @@ def test(args, test_env):
             policy.load_state_dict(torch.load(model), 
                                    strict = True)
     agent = A2C(policy, 
-                device = args.device, 
-                batch_size = args.batch_size)
+                device = args.device)
     
     print("---------------------------------------------")
     print('Model to test:', model)
@@ -264,7 +258,7 @@ def test(args, test_env):
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/model-A2C{args.batch_size}-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
 
     env.close()
 
