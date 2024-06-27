@@ -10,7 +10,7 @@ sys.path.append(
 	os.path.abspath(
 		os.path.join(os.path.dirname(__file__), '..')))
 
-from agents.actor_critic import A2C, A2CPolicy
+from agents.aac import A2C, A2CPolicy
 from env.custom_hopper import *
 
 
