@@ -17,7 +17,7 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
-from agents.reinforce import RF, RFPolicy
+from agents.rein import RF, RFPolicy
 from stable_baselines3.common.evaluation import evaluate_policy
 
 
