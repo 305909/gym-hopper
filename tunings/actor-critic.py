@@ -1,9 +1,14 @@
 import os
+import sys
 import gym
 import argparse
 import warnings
 import itertools
 import numpy as np
+
+sys.path.append(
+	os.path.abspath(
+		os.path.join(os.path.dirname(__file__), '..')))
 
 from agents.actor_critic import A2C, A2CPolicy
 from env.custom_hopper import *
