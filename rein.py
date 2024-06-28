@@ -182,7 +182,7 @@ def train(args, train_env, test_env):
         uppers, lowers = [0], [0]
         
         for key, value in enumerate(records):
-            point = key * int(self.train_episodes * 1e-3)
+            point = key * int(args.train_episodes * 1e-3)
             x.append(point)
             y.append(value[0])
             lowers.append(value[1])
