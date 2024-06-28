@@ -127,7 +127,7 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {                                           # | source -> source
-        'batch_size': [8, 16, 32, 64],                   # | 32
+        'batch_size': [32, 64],                          # | 32 from [8, 16, 32, 64]
         'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | 7e-4
         }
 
