@@ -109,7 +109,7 @@ class Callback(BaseCallback):
             self.episode_lengths.append((el.mean(), 
                                          el.mean() - el.std(), 
                                          el.mean() + el.std()))
-            if self.verbose > 0 and self.num_episodes % (self.train_timesteps * 1e-2) == 0:
+            if self.verbose > 0 and self.n_calls % (self.train_timesteps * 1e-2) == 0:
                 print(f'Training Steps: {self.num_timesteps - int(self.train_timesteps * 1e-2)} - {self.num_timesteps} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
 
