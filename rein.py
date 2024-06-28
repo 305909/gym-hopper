@@ -231,7 +231,7 @@ def test(args, test_env):
         if args.input_model is not None:
             model = args.input_model
             policy.load_state_dict(torch.load(model), 
-                               strict = True)
+                                   strict = True)
     agent = RF(policy, 
                device = args.device, 
                baseline = args.baseline)
