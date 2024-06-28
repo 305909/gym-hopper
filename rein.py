@@ -55,7 +55,7 @@ def parse_args():
                         type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 50, 
+                        default = 10, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--baseline', 
