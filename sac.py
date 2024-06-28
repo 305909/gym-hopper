@@ -64,7 +64,7 @@ def parse_args():
                         type = int, 
                         help = 'Number of training timesteps')
     parser.add_argument('--test-episodes', 
-                        default = 100, 
+                        default = 50, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--learning-rate', 
@@ -98,7 +98,7 @@ class Callback(BaseCallback):
         self.env = env
         
     def _on_step(self) -> bool:
-        if self.n_calls %  (self.train_timesteps / 100) == 0:
+        if self.n_calls %  (self.train_timesteps * 1e-3) == 0:
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             
@@ -109,8 +109,8 @@ class Callback(BaseCallback):
             self.episode_lengths.append((el.mean(), 
                                          el.mean() - el.std(), 
                                          el.mean() + el.std()))
-            if self.verbose > 0:
-                print(f'Training Steps: {self.num_timesteps - int(self.train_timesteps / 100)} - {self.num_timesteps} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+            if self.verbose > 0 and num_episodes % (self.train_timesteps * 1e-2) == 0:
+                print(f'Training Steps: {self.num_timesteps - int(self.train_timesteps * 1e-2)} - {self.num_timesteps} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
 
 
@@ -179,11 +179,11 @@ def train(args, train_env, test_env):
         return x
         
     for metric, records in zip(('reward', 'length'), (callback.episode_rewards, callback.episode_lengths)):
-        x, y = list(), list()
-        uppers, lowers = list(), list()
+        x, y = [0], [0]
+        uppers, lowers = [0], [0]
         
         for key, value in enumerate(records):
-            point = key * int(args.train_timesteps / 100)
+            point = key * int(args.train_timesteps * 1e-3)
             x.append(point)
             y.append(value[0])
             lowers.append(value[1])
@@ -264,7 +264,7 @@ def test(args, test_env):
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 10)
 
     env.close()
 
