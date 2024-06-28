@@ -264,7 +264,7 @@ def test(args, test_env):
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 10)
+        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
 
     env.close()
 
