@@ -55,7 +55,7 @@ def parse_args():
                         type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 100, 
+                        default = 50, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--input-model', 
@@ -84,7 +84,7 @@ class Callback():
         self.env = env
         
     def _on_step(self, num_episodes) -> bool:
-        if num_episodes % (self.train_episodes / 100) == 0: 
+        if num_episodes % (self.train_episodes * 1e-3) == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             
@@ -95,8 +95,8 @@ class Callback():
             self.episode_lengths.append((el.mean(), 
                                          el.mean() - el.std(), 
                                          el.mean() + el.std()))
-            if self.verbose > 0:
-                print(f'Training Episodes: {num_episodes - int(self.train_episodes / 100)} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+            if self.verbose > 0 and num_episodes % (self.train_episodes * 1e-2) == 0:
+                print(f'Training Episodes: {num_episodes - int(self.train_episodes * 1e-2)} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
         
 
@@ -173,11 +173,11 @@ def train(args, train_env, test_env):
         return x
 
     for metric, records in zip(('reward', 'length'), (callback.episode_rewards, callback.episode_lengths)):
-        x, y = list(), list()
-        uppers, lowers = list(), list()
+        x, y = [0], [0]
+        uppers, lowers = [0], [0]
         
         for key, value in enumerate(records):
-            point = key * int(args.train_episodes / 100)
+            point = key * int(self.train_episodes * 1e-3)
             x.append(point)
             y.append(value[0])
             lowers.append(value[1])
