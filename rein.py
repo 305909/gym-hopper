@@ -84,19 +84,26 @@ Z = 100  # frame recording frequency over training iterations -> 10000
 # callback class to evaluate rewards over training iterations
 class Callback():
     
-    def __init__(self, agent, env, args, rendering, verbose = 1):
+    def __init__(self, agent, env, args, verbose = 1):
         
         self.train_episodes = args.train_episodes
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
-        self.rendering = rendering
         self.verbose = verbose
         self.frames = list()
         self.agent = agent
         self.args = args
         self.env = env
-        
+
+    def rendering(self, frame, steps, episode, rewards):
+        image = Image.fromarray(frame)
+        drawer = ImageDraw.Draw(image)
+        color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
+        drawer.text((image.size[0] / 20, image.size[1] / 18), 
+                    f'Train Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+        return image
+    
     def _on_step(self, num_episodes) -> bool:
         if num_episodes % X == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
@@ -135,7 +142,7 @@ def rendering(frame, steps, episode, rewards):
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                f'Test Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
     return image
 
 
@@ -168,7 +175,7 @@ def train(args, train_env, test_env):
     print('Model to train:', model)
     print("---------------------------------------------")
 
-    callback = Callback(agent, gym.make(test_env), args, rendering)
+    callback = Callback(agent, gym.make(test_env), args)
     num_episodes = 0
     
     start = time.time()
