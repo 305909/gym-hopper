@@ -103,12 +103,12 @@ class Callback(BaseCallback):
         self.args = args
         self.env = env
         
-    def rendering(self, frame, steps, timestep, rewards):
+    def rendering(self, frame, steps, rewards):
         image = Image.fromarray(frame)
         drawer = ImageDraw.Draw(image)
         color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
         drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                    f'Time-Step: {timestep} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                    f'Step: {steps} | Reward: {rewards:.2f}', fill = color)
         return image
     
     def _on_step(self) -> bool:
@@ -138,7 +138,7 @@ class Callback(BaseCallback):
                     
                     steps += 1
                     frame = self.env.render(mode = 'rgb_array')
-                    self.frames.append(self.rendering(frame, steps, self.num_timesteps, rewards))
+                    self.frames.append(self.rendering(frame, self.num_timesteps + steps, rewards))
                     
         return True
 
