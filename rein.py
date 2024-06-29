@@ -75,9 +75,11 @@ def parse_args():
                         help = 'Path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
-X = 100
-Y = 1000
-Z = 10000
+
+X = 10  # evaluation frequency over training iterations -> 100
+Y = 100  # verbose output frequency over training iterations -> 1000
+Z = 100  # frame recording frequency over training iterations -> 10000
+
 
 # callback class to evaluate rewards over training iterations
 class Callback():
@@ -181,12 +183,12 @@ def train(args, train_env, test_env):
         num_episodes += 1   
         agent.update_policy()
         frames = callback._on_step(num_episodes)
-
-    torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
+        
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
     
+    torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
     if args.render:
         imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-train.gif', frames, fps = 30)
         
@@ -297,19 +299,34 @@ def test(args, test_env):
 def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
-
+    
     if not os.path.exists(args.directory):
         os.mkdir(args.directory)
 
-    train_env, test_env = tuple(f'CustomHopper-{x}-v0' for x in [args.train_env, args.test_env])
+    train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
+                                for x in [args.train_env, 
+                                          args.test_env])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
-        print('Warning: CUDA not available, switching to CPU')
+        print('Warning: cuda not available, switching to cpu')
         args.device = 'cpu'
-
+        
+    # validate environment registration
+    try: env = gym.make(train_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'environment {train_env} not found')
+        
+    try: env = gym.make(test_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'environment {test_env} not found')
+        
+    # validate model loading
+    if args.input_model is not None and not os.path.isfile(args.input_model):
+        raise FileNotFoundError(f'model file {args.input_model} not found')
+    
     if args.train:
         train(args, train_env, test_env)
-
+        
     if args.test or args.render:
         test(args, test_env)
 
