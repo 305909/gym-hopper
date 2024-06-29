@@ -164,7 +164,7 @@ def train(args, train_env, test_env):
                 device = args.device)
     
     print("---------------------------------------------")
-    print('Model to train:', model)
+    print('Model to Train:', model)
     print("---------------------------------------------")
 
     callback = Callback(agent, gym.make(test_env), args)
@@ -187,7 +187,7 @@ def train(args, train_env, test_env):
         callback._on_step(num_episodes)
         
     print("---------------------------------------------")
-    print(f'Time: {time.time() - start:.2f}')
+    print(f'Training Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
     
     torch.save(agent.policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')  
@@ -263,7 +263,7 @@ def test(args, test_env):
                 device = args.device)
     
     print("---------------------------------------------")
-    print('Model to test:', model)
+    print('Model to Test:', model)
     print("---------------------------------------------")
 
     frames = list()
@@ -309,21 +309,22 @@ def main():
                                           args.test_env])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
-        print('WARNING: cuda not available, switching to cpu')
+        print("---------------------------------------------")
+        print('WARNING: GPU not available, switch to CPU')
         args.device = 'cpu'
         
     # validate environment registration
     try: env = gym.make(train_env)
     except gym.error.UnregisteredEnv: 
-        raise ValueError(f'environment {train_env} not found')
+        raise ValueError(f'ERROR: environment {train_env} not found')
         
     try: env = gym.make(test_env)
     except gym.error.UnregisteredEnv: 
-        raise ValueError(f'environment {test_env} not found')
+        raise ValueError(f'ERROR: environment {test_env} not found')
         
     # validate model loading
     if args.input_model is not None and not os.path.isfile(args.input_model):
-        raise FileNotFoundError(f'model file {args.input_model} not found')
+        raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
         
     if args.train:
         train(args, train_env, test_env)
