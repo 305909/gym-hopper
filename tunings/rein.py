@@ -17,11 +17,11 @@ from env.custom_hopper import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train-episodes', 
-                        default = 19750, 
+                        default = 10000, 
                         type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 250, 
+                        default = 100, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--device', 
@@ -34,7 +34,7 @@ def parse_args():
 
 
 def train(device: str = 'cpu', 
-          train_episodes: int = 19750, 
+          train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> RF:
               
     env = gym.make(train_env)
@@ -60,7 +60,7 @@ def train(device: str = 'cpu',
 
 
 def test(agent: RF, 
-         test_episodes: int = 250, 
+         test_episodes: int = 100, 
          test_env: str = 'CustomHopper-source-v0') -> float:
              
     env = gym.make(test_env)
