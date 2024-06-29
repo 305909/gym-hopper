@@ -69,22 +69,29 @@ def parse_args():
     return parser.parse_args()
 
 
+X = 10  # evaluation frequency over training iterations -> 100
+Y = 100  # verbose output frequency over training iterations -> 1000
+Z = 100  # frame recording frequency over training iterations -> 10000
+
+
 # callback class to evaluate rewards over training iterations
 class Callback():
     
-    def __init__(self, agent, env, args, verbose = 1):
+    def __init__(self, agent, env, args, rendering, verbose = 1):
         
         self.train_episodes = args.train_episodes
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
+        self.rendering = rendering
         self.verbose = verbose
+        self.frames = list()
         self.agent = agent
         self.args = args
         self.env = env
         
     def _on_step(self, num_episodes) -> bool:
-        if num_episodes % (self.train_episodes * 1e-3) == 0: 
+        if num_episodes % X == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             
@@ -95,9 +102,24 @@ class Callback():
             self.episode_lengths.append((el.mean(), 
                                          el.mean() - el.std(), 
                                          el.mean() + el.std()))
-            if self.verbose > 0 and num_episodes % (self.train_episodes * 1e-2) == 0:
-                print(f'Training Episodes: {num_episodes - int(self.train_episodes * 1e-2)} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
-        return True
+            if self.verbose > 0 and num_episodes % Y == 0:
+                print(f'Training Episodes: {num_episodes - Y} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+                
+            if self.args.render and num_episodes % Z == 0:
+                done = False
+                obs = self.env.reset()
+                rewards, steps = (0, 0)
+                while not done:
+                    action, _ = self.agent.predict(obs, deterministic = True)
+                    next_state, reward, done, _ = self.env.step(action)
+                    rewards += reward
+                    obs = next_state
+                    
+                    steps += 1
+                    frame = self.env.render(mode = 'rgb_array')
+                    self.frames.append(self.rendering(frame, steps, num_episodes, rewards))
+                    
+        return self.frames
         
 
 # function to render the simulator
@@ -106,7 +128,7 @@ def rendering(frame, steps, episode, rewards):
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'Episode: {episode + 1} | Step: {steps + 1} | Reward: {rewards:.2f}', fill = color)
+                f'Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
     return image
 
 
@@ -138,7 +160,7 @@ def train(args, train_env, test_env):
     print('Model to train:', model)
     print("---------------------------------------------")
 
-    callback = Callback(agent, gym.make(test_env), args)
+    callback = Callback(agent, gym.make(test_env), args, rendering)
     num_timesteps = 0
     num_episodes = 0
     
@@ -155,13 +177,16 @@ def train(args, train_env, test_env):
             if num_timesteps % agent.batch_size == 0: 
                 agent.update_policy()
         num_episodes += 1   
-        callback._on_step(num_episodes)
-    
-    torch.save(agent.policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')  
+        frames = callback._on_step(num_episodes)
+        
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
     print("---------------------------------------------")
     
+    torch.save(agent.policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')  
+    if args.render:
+        imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env})-train.gif', frames, fps = 30)
+
     # exponential moving average
     def smooth(scalars, weight = 0.85):
         x = list()
@@ -177,7 +202,7 @@ def train(args, train_env, test_env):
         uppers, lowers = [0], [0]
         
         for key, value in enumerate(records):
-            point = key * int(args.train_episodes * 1e-3)
+            point = key * X
             x.append(point)
             y.append(value[0])
             lowers.append(value[1])
@@ -234,9 +259,10 @@ def test(args, test_env):
     print('Model to test:', model)
     print("---------------------------------------------")
 
-    frames = []
+    frames = list()
+    num_episodes = 0
     episode_rewards = []
-    for episode in range(args.test_episodes):
+    while num_episodes < args.test_episodes:
         done = False
         obs = env.reset()
         rewards, steps = (0, 0)
@@ -245,20 +271,21 @@ def test(args, test_env):
             next_state, reward, done, _ = env.step(action)
             rewards += reward
             obs = next_state
-
-            if args.render and episode < 10:
+            
+            steps += 1
+            if args.render and num_episodes < 10:
                 frame = env.render(mode = 'rgb_array')
-                frames.append(rendering(frame, steps, episode, rewards))
-                steps += 1
-
+                frames.append(rendering(frame, steps, num_episodes + 1, rewards))
+                
+        num_episodes += 1   
         episode_rewards.append(rewards)
     er = np.array(episode_rewards)
     print("---------------------------------------------")
-    print(f'Test Episodes: {episode + 1} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+    print(f'Test Episodes: {num_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
     print("---------------------------------------------")
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env}).gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
 
     env.close()
 
@@ -270,8 +297,27 @@ def main():
     if not os.path.exists(args.directory):
         os.mkdir(args.directory)
 
-    train_env, test_env = tuple(f'CustomHopper-{x}-v0' for x in [args.train_env, args.test_env])
+    train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
+                                for x in [args.train_env, 
+                                          args.test_env])
 
+    if args.device == 'cuda' and not torch.cuda.is_available():
+        print('WARNING: cuda not available, switching to cpu')
+        args.device = 'cpu'
+        
+    # validate environment registration
+    try: env = gym.make(train_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'environment {train_env} not found')
+        
+    try: env = gym.make(test_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'environment {test_env} not found')
+        
+    # validate model loading
+    if args.input_model is not None and not os.path.isfile(args.input_model):
+        raise FileNotFoundError(f'model file {args.input_model} not found')
+        
     if args.train:
         train(args, train_env, test_env)
 
