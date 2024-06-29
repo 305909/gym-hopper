@@ -329,7 +329,7 @@ def main():
     if args.train:
         train(args, train_env, test_env)
 
-    if args.test or args.render:
+    if args.test:
         test(args, test_env)
 
 
