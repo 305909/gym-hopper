@@ -126,7 +126,7 @@ class Callback():
                     frame = self.env.render(mode = 'rgb_array')
                     self.frames.append(self.rendering(frame, steps, num_episodes, rewards))
                     
-        return self.frames
+        return True
         
 
 # function to render the simulator
@@ -182,7 +182,7 @@ def train(args, train_env, test_env):
             obs = next_state 
         num_episodes += 1   
         agent.update_policy()
-        frames = callback._on_step(num_episodes)
+        callback._on_step(num_episodes)
         
     print("---------------------------------------------")
     print(f'Time: {time.time() - start:.2f}')
@@ -190,7 +190,7 @@ def train(args, train_env, test_env):
     
     torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
     if args.render:
-        imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-train.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-train.gif', callback.frames, fps = 30)
         
     # exponential moving average
     def smooth(scalars, weight = 0.85):
