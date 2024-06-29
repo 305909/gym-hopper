@@ -111,7 +111,7 @@ class Callback(BaseCallback):
                     f'Time-Step: {timestep} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
         return image
     
-    def _on_step(self) -> bool:
+    def on_step(self) -> bool:
         if self.num_timesteps %  X == 0:
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
@@ -140,7 +140,7 @@ class Callback(BaseCallback):
                     frame = self.env.render(mode = 'rgb_array')
                     self.frames.append(self.rendering(frame, steps, self.num_timesteps, rewards))
                     
-        return self.frames
+        return True
 
 
 # function to render the simulator
