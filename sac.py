@@ -112,7 +112,8 @@ class Callback(BaseCallback):
         return image
     
     def _on_step(self) -> bool:
-        if self.num_timesteps %  X == 0:
+        num_timesteps = self.n_calls
+        if num_timesteps %  X == 0:
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             
@@ -123,10 +124,10 @@ class Callback(BaseCallback):
             self.episode_lengths.append((el.mean(), 
                                          el.mean() - el.std(), 
                                          el.mean() + el.std()))
-            if self.verbose > 0 and self.num_timesteps % Y == 0:
-                print(f'Training Steps: {self.num_timesteps - Y} - {self.num_timesteps} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+            if self.verbose > 0 and num_timesteps % Y == 0:
+                print(f'Training Steps: {num_timesteps - Y} - {num_timesteps} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
             
-            if self.args.render and self.num_timesteps % Z == 0:
+            if self.args.render and num_timesteps % Z == 0:
                 done = False
                 obs = self.env.reset()
                 rewards, steps = (0, 0)
@@ -138,7 +139,7 @@ class Callback(BaseCallback):
                     
                     steps += 1
                     frame = self.env.render(mode = 'rgb_array')
-                    self.frames.append(self.rendering(frame, steps, self.num_timesteps, rewards))
+                    self.frames.append(self.rendering(frame, steps, num_timesteps, rewards))
                     
         return True
 
