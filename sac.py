@@ -103,7 +103,7 @@ class Callback(BaseCallback):
         self.args = args
         self.env = env
         
-    def rendering(frame, steps, timestep, rewards):
+    def rendering(self, frame, steps, timestep, rewards):
         image = Image.fromarray(frame)
         drawer = ImageDraw.Draw(image)
         color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
