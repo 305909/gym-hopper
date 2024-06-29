@@ -108,7 +108,7 @@ class Callback(BaseCallback):
         drawer = ImageDraw.Draw(image)
         color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
         drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                    f'Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                    f'Train Step: {steps} | Reward: {rewards:.2f}', fill = color)
         return image
     
     def _on_step(self) -> bool:
@@ -149,7 +149,7 @@ def rendering(frame, steps, episode, rewards):
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                f'Test Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
     return image
 
 
