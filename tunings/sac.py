@@ -39,11 +39,11 @@ def parse_args():
                                    'target-wide-randomization'],
                         help = 'Testing environment')
     parser.add_argument('--train-timesteps', 
-                        default = 19750, 
+                        default = 100000, 
 			type = int, 
-                        help = 'Number of training episodes')
+                        help = 'Number of training timesteps')
     parser.add_argument('--test-episodes', 
-                        default = 250, 
+                        default = 100, 
 			type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--device', 
@@ -56,7 +56,7 @@ def parse_args():
 
 
 def train(device = 'cpu', 
-          train_timesteps: int = 19750, 
+          train_timesteps: int = 100000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> SAC:
           
     env = gym.make(train_env)
@@ -72,7 +72,7 @@ def train(device = 'cpu',
 
 
 def test(agent: SAC, 
-         test_episodes: int = 250, 
+         test_episodes: int = 100, 
          test_env: str = 'CustomHopper-source-v0') -> float:
              
     env = gym.make(test_env)
