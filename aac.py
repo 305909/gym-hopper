@@ -69,9 +69,9 @@ def parse_args():
     return parser.parse_args()
 
 
-X = 10  # evaluation frequency over training iterations -> 100
-Y = 100  # verbose output frequency over training iterations -> 1000
-Z = 100  # frame recording frequency over training iterations -> 10000
+X = 250  # evaluation frequency over training iterations
+Y = 2500  # verbose output frequency over training iterations
+Z = 25000  # frame recording frequency over training iterations
 
 
 # callback class to evaluate rewards over training iterations
@@ -280,7 +280,7 @@ def test(args, test_env):
             obs = next_state
             
             steps += 1
-            if args.render and num_episodes < 10:
+            if args.render and num_episodes < 5:
                 frame = env.render(mode = 'rgb_array')
                 frames.append(rendering(frame, steps, num_episodes + 1, rewards))
                 
