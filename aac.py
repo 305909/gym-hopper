@@ -51,11 +51,11 @@ def parse_args():
                                    'target'],
                         help = 'Testing environment')
     parser.add_argument('--train-episodes', 
-                        default = 100000, 
+                        default = 25000, 
                         type = int, 
                         help = 'Number of training episodes')
     parser.add_argument('--test-episodes', 
-                        default = 10, 
+                        default = 50, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--input-model', 
@@ -71,7 +71,7 @@ def parse_args():
 
 X = 250  # evaluation frequency over training iterations
 Y = 2500  # verbose output frequency over training iterations
-Z = 25000  # frame recording frequency over training iterations
+Z = 6250  # frame recording frequency over training iterations
 
 
 # callback class to evaluate rewards over training iterations
