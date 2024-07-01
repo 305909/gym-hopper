@@ -60,15 +60,15 @@ def parse_args():
                                    'target-wide-randomization'],
                         help = 'Testing environment')
     parser.add_argument('--train-timesteps', 
-                        default = 1000000, 
+                        default = 250000, 
                         type = int, 
                         help = 'Number of training timesteps')
     parser.add_argument('--test-episodes', 
-                        default = 10, 
+                        default = 50, 
                         type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--learning-rate', 
-                        default = 3e-4, 
+                        default = 7e-4, 
                         type = float, 
                         help = 'Learning rate')
     parser.add_argument('--input-model', 
@@ -82,9 +82,9 @@ def parse_args():
     return parser.parse_args()
 
 
-X = 100  # evaluation frequency over training iterations -> 100
-Y = 1000  # verbose output frequency over training iterations -> 1000
-Z = 1000  # frame recording frequency over training iterations -> 10000
+X = 250  # evaluation frequency over training iterations
+Y = 25000  # verbose output frequency over training iterations
+Z = 62500  # frame recording frequency over training iterations
 
 
 # callback class to evaluate rewards over training iterations
