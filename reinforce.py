@@ -101,8 +101,8 @@ class Callback():
                                                                return_episode_rewards = True)
             
             er, el = np.array(episode_rewards), np.array(episode_lengths)
-            self.episode_rewards.append((er.mean())
-            self.episode_lengths.append((el.mean())
+            self.episode_rewards.append(er.mean())
+            self.episode_lengths.append(el.mean())
             if self.verbose > 0 and num_episodes % Y == 0:
                 print(f'Training Episodes: {num_episodes - Y} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
                     
