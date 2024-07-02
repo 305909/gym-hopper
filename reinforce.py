@@ -93,9 +93,7 @@ class Callback():
     
     def _on_step(self, num_episodes, verbose = 1) -> bool:
         if num_episodes % X == 0: 
-            episode_rewards, episode_lengths = evaluate_policy(self.agent, 
-                                                               self.env, 
-                                                               self.test_episodes, 
+            episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
@@ -116,7 +114,7 @@ def rendering(frame, steps, episode, rewards):
     return image
 
 
-def loops(args, train_env, test_env, num = 8):
+def loops(args, train_env, test_env, iters = 8):
     
     env = gym.make(train_env)
     print("---------------------------------------------")
@@ -144,17 +142,28 @@ def loops(args, train_env, test_env, num = 8):
     print('Model to Train:', model)
     print("---------------------------------------------")
     
+    weights = []
     rewards, lengths, times = [], [], []
-    for iter in range(num):
+    
+    for iter in range(iters):
         print("---------------------------------------------")
         print('Training Iter:', iter)
         print("---------------------------------------------")
-        episode_rewards, episode_lengths, time = train(args, train_env, test_env, model)
+        episode_rewards, episode_lengths, time, agent_weights = train(args, train_env, test_env, model)
         lengths.append(episode_lengths)
         rewards.append(episode_rewards)
+        weights.append(agent_weights)
         times.append(time)
-    return rewards, lengths, times
-  
+    return rewards, lengths, times, weights
+
+
+def average_weights(weights):
+    avg_weights = {}
+    for key in weights[0].keys():
+        avg_weights[key] = torch.mean(torch.stack([w[key] for w in weights]), dim = 0)
+    return avg_weights
+    
+
 # function to train the simulator
 def train(args, train_env, test_env, model):
   
@@ -184,10 +193,8 @@ def train(args, train_env, test_env, model):
         num_episodes += 1   
         agent.update_policy()
         callback._on_step(num_episodes)
-      
-    train_time = time.time() - start
-    torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
-    return callback.episode_rewards, callback.episode_lengths, train_time
+    
+    return callback.episode_rewards, callback.episode_lengths, time.time() - start, policy.state_dict()
         
 
 def aggregate(metric, records):
@@ -310,10 +317,18 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
       
     if args.train:
-        rewards, lengths, times = loops(args, train_env, test_env)
+        rewards, lengths, times, weights = loops(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (rewards, lengths)):
             metric, x, y, sigma = aggregate(metric, records)
             plot_average_rewards(metric, x, y, sigma, args)
+        print("---------------------------------------------")
+        print(f'Training Time: {np.mean(times)} +/- {np.std(times)}')
+        print("---------------------------------------------")
+        
+        avg_weights = average_weights(weights)
+        avg_policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+        avg_policy.load_state_dict(avg_weights)
+        torch.save(avg_policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
         
     if args.test:
         test(args, test_env)
