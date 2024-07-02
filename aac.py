@@ -293,7 +293,11 @@ def main():
         
         weights = OrderedDict()
         for key in pool['weights'][0].keys():
-            weights[key] = torch.mean(torch.stack([w[key] for w in pool['weights']]), dim = 0)
+            subkeys = pool['weights'][0][key].keys()
+            weights[key] = OrderedDict()
+            for subkey in subkeys:
+                weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
+                                                               for w in pool['weights']]), dim = 0)
 
         policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
         policy.load_state_dict(weights)
