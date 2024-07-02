@@ -17,6 +17,7 @@ import PIL.ImageDraw as ImageDraw
 import stable_baselines3
 
 from PIL import Image
+from cycler import cycler
 from env.custom_hopper import *
 
 from agents.rein import RF, RFPolicy
@@ -183,10 +184,14 @@ def aggregate(metric, records):
 
 def plot(metric, xs, ys, sigmas, args):
     """ 
-        -> track the evaluation metric progress 
+        -> track the evaluation metric progress 1
            over the training episodes
 
     """
+    colors = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
+              '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
+    plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
+
     plt.plot(xs, ys, alpha = 1, label = f'RF {args.baseline}')
     plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
@@ -199,14 +204,12 @@ def plot(metric, xs, ys, sigmas, args):
     plt.close()
 
 
-# function to test the simulator
 def test(args, test_env):
     """ 
         -> test the agent in the testing environment
         
     """
     env = gym.make(test_env)
-    
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
     model = None
 
