@@ -20,6 +20,7 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
+from collections import OrderedDict
 from agents.aac import A2C, A2CPolicy
 from stable_baselines3.common.evaluation import evaluate_policy
 
@@ -290,7 +291,7 @@ def main():
             plot(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
         
-        weights = {}
+        weights = OrderedDict()
         for key in pool['weights'][0].keys():
             weights[key] = torch.mean(torch.stack([w[key] for w in pool['weights']]), dim = 0)
 
