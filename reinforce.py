@@ -80,7 +80,7 @@ X = 5  # evaluation frequency over training iterations
 Y = 25  # verbose output frequency over training iterations
 
 
-# callback class to evaluate rewards over training iterations
+# callback class to evaluate episode rewards and episode lengths over training iterations
 class Callback():
     
     def __init__(self, agent, env, args):
@@ -105,16 +105,17 @@ class Callback():
         
 
 # function to render the simulator
-def rendering(frame, steps, episode, rewards):
+def rendering(frame, steps, num_episodes, rewards):
     image = Image.fromarray(frame)
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'Test Episode: {episode} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                f'Test Episode: {num_episodes} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
     return image
 
 
-def loops(args, train_env, test_env, iters = 8):
+# function to multiprocess training sessions (to counteract variance)
+def pool(args, train_env, test_env, sessions = 8):
     
     env = gym.make(train_env)
     print("---------------------------------------------")
@@ -141,28 +142,19 @@ def loops(args, train_env, test_env, iters = 8):
     print("---------------------------------------------")
     print('Model to Train:', model)
     print("---------------------------------------------")
-    
-    weights = []
-    rewards, lengths, times = [], [], []
-    
-    for iter in range(iters):
-        print("---------------------------------------------")
-        print('Training Iter:', iter)
-        print("---------------------------------------------")
-        episode_rewards, episode_lengths, time, agent_weights = train(args, train_env, test_env, model)
-        lengths.append(episode_lengths)
-        rewards.append(episode_rewards)
-        weights.append(agent_weights)
-        times.append(time)
-    return rewards, lengths, times, weights
 
-
-def average_weights(weights):
-    avg_weights = {}
-    for key in weights[0].keys():
-        avg_weights[key] = torch.mean(torch.stack([w[key] for w in weights]), dim = 0)
-    return avg_weights
+    pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
     
+    for iter in range(sessions):
+        print("---------------------------------------------")
+        print('Training Session:', iter)
+        print("---------------------------------------------")
+        
+        for key, value in zip(pool.keys(), [train(args, train_env, test_env, model)]):
+            pool[key].append(value)
+    
+    return pool
+
 
 # function to train the simulator
 def train(args, train_env, test_env, model):
@@ -199,20 +191,16 @@ def train(args, train_env, test_env, model):
 
 def aggregate(metric, records):
     averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in list(zip(*records))]
+    xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
+    ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
+    sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
+    return metric, sx, ys, sigmas
 
-    x = np.array([point * X for point in range(len(averages))])
-    y = np.array([record[0] for record in averages])
-    sigma = np.array([record[1] for record in averages])
-    np.append(0, x)
-    np.append(0, y)
-    np.append(0, sigma)
 
-    return metric, x, y, sigma
-
-def plot_average_rewards(metric, x, y, sigma, args):
+def plot(metric, xs, ys, sigmas, args):
   
-    plt.plot(x, y, alpha = 1, label = f'RF {args.baseline}')
-    plt.fill_between(x, y - sigma, y + sigma, alpha = 0.5)
+    plt.plot(xs, ys, alpha = 1, label = f'RF {args.baseline}')
+    plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
     plt.xlabel('episodes')
     plt.ylabel(f'episode {metric}')
@@ -225,6 +213,7 @@ def plot_average_rewards(metric, x, y, sigma, args):
 
 # function to test the simulator
 def test(args, test_env):
+    
     env = gym.make(test_env)
     print("---------------------------------------------")
     print(f'Testing Environment: {test_env}')
@@ -317,18 +306,21 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
       
     if args.train:
-        rewards, lengths, times, weights = loops(args, train_env, test_env)
-        for metric, records in zip(('reward', 'length'), (rewards, lengths)):
-            metric, x, y, sigma = aggregate(metric, records)
-            plot_average_rewards(metric, x, y, sigma, args)
+        pool = pool(args, train_env, test_env)
+        for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
+            metric, xs, ys, sigmas = aggregate(metric, records)
+            plot(metric, xs, ys, sigmas, args)
         print("---------------------------------------------")
-        print(f'Training Time: {np.mean(times)} +/- {np.std(times)}')
+        print(f'Training Time: {np.mean(pool['times']):.2f} +/- {np.std(pool['times']):.2f}')
         print("---------------------------------------------")
         
-        avg_weights = average_weights(weights)
-        avg_policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
-        avg_policy.load_state_dict(avg_weights)
-        torch.save(avg_policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
+        weights = {}
+        for key in pool['weights'][0].keys():
+            weights[key] = torch.mean(torch.stack([w[key] for w in weights]), dim = 0)
+            
+        policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+        policy.load_state_dict(weights)
+        torch.save(policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
         
     if args.test:
         test(args, test_env)
