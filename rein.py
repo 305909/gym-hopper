@@ -53,8 +53,8 @@ def parse_args():
     return parser.parse_args()
 
 
-X = 5
-Y = 25
+X = 250
+Y = 6250
 
 
 class Callback():
@@ -108,7 +108,7 @@ def rendering(frame, steps, num_episodes, rewards):
     return image
 
 
-def multiprocessing(args, train_env, test_env, sessions = 8):
+def multiprocessing(args, train_env, test_env, sessions = 10):
     """ 
         -> multiprocess sequential training sessions 
            to counteract variance
