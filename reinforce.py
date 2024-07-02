@@ -35,7 +35,8 @@ def parse_args():
                         choices = ['vanilla', 'constant', 'whitening'], 
                         help = 'Baseline for the policy update function [vanilla, constant, whitening]')
     parser.add_argument('--input-model', default = None, type = str, help = 'Pre-trained input model (in .mdl format)')
-    parser.add_argument('--directory', default = 'results', type = str, help = 'Path to the output location for checkpoint storage (model and rendering)')
+    parser.add_argument('--directory', default = 'results', type = str, 
+                        help = 'Path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
@@ -74,11 +75,14 @@ def rendering(frame, steps, num_episodes, rewards):
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
                 f'Test Episode: {num_episodes} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+    
     return image
 
 
 # function to multiprocess training sessions (to counteract variance)
 def multiprocessing(args, train_env, test_env, sessions = 8):
+    
+    """ Multiprocessing """
     
     env = gym.make(train_env)
     print("---------------------------------------------")
@@ -101,16 +105,14 @@ def multiprocessing(args, train_env, test_env, sessions = 8):
     model = None
     if args.input_model is not None:
         model = args.input_model
-      
     print("---------------------------------------------")
     print('Model to Train:', model)
     print("---------------------------------------------")
 
     pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
-    
     for iter in range(sessions):
         print("---------------------------------------------")
-        print('Training Session:', iter)
+        print('Training Session:', iter + 1)
         print("---------------------------------------------")
         
         for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
@@ -135,6 +137,7 @@ def train(args, train_env, test_env, model):
                baseline = args.baseline)
 
     callback = Callback(agent, gym.make(test_env), args)
+    
     num_episodes = 0
     start = time.time()
     while num_episodes < args.train_episodes:
@@ -145,6 +148,7 @@ def train(args, train_env, test_env, model):
             next_state, reward, done, _ = env.step(action)
             agent.store_outcome(obs, action_log_prob, reward)
             obs = next_state 
+            
         num_episodes += 1   
         agent.update_policy()
         callback._on_step(num_episodes)
@@ -153,10 +157,12 @@ def train(args, train_env, test_env, model):
         
 
 def aggregate(metric, records):
-    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in list(zip(*records))]
+    averages = [(statistics.mean(elements), statistics.stdev(elements)) 
+                for elements in list(zip(*records))]
     xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
     ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
     sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
+    
     return metric, xs, ys, sigmas
 
 
@@ -176,6 +182,8 @@ def plot(metric, xs, ys, sigmas, args):
 
 # function to test the simulator
 def test(args, test_env):
+
+    """ Evaluation """
     
     env = gym.make(test_env)
     print("---------------------------------------------")
@@ -185,8 +193,6 @@ def test(args, test_env):
     print('State Space:', env.observation_space)
     print('Dynamics Parameters:', env.get_parameters())
     print("---------------------------------------------")
-
-    """ Evaluation """
     
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
     model = None
@@ -283,6 +289,7 @@ def main():
             
         policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
         policy.load_state_dict(weights)
+        
         torch.save(policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
         
     if args.test:
