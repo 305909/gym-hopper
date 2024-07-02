@@ -182,6 +182,7 @@ def train(args, train_env, test_env, model):
       
     train_time = time.time() - start
     torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
+    print(callback.episode_rewards)
     return callback.episode_rewards, callback.episode_lengths, train_time
         
 
