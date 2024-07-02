@@ -150,7 +150,7 @@ def multiprocessing(args, train_env, test_env, sessions = 8):
         print('Training Session:', iter)
         print("---------------------------------------------")
         
-        for key, value in zip(pool.keys(), [train(args, train_env, test_env, model)]):
+        for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
             pool[key].append(value)
     
     return pool
@@ -190,8 +190,7 @@ def train(args, train_env, test_env, model):
         
 
 def aggregate(metric, records):
-    flat = [item for sublist in records for item in sublist]
-    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in list(zip(*flat))]
+    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in list(zip(*records))]
     xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
     ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
     sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
