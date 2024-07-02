@@ -84,11 +84,11 @@ class A2C:
     
     def __init__(self, policy, 
                  device: str = 'cpu',
-                 learning_rate: float = 1e-4,
+                 learning_rate: float = 1e-3,
                  max_grad_norm: float = 0.5,
                  entropy_coef: float = 0.0,
                  critic_coef: float = 0.5,
-                 batch_size: int = 16,
+                 batch_size: int = 32,
                  gamma: float = 0.99,
                  **kwargs):
                      
