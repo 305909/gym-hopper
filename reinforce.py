@@ -83,7 +83,7 @@ Y = 25  # verbose output frequency over training iterations
 # callback class to evaluate rewards over training iterations
 class Callback():
     
-    def __init__(self, agent, env, args, verbose = 1):
+    def __init__(self, agent, env, args):
         
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
@@ -91,7 +91,7 @@ class Callback():
         self.agent = agent
         self.env = env
     
-    def _on_step(self, num_episodes) -> bool:
+    def _on_step(self, num_episodes, verbose = 1) -> bool:
         if num_episodes % X == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, 
