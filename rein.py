@@ -26,28 +26,28 @@ from stable_baselines3.common.evaluation import evaluate_policy
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train', action = 'store_true', 
-                        help = 'Train the model')
+                        help = 'train the model')
     parser.add_argument('--test', action = 'store_true', 
-                        help = 'Test the model')
+                        help = 'test the model')
     parser.add_argument('--render', action = 'store_true', 
-                        help = 'Render the simulator')
+                        help = 'render the simulator')
     parser.add_argument('--device', default = 'cpu', type = str, 
-                        help = 'Network device [cpu, cuda]')
+                        help = 'network device [cpu, cuda]')
     parser.add_argument('--train-env', default = 'source', type = str, 
-                        help = 'Training environment')
+                        help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
-                        help = 'Testing environment')
+                        help = 'testing environment')
     parser.add_argument('--train-episodes', default = 25000, type = int, 
-                        help = 'Number of training episodes')
+                        help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
-                        help = 'Number of testing episodes')
+                        help = 'number of testing episodes')
     parser.add_argument('--baseline', default = 'vanilla', type = str, 
                         choices = ['vanilla', 'constant', 'whitening'], 
-                        help = 'Baseline for the policy update function [vanilla, constant, whitening]')
+                        help = 'baseline for the policy update function [vanilla, constant, whitening]')
     parser.add_argument('--input-model', default = None, type = str, 
-                        help = 'Pre-trained input model (in .mdl format)')
+                        help = 'pre-trained input model (in .mdl format)')
     parser.add_argument('--directory', default = 'results', type = str, 
-                        help = 'Path to the output location for checkpoint storage (model and rendering)')
+                        help = 'path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
@@ -86,7 +86,7 @@ class Callback():
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
             if verbose > 0 and num_episodes % Y == 0:
-                print(f'Training Episode: {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+                print(f'training episode: {num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
         
 
@@ -102,7 +102,7 @@ def rendering(frame, steps, num_episodes, rewards):
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'Test Episode: {num_episodes} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
+                f'episode: {num_episodes} | step: {steps} | reward: {rewards:.2f}', fill = color)
     return image
 
 
@@ -119,11 +119,11 @@ def multiprocessing(args, train_env, test_env, sessions = 8):
     if args.input_model is not None:
         model = args.input_model
 
-    print(f'\nModel to Train: {model}\n')
+    print(f'\nmodel to train: {model}\n')
 
     pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
     for iter in range(sessions):
-        print(f'\nTraining Session: {iter + 1}\n')
+        print(f'\ntraining session: {iter + 1}\n')
         for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
             pool[key].append(value)
     
@@ -223,7 +223,7 @@ def test(args, test_env):
                device = args.device, 
                baseline = args.baseline)
 
-    print(f'\nModel to Test: {model}\n')
+    print(f'\nmodel to test: {model}\n')
 
     frames = list()
     num_episodes = 0
@@ -246,7 +246,7 @@ def test(args, test_env):
         num_episodes += 1   
         episode_rewards.append(rewards)
     er = np.array(episode_rewards)
-    print(f'\nTest Episodes: {num_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}\n')
+    print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
         imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
@@ -287,7 +287,7 @@ def main():
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = aggregate(metric, records)
             plot(metric, xs, ys, sigmas, args)
-        print(f'\nTraining Time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
+        print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
         
         weights = {}
         for key in pool['weights'][0].keys():
@@ -297,7 +297,7 @@ def main():
         policy.load_state_dict(weights)
         
         torch.save(policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
-        print(f'\ncheckpoint: {args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl\n')
+        print(f'\nmodel checkpoint storage: {args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl\n')
         
     if args.test:
         test(args, test_env)
