@@ -54,7 +54,7 @@ class RF:
     def __init__(self, policy, 
                  device: str = 'cpu', 
                  baseline: str = 'vanilla',
-                 learning_rate: float = 1e-4, 
+                 learning_rate: float = 1e-3, 
                  max_grad_norm: float = 0.5, 
                  entropy_coef: float = 0.0, 
                  gamma: float = 0.99,  
