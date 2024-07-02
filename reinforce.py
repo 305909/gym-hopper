@@ -180,9 +180,9 @@ def train(args, train_env, test_env, model):
         agent.update_policy()
         callback._on_step(num_episodes)
       
-    time = time.time() - start
+    train_time = time.time() - start
     torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
-    return callback.episode_rewards, callback.episode_lengths, time
+    return callback.episode_rewards, callback.episode_lengths, train_time
         
 
 def aggregate(metric, records):
