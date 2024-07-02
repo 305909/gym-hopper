@@ -311,7 +311,7 @@ def main():
             metric, xs, ys, sigmas = aggregate(metric, records)
             plot(metric, xs, ys, sigmas, args)
         print("---------------------------------------------")
-        print(f'Training Time: {np.mean(pool['times']):.2f} +/- {np.std(pool['times']):.2f}')
+        print(f'Training Time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("---------------------------------------------")
         
         weights = {}
