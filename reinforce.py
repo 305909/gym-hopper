@@ -76,8 +76,8 @@ def parse_args():
     return parser.parse_args()
 
 
-X = 25  # evaluation frequency over training iterations
-Y = 250  # verbose output frequency over training iterations
+X = 5  # evaluation frequency over training iterations
+Y = 25  # verbose output frequency over training iterations
 # Z = 6250  # frame recording frequency over training iterations
 
 
@@ -120,7 +120,8 @@ def rendering(frame, steps, episode, rewards):
 
 
 def loops(args, train_env, test_env, num = 8):
-  
+    env = gym.make(train_env)
+    
     print("---------------------------------------------")
     print(f'Training Environment: {train_env}')
     print("---------------------------------------------")
