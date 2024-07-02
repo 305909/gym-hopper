@@ -186,7 +186,7 @@ def train(args, train_env, test_env, model):
         
 
 def aggregate(metric, records):
-    averages = 
+    averages = []
     print(metric, records)
     for i in range(len(records[0])):
         ras = np.array([record[i][0] for record in records])  # record at step
