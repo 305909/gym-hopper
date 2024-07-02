@@ -85,7 +85,6 @@ class Callback():
             self.episode_lengths.append(el.mean())
             if verbose > 0 and num_episodes % Y == 0:
                 print(f'training episode: {num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
-        return Truent(f'training episode: {num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
         
 
