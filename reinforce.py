@@ -23,56 +23,19 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train', 
-                        action = 'store_true', 
-                        help = 'Train the model')
-    parser.add_argument('--test', 
-                        action = 'store_true', 
-                        help = 'Test the model')
-    parser.add_argument('--render', 
-                        action = 'store_true', 
-                        help = 'Render the simulator')
-    parser.add_argument('--device', 
-                        default = 'cpu', 
-                        type = str, 
-                        choices = ['cpu', 
-                                   'cuda'], 
-                        help = 'Network device [cpu, cuda]')
-    parser.add_argument('--train-env', 
-                        default = 'source', 
-                        type = str,
-                        choices = ['source', 
-                                   'target'],
-                        help = 'Training environment')
-    parser.add_argument('--test-env', 
-                        default = 'target', 
-                        type = str,
-                        choices = ['source', 
-                                   'target'],
-                        help = 'Testing environment')
-    parser.add_argument('--train-episodes', 
-                        default = 25000, 
-                        type = int, 
-                        help = 'Number of training episodes')
-    parser.add_argument('--test-episodes', 
-                        default = 50, 
-                        type = int, 
-                        help = 'Number of testing episodes')
-    parser.add_argument('--baseline', 
-                        default = 'vanilla', 
-                        type = str, 
-                        choices = ['vanilla', 
-                                   'constant', 
-                                   'whitening'], 
+    parser.add_argument('--train', action = 'store_true', help = 'Train the model')
+    parser.add_argument('--test', action = 'store_true', help = 'Test the model')
+    parser.add_argument('--render', action = 'store_true', help = 'Render the simulator')
+    parser.add_argument('--device', default = 'cpu', type = str, help = 'Network device [cpu, cuda]')
+    parser.add_argument('--train-env', default = 'source', type = str, help = 'Training environment')
+    parser.add_argument('--test-env', default = 'target', type = str, help = 'Testing environment')
+    parser.add_argument('--train-episodes', default = 25000, type = int, help = 'Number of training episodes')
+    parser.add_argument('--test-episodes', default = 50, type = int, help = 'Number of testing episodes')
+    parser.add_argument('--baseline', default = 'vanilla', type = str, 
+                        choices = ['vanilla', 'constant', 'whitening'], 
                         help = 'Baseline for the policy update function [vanilla, constant, whitening]')
-    parser.add_argument('--input-model', 
-                        default = None, 
-                        type = str, 
-                        help = 'Pre-trained input model (in .mdl format)')
-    parser.add_argument('--directory', 
-                        default = 'results', 
-                        type = str, 
-                        help = 'Path to the output location for checkpoint storage (model and rendering)')
+    parser.add_argument('--input-model', default = None, type = str, help = 'Pre-trained input model (in .mdl format)')
+    parser.add_argument('--directory', default = 'results', type = str, help = 'Path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
