@@ -190,7 +190,7 @@ def aggregate(metric, records):
     averages = []
     print(metric, len(records[0]), records)
     for i in range(len(records[0])):
-        ras = np.array([record[j][i] for j in len(records)])  # record at step
+        ras = np.array([records[j][i] for j in len(records)])  # record at step
         averages.append((ras.mean(), ras.std()))
     print(averages, len(averages))
 
