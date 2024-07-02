@@ -297,6 +297,7 @@ def main():
         policy.load_state_dict(weights)
         
         torch.save(policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
+        print(f'\ncheckpoint: {args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl\n')
         
     if args.test:
         test(args, test_env)
