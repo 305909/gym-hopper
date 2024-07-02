@@ -88,7 +88,6 @@ class Callback():
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
-        self.verbose = verbose
         self.agent = agent
         self.args = args
         self.env = env
@@ -101,7 +100,7 @@ class Callback():
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
-            if self.verbose > 0 and num_episodes % Y == 0:
+            if verbose > 0 and num_episodes % Y == 0:
                 print(f'Training Episode: {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
                     
         return True
