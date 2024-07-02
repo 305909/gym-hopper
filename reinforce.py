@@ -1,4 +1,6 @@
-""" REINFORCE algorithm - Reinforcement Learning (RL) paradigm within the Custom Hopper MuJoCo environment """
+""" REINFORCE algorithm
+Custom Hopper MuJoCo environment
+"""
 
 import os
 import gym
@@ -23,32 +25,46 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train', action = 'store_true', help = 'Train the model')
-    parser.add_argument('--test', action = 'store_true', help = 'Test the model')
-    parser.add_argument('--render', action = 'store_true', help = 'Render the simulator')
-    parser.add_argument('--device', default = 'cpu', type = str, help = 'Network device [cpu, cuda]')
-    parser.add_argument('--train-env', default = 'source', type = str, help = 'Training environment')
-    parser.add_argument('--test-env', default = 'target', type = str, help = 'Testing environment')
-    parser.add_argument('--train-episodes', default = 25000, type = int, help = 'Number of training episodes')
-    parser.add_argument('--test-episodes', default = 50, type = int, help = 'Number of testing episodes')
+    parser.add_argument('--train', action = 'store_true', 
+                        help = 'Train the model')
+    parser.add_argument('--test', action = 'store_true', 
+                        help = 'Test the model')
+    parser.add_argument('--render', action = 'store_true', 
+                        help = 'Render the simulator')
+    parser.add_argument('--device', default = 'cpu', type = str, 
+                        help = 'Network device [cpu, cuda]')
+    parser.add_argument('--train-env', default = 'source', type = str, 
+                        help = 'Training environment')
+    parser.add_argument('--test-env', default = 'target', type = str, 
+                        help = 'Testing environment')
+    parser.add_argument('--train-episodes', default = 25000, type = int, 
+                        help = 'Number of training episodes')
+    parser.add_argument('--test-episodes', default = 50, type = int, 
+                        help = 'Number of testing episodes')
     parser.add_argument('--baseline', default = 'vanilla', type = str, 
                         choices = ['vanilla', 'constant', 'whitening'], 
                         help = 'Baseline for the policy update function [vanilla, constant, whitening]')
-    parser.add_argument('--input-model', default = None, type = str, help = 'Pre-trained input model (in .mdl format)')
+    parser.add_argument('--input-model', default = None, type = str, 
+                        help = 'Pre-trained input model (in .mdl format)')
     parser.add_argument('--directory', default = 'results', type = str, 
                         help = 'Path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
-X = 5  # evaluation frequency over training iterations
-Y = 25  # verbose output frequency over training iterations
+X = 5
+Y = 25
 
 
-# callback class to evaluate episode rewards and episode lengths over training iterations
 class Callback():
-    
-    def __init__(self, agent, env, args):
+    """ 
+        -> evaluate the agent in the testing environment 
+           over training iterations
         
+    ----------
+    X: evaluation frequency over training iterations
+    Y: verbose output frequency over training iterations
+    """
+    def __init__(self, agent, env, args):
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
@@ -56,6 +72,13 @@ class Callback():
         self.env = env
     
     def _on_step(self, num_episodes, verbose = 1) -> bool:
+        """ 
+            -> evaluate the agent after X training episodes
+            -> outputs evaluation information after Y episodes
+
+        ----------
+        evaluation metrics: episode rewards, episode lengths
+        """
         if num_episodes % X == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
@@ -64,68 +87,56 @@ class Callback():
             self.episode_lengths.append(el.mean())
             if verbose > 0 and num_episodes % Y == 0:
                 print(f'Training Episode: {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
-                    
         return True
         
 
-# function to render the simulator
 def rendering(frame, steps, num_episodes, rewards):
+    """ 
+        -> render the agent time-step in the testing environment 
+           into a frame for graphic interchange format
+
+    ----------
+    image: frame for graphic interchange format
+    """
     image = Image.fromarray(frame)
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
                 f'Test Episode: {num_episodes} | Step: {steps} | Reward: {rewards:.2f}', fill = color)
-    
     return image
 
 
-# function to multiprocess training sessions (to counteract variance)
 def multiprocessing(args, train_env, test_env, sessions = 8):
-    
-    """ Multiprocessing """
-    
-    env = gym.make(train_env)
-    print("---------------------------------------------")
-    print(f'Training Environment: {train_env}')
-    print("---------------------------------------------")
-    print('Action Space:', env.action_space)
-    print('State Space:', env.observation_space)
-    print('Dynamics Parameters:', env.get_parameters())
-    print("---------------------------------------------")
-    
-    env = gym.make(test_env)
-    print("---------------------------------------------")
-    print(f'Testing Environment: {test_env}')
-    print("---------------------------------------------")
-    print('Action Space:', env.action_space)
-    print('State Space:', env.observation_space)
-    print('Dynamics Parameters:', env.get_parameters())
-    print("---------------------------------------------")
-  
+    """ 
+        -> multiprocess sequential training sessions 
+           to counteract variance
+
+    ----------
+    sessions: sequential training sessions to process
+    pool: dictionary of training session outputs
+    """
     model = None
     if args.input_model is not None:
         model = args.input_model
-    print("---------------------------------------------")
-    print('Model to Train:', model)
-    print("---------------------------------------------")
+
+    print(f'\nModel to Train: {model}\n')
 
     pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
     for iter in range(sessions):
-        print("---------------------------------------------")
-        print('Training Session:', iter + 1)
-        print("---------------------------------------------")
-        
+        print(f'\nTraining Session: {iter + 1}\n')
         for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
             pool[key].append(value)
     
     return pool
 
 
-# function to train the simulator
 def train(args, train_env, test_env, model):
-  
-    """ Training """
-  
+    """ 
+        -> train the agent in the training environment
+
+    ----------
+    model: model to train
+    """
     env = gym.make(train_env)
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
 
@@ -157,6 +168,10 @@ def train(args, train_env, test_env, model):
         
 
 def aggregate(metric, records):
+    """ 
+        -> aggregate the training sessions outputs 
+
+    """
     averages = [(statistics.mean(elements), statistics.stdev(elements)) 
                 for elements in list(zip(*records))]
     xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
@@ -167,7 +182,11 @@ def aggregate(metric, records):
 
 
 def plot(metric, xs, ys, sigmas, args):
-  
+    """ 
+        -> track the evaluation metric progress 
+           over the training episodes
+
+    """
     plt.plot(xs, ys, alpha = 1, label = f'RF {args.baseline}')
     plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
@@ -182,17 +201,11 @@ def plot(metric, xs, ys, sigmas, args):
 
 # function to test the simulator
 def test(args, test_env):
-
-    """ Evaluation """
-    
+    """ 
+        -> test the agent in the testing environment
+        
+    """
     env = gym.make(test_env)
-    print("---------------------------------------------")
-    print(f'Testing Environment: {test_env}')
-    print("---------------------------------------------")
-    print('Action Space:', env.action_space)
-    print('State Space:', env.observation_space)
-    print('Dynamics Parameters:', env.get_parameters())
-    print("---------------------------------------------")
     
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
     model = None
@@ -209,10 +222,8 @@ def test(args, test_env):
     agent = RF(policy, 
                device = args.device, 
                baseline = args.baseline)
-    
-    print("---------------------------------------------")
-    print('Model to Test:', model)
-    print("---------------------------------------------")
+
+    print(f'\nModel to Test: {model}\n')
 
     frames = list()
     num_episodes = 0
@@ -235,9 +246,7 @@ def test(args, test_env):
         num_episodes += 1   
         episode_rewards.append(rewards)
     er = np.array(episode_rewards)
-    print("---------------------------------------------")
-    print(f'Test Episodes: {num_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
-    print("---------------------------------------------")
+    print(f'\nTest Episodes: {num_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
         imageio.mimwrite(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
@@ -257,12 +266,11 @@ def main():
                                           args.test_env])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
-        print("---------------------------------------------")
-        print('WARNING: GPU not available, switch to CPU')
+        print('\nWARNING: GPU not available, switch to CPU\n')
         args.device = 'cpu'
         
     # validate environment registration
-    try: env = gym.make(train_env)
+    try: env = gym.make(train_env)  
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {train_env} not found')
         
@@ -279,9 +287,7 @@ def main():
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = aggregate(metric, records)
             plot(metric, xs, ys, sigmas, args)
-        print("---------------------------------------------")
-        print(f'Training Time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
-        print("---------------------------------------------")
+        print(f'\nTraining Time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
         
         weights = {}
         for key in pool['weights'][0].keys():
