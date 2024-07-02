@@ -294,7 +294,8 @@ def main():
         
         weights = {}
         for key in pool['weights'][0].keys():
-            weights[key] = torch.mean(torch.stack([w[key] for w in pool['weights']]), dim = 0)
+            weights[key] = torch.mean(torch.stack([w[key] 
+                                                   for w in pool['weights']]), dim = 0)
             
         policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
         policy.load_state_dict(weights)
