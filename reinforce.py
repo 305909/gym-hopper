@@ -115,7 +115,7 @@ def rendering(frame, steps, num_episodes, rewards):
 
 
 # function to multiprocess training sessions (to counteract variance)
-def pool(args, train_env, test_env, sessions = 8):
+def multiprocessing(args, train_env, test_env, sessions = 8):
     
     env = gym.make(train_env)
     print("---------------------------------------------")
@@ -306,7 +306,7 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
       
     if args.train:
-        pool = pool(args, train_env, test_env)
+        pool = multiprocessing(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = aggregate(metric, records)
             plot(metric, xs, ys, sigmas, args)
