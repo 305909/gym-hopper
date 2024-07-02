@@ -194,7 +194,7 @@ def aggregate(metric, records):
     xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
     ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
     sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
-    return metric, sx, ys, sigmas
+    return metric, xs, ys, sigmas
 
 
 def plot(metric, xs, ys, sigmas, args):
