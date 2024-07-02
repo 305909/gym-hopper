@@ -89,14 +89,14 @@ class Callback():
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.agent = agent
-        self.args = args
         self.env = env
     
     def _on_step(self, num_episodes) -> bool:
         if num_episodes % X == 0: 
-            episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
+            episode_rewards, episode_lengths = evaluate_policy(self.agent, 
+                                                               self.env, 
+                                                               self.test_episodes, 
                                                                return_episode_rewards = True)
-            
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
