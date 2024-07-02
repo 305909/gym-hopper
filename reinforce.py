@@ -187,11 +187,10 @@ def train(args, train_env, test_env, model):
         
 
 def aggregate(metric, records):
-    averages = []
-    print(metric, len(records[0]), records)
-    for i in range(len(records[0])):
-        ras = np.array([records[j][i] for j in len(records)])  # record at step
-        averages.append((ras.mean(), ras.std()))
+    import statistics
+    transposed = list(zip(*records))
+    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in transposed]
+
     print(averages, len(averages))
 
     x = np.array([point * X for point in range(len(averages))])
