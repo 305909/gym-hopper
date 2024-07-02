@@ -193,9 +193,9 @@ def aggregate(metric, records):
     x = np.array([point * X for point in range(len(averages))])
     y = np.array([record[0] for record in averages])
     sigma = np.array([record[1] for record in averages])
-    np.append(0, x))
-    np.append(0, y))
-    np.append(0, sigma))
+    np.append(0, x)
+    np.append(0, y)
+    np.append(0, sigma)
 
     return metric, x, y, sigma
 
