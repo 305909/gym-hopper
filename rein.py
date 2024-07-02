@@ -174,7 +174,7 @@ def aggregate(metric, records):
     """
     averages = [(statistics.mean(elements), statistics.stdev(elements)) 
                 for elements in list(zip(*records))]
-    xs = np.insert(np.array([index * X for index in range(len(averages))]), 0, 0)
+    xs = np.insert(np.array([(index + 1) * X for index in range(len(averages))]), 0, 0)
     ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
     sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
     
