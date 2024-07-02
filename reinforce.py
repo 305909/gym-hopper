@@ -7,6 +7,7 @@ import torch
 import imageio
 import argparse
 import warnings
+import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 import PIL.ImageDraw as ImageDraw
@@ -14,7 +15,6 @@ import PIL.ImageDraw as ImageDraw
 import stable_baselines3
 
 from PIL import Image
-from cycler import cycler
 from env.custom_hopper import *
 
 from agents.rein import RF, RFPolicy
@@ -78,7 +78,6 @@ def parse_args():
 
 X = 5  # evaluation frequency over training iterations
 Y = 25  # verbose output frequency over training iterations
-# Z = 6250  # frame recording frequency over training iterations
 
 
 # callback class to evaluate rewards over training iterations
@@ -86,7 +85,6 @@ class Callback():
     
     def __init__(self, agent, env, args, verbose = 1):
         
-        self.train_episodes = args.train_episodes
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
@@ -104,7 +102,7 @@ class Callback():
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
             if self.verbose > 0 and num_episodes % Y == 0:
-                print(f'Training Episodes: {num_episodes - Y} - {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
+                print(f'Training Episode: {num_episodes} | Test Episodes: {self.test_episodes} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f}')
                     
         return True
         
@@ -120,10 +118,19 @@ def rendering(frame, steps, episode, rewards):
 
 
 def loops(args, train_env, test_env, num = 8):
-    env = gym.make(train_env)
     
+    env = gym.make(train_env)
     print("---------------------------------------------")
     print(f'Training Environment: {train_env}')
+    print("---------------------------------------------")
+    print('Action Space:', env.action_space)
+    print('State Space:', env.observation_space)
+    print('Dynamics Parameters:', env.get_parameters())
+    print("---------------------------------------------")
+    
+    env = gym.make(test_env)
+    print("---------------------------------------------")
+    print(f'Testing Environment: {test_env}')
     print("---------------------------------------------")
     print('Action Space:', env.action_space)
     print('State Space:', env.observation_space)
@@ -147,7 +154,6 @@ def loops(args, train_env, test_env, num = 8):
         lengths.append(episode_lengths)
         rewards.append(episode_rewards)
         times.append(time)
-    print(rewards)
     return rewards, lengths, times
   
 # function to train the simulator
@@ -182,16 +188,11 @@ def train(args, train_env, test_env, model):
       
     train_time = time.time() - start
     torch.save(agent.policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
-    print(callback.episode_rewards)
     return callback.episode_rewards, callback.episode_lengths, train_time
         
 
 def aggregate(metric, records):
-    import statistics
-    transposed = list(zip(*records))
-    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in transposed]
-
-    print(averages, len(averages))
+    averages = [(statistics.mean(elements), statistics.stdev(elements)) for elements in list(zip(*records))]
 
     x = np.array([point * X for point in range(len(averages))])
     y = np.array([record[0] for record in averages])
@@ -219,7 +220,6 @@ def plot_average_rewards(metric, x, y, sigma, args):
 # function to test the simulator
 def test(args, test_env):
     env = gym.make(test_env)
-
     print("---------------------------------------------")
     print(f'Testing Environment: {test_env}')
     print("---------------------------------------------")
