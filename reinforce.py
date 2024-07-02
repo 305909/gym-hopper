@@ -147,7 +147,7 @@ def loops(args, train_env, test_env, num = 8):
         lengths.append(episode_lengths)
         rewards.append(episode_rewards)
         times.append(time)
-
+    print(rewards)
     return rewards, lengths, times
   
 # function to train the simulator
