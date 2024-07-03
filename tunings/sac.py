@@ -108,7 +108,7 @@ def gridsearch(args, params, train_env, test_env, sessions = 5):
 
     results.sort(key = lambda x: x[0], reverse = True)
     print(f'\ngrid search - ranking scores:')
-    print("-----------------------------")
+    print("----------------------------")
     for rank, candidate in enumerate(results):
         print(f'{rank + 1} | score: {candidate[0]:.2f} | reward: {candidate[1]:.2f} +/- {candidate[2]:.2f} | parameters: {candidate[3]}')
 
@@ -141,7 +141,7 @@ def main():
     
     prime = gridsearch(args, params, train_env, test_env)
     print(f'\nmaximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal parameters: {prime[3]}')
-    print("--------------")
+    print("-------------")
 
 
 if __name__ == '__main__':
