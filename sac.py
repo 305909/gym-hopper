@@ -66,6 +66,7 @@ class Callback():
     Y: verbose output frequency over training iterations
     """
     def __init__(self, agent, env, args, verbose = 1):
+        super(Callback, self).__init__(verbose)
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
