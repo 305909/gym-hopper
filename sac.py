@@ -56,7 +56,7 @@ X = 10 # 250
 Y = 500 # 6250
 
 
-class Callback():
+class Callback(BaseCallback):
     """ 
         -> evaluate the agent in the testing environment 
            over training iterations
