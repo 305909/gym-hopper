@@ -291,13 +291,23 @@ def main():
             subkeys = pool['weights'][0][key].keys()
             weights[key] = OrderedDict()
             for subkey in subkeys:
-                weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
-                                                               for w in pool['weights']]), dim = 0)
-
-        policy = 'MlpPolicy'
-        policy.load_state_dict(weights)
+                weights[key][subkey] = torch.zeros_like(weights[0][key][subkey])
         
-        torch.save(policy.state_dict(), f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
+        for weight in pool['weights']:
+            for key in weight.keys():
+                for subkey in pool['weights'][0][key].keys():
+                    weights[key][subkey] += pool['weights'][0][key][subkey]
+                    
+        for key in weights.keys():
+            for subkey in weights[key].keys():
+                weights[key][subkey] /= len(weights)
+            
+        policy = 'MlpPolicy'
+        env = gym.make(train_env)
+        agent = SAC(policy, env, device = args.device, learning_rate = args.learning_rate)
+        agent.policy.load_state_dict(weights)
+        
+        agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
         print(f'\nmodel checkpoint storage: {args.directory}/SAC-({args.train_env} to {args.test_env}).mdl\n')
         
     if args.test:
