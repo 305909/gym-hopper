@@ -125,7 +125,22 @@ def main():
         'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]
         }
     
-    train_env, test_env = tuple(f'CustomHopper-{x}-v0' for x in [args.train_env, args.test_env])
+    train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
+                                for x in [args.train_env, 
+                                          args.test_env])
+
+    if args.device == 'cuda' and not torch.cuda.is_available():
+        print('\nWARNING: GPU not available, switch to CPU\n')
+        args.device = 'cpu'
+        
+    # validate environment registration
+    try: env = gym.make(train_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'ERROR: environment {train_env} not found')
+        
+    try: env = gym.make(test_env)
+    except gym.error.UnregisteredEnv: 
+        raise ValueError(f'ERROR: environment {test_env} not found')
     
     prime = gridsearch(args, params, train_env, test_env)
     print("---------------------------------------------")
