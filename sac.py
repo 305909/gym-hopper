@@ -188,7 +188,7 @@ def plot(metric, xs, ys, sigmas, args):
     plt.plot(xs, ys, alpha = 1, label = f'SAC')
     plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
-    plt.xlabel('episodes')
+    plt.xlabel('time-steps')
     plt.ylabel(f'episode {metric}')
     plt.title(f'average episode {metric} over training iterations', loc = 'left')
     plt.legend()
