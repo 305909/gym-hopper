@@ -121,8 +121,8 @@ def gridsearch(args, params, train_env, test_env, sessions = 5):
 def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
-    params = {                                           # | source -> source | source -> target | target -> target
-        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | ...              | ...              | ...
+    params = {
+        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]
         }
     
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' for x in [args.train_env, args.test_env])
