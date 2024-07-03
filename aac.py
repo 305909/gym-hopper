@@ -123,7 +123,8 @@ def multiprocess(args, train_env, test_env, sessions = 5):
 
     pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
     for iter in range(sessions):
-        print(f'\ntraining session: {iter + 1}\n')
+        print(f'\ntraining session: {iter + 1}')
+        print("----------------")
         for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
             pool[key].append(value)
     
@@ -315,7 +316,8 @@ def main():
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(metric, records)
             track(metric, xs, ys, sigmas, args)
-        print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
+        print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
+        print("-------------")
 
         arrange(args, pool['weights'], train_env)
         
