@@ -104,7 +104,8 @@ def gridsearch(args, params, sessions = 5):
         kwargs = dict(zip(keys, param))
         pool = list()
         for iter in range(sessions):
-            er, _ = pooling(kwargs, device = args.device,
+            er, _ = pooling(kwargs, 
+			    device = args.device,
                             train_episodes = args.train_episodes,
                             test_episodes = args.test_episodes)
             pool.append(er)
@@ -131,8 +132,8 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {                                           # | source -> source
-        'batch_size': [8, 16, 32, 64],                   # | 16
-        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | 1e-4
+        'batch_size': [16, 32, 64],                      # | ...
+        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | ...
         }
 
     prime = gridsearch(args, params)
