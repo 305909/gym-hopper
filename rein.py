@@ -277,7 +277,7 @@ def arrange(stacks):
     policy.load_state_dict(weights)
         
     torch.save(policy.state_dict(), f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl\n'))
+    print(f'\nmodel checkpoint storage: {args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env}).mdl\n')
 
 
 def main():
