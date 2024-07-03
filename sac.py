@@ -292,8 +292,7 @@ def main():
         
         for weight in pool['weights']:
             for key in weight.keys():
-                for subkey in pool['weights'][0][key].keys():
-                    weights[key] += weight[key]
+                weights[key] += weight[key]
                     
         for key in weights.keys():
             weights[key] /= len(weights)
