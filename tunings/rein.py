@@ -21,8 +21,7 @@ def parse_args():
     parser.add_argument('--test-episodes', default = 100, type = int, 
                         help = 'Number of testing episodes')
     parser.add_argument('--device', default = 'cpu', type = str, 
-                        choices = ['cpu', 'cuda'], 
-                        help = 'Network device [cpu, cuda]')
+			help = 'Network device [cpu, cuda]')
     return parser.parse_args()
 
 
@@ -103,13 +102,11 @@ def gridsearch(args, params, sessions = 5):
         res = np.mean(pool, axis = 0)
         cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
-        print("---------------------------------------------")
-        print(f'Score: {score:.2f} | Avg. Reward: {res.mean():.2f} +/- {res.std():.2f} | Parameters: {kwargs}')
+        print(f'\nScore: {score:.2f} | Avg. Reward: {res.mean():.2f} +/- {res.std():.2f} | Parameters: {kwargs}\n')
         results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
-    print("---------------------------------------------")
-    print(f'Grid Search - Ranking Scores:')
+    print(f'\nGrid Search - Ranking Scores:')
     print("---------------------------------------------")
     for rank, candidate in enumerate(results):
         print(f'{rank + 1} | Score: {candidate[0]:.2f} | Avg. Reward: {candidate[1]:.2f} +/- {candidate[2]:.2f} | Parameters: {candidate[3]}')
@@ -128,7 +125,6 @@ def main():
     prime = gridsearch(args, params)
     print("---------------------------------------------")
     print(f'Maximum Score: {prime[0]:.2f} | Avg. Reward: {prime[1]:.2f} +/- {prime[2]:.2f} | Optimal Parameters: {prime[3]}')
-    print("---------------------------------------------")
 
 
 if __name__ == '__main__':
