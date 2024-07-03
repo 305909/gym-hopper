@@ -96,7 +96,7 @@ def gridsearch(args, params, train_env, test_env, sessions = 5):
 			    device = args.device,
                             train_timesteps = args.train_timesteps,
                             test_episodes = args.test_episodes, 
-			    train_env = trein_env, 
+			    train_env = train_env, 
 			    test_env = test_env)
             pool.append(er)
         pool = np.array(pool)
