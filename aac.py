@@ -177,9 +177,9 @@ def stack(metric, records):
     """
     stacks = [(statistics.mean(elements), statistics.stdev(elements)) 
               for elements in list(zip(*records))]
-    xs = np.insert(np.array([(index + 1) * X for index in range(len(stacks))]), 0, 0)
-    ys = np.insert(np.array([stack[0] for stack in stacks]), 0, 0)
-    sigmas = np.insert(np.array([stack[1] for stack in stacks]), 0, 0)
+    xs = np.array([(index + 1) * X for index in range(len(stacks))])
+    ys = np.array([stack[0] for stack in stacks])
+    sigmas = np.array([stack[1] for stack in stacks])
     
     return metric, xs, ys, sigmas
 
