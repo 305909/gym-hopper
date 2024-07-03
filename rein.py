@@ -260,7 +260,7 @@ def test(args, test_env):
     env.close()
 
 
-def arrange(args, stacks):
+def arrange(stacks, train_env):
     """ 
         -> arrange policy network weights
         -> save the model
@@ -319,7 +319,7 @@ def main():
         arrange(args, pool['weights'])
         
     if args.test:
-        test(args, test_env)
+        test(pool['weights'], train_env)
 
 
 if __name__ == '__main__':
