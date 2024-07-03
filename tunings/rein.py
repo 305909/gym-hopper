@@ -102,7 +102,7 @@ def gridsearch(args, params, sessions = 5):
         res = np.mean(pool, axis = 0)
         cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
-        print(f'\nscore: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}\n')
+        print(f'\nscore: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}')
         results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
