@@ -316,10 +316,10 @@ def main():
             track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
         
-        arrange(args, pool['weights'])
+        arrange(pool['weights'], train_env))
         
     if args.test:
-        test(pool['weights'], train_env)
+        test(args, test_env)
 
 
 if __name__ == '__main__':
