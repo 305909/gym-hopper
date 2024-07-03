@@ -76,8 +76,8 @@ class Callback(BaseCallback):
     
     def _on_step(self) -> bool:
         """ 
-            -> evaluate the agent after X training episodes
-            -> outputs evaluation information after Y episodes
+            -> evaluate the agent after X training time-steps
+            -> outputs evaluation information after Y time-steps
 
         ----------
         evaluation metrics: episode rewards, episode lengths
