@@ -144,12 +144,10 @@ def train(args, train_env, test_env, model):
     policy = 'MlpPolicy'
 
     if model is not None:
-        agent = SAC.load(model, 
-                         env = env, 
+        agent = SAC.load(model, env = env, 
                          device = args.device)
     else:
-        agent = SAC(policy, 
-                    env = env, 
+        agent = SAC(policy, env = env, 
                     device = args.device, 
                     learning_rate = args.learning_rate,
                     batch_size = 256, 
@@ -210,14 +208,12 @@ def test(args, test_env):
 
     if args.train:
         model = f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl'
-        agent = SAC.load(model, 
-                         env = env, 
+        agent = SAC.load(model, env = env, 
                          device = args.device)
     else:
         if args.input_model is not None:
             model = args.input_model
-            agent = SAC.load(model, 
-                             env = env, 
+            agent = SAC.load(model, env = env, 
                              device = args.device)
     
     print(f'\nmodel to test: {model}\n')
@@ -289,19 +285,21 @@ def main():
         weights = OrderedDict()
         for key in pool['weights'][0].keys():
             weights[key] = torch.zeros_like(pool['weights'][0][key])
-        
         for weight in pool['weights']:
             for key in weight.keys():
-                weights[key] += weight[key]
-                    
+                weights[key] += weight[key]    
         for key in weights.keys():
             weights[key] /= len(weights)
             
         policy = 'MlpPolicy'
         env = gym.make(train_env)
-        agent = SAC(policy, env, device = args.device, learning_rate = args.learning_rate)
-        agent.policy.load_state_dict(weights)
+        agent = SAC(policy, env = env, 
+                    device = args.device, 
+                    learning_rate = args.learning_rate,
+                    batch_size = 256, 
+                    gamma = 0.99)
         
+        agent.policy.load_state_dict(weights)
         agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
         print(f'\nmodel checkpoint storage: {args.directory}/SAC-({args.train_env} to {args.test_env}).mdl\n')
         
