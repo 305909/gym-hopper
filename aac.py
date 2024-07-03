@@ -258,7 +258,7 @@ def test(args, test_env):
     env.close()
 
 
-def arrange(stacks):
+def arrange(stacks, train_env):
     """ 
         -> arrange policy network weights
         -> save the model
@@ -317,7 +317,7 @@ def main():
             track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
 
-        arrange(args, pool['weights'])
+        arrange(pool['weights'], train_env)
         
     if args.test:
         test(args, test_env)
