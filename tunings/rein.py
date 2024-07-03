@@ -16,19 +16,12 @@ from env.custom_hopper import *
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train-episodes', 
-                        default = 10000, 
-                        type = int, 
+    parser.add_argument('--train-episodes', default = 10000, type = int, 
                         help = 'Number of training episodes')
-    parser.add_argument('--test-episodes', 
-                        default = 100, 
-                        type = int, 
+    parser.add_argument('--test-episodes', default = 100, type = int, 
                         help = 'Number of testing episodes')
-    parser.add_argument('--device', 
-                        default = 'cpu', 
-                        type = str, 
-                        choices = ['cpu', 
-                                   'cuda'], 
+    parser.add_argument('--device', default = 'cpu', type = str, 
+                        choices = ['cpu', 'cuda'], 
                         help = 'Network device [cpu, cuda]')
     return parser.parse_args()
 
