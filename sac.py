@@ -159,7 +159,7 @@ def train(args, train_env, test_env, model):
     start = time.time()
     agent.learn(total_timesteps = args.train_timesteps, callback = callback)
     
-    return callback.episode_rewards, callback.episode_lengths, time.time() - start, policy.state_dict()
+    return callback.episode_rewards, callback.episode_lengths, time.time() - start, agent.policy.state_dict()
 
 
 def aggregate(metric, records):
