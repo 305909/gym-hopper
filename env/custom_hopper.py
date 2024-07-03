@@ -148,29 +148,8 @@ gym.envs.register(
 )
 
 gym.envs.register(
-    id = "CustomHopper-source-moderate-randomization-v0",
+    id = "CustomHopper-source-UDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
     kwargs = {"domain": "source", "randomize": True, "bound": 0.25}
-)
-
-gym.envs.register(
-    id = "CustomHopper-target-moderate-randomization-v0",
-    entry_point = "%s:CustomHopper" % __name__,
-    max_episode_steps = 500,
-    kwargs = {"domain": "target", "randomize": True, "bound": 0.25}
-)
-
-gym.envs.register(
-    id = "CustomHopper-source-wide-randomization-v0",
-    entry_point = "%s:CustomHopper" % __name__,
-    max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "bound": 0.75}
-)
-
-gym.envs.register(
-    id = "CustomHopper-target-wide-randomization-v0",
-    entry_point = "%s:CustomHopper" % __name__,
-    max_episode_steps = 500,
-    kwargs = {"domain": "target", "randomize": True, "bound": 0.75}
 )
