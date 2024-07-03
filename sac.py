@@ -72,7 +72,7 @@ class Callback():
         self.agent = agent
         self.env = env
     
-    def _on_step(self) -> bool:
+    def on_step(self) -> bool:
         """ 
             -> evaluate the agent after X training episodes
             -> outputs evaluation information after Y episodes
