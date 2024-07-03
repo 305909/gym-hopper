@@ -56,8 +56,8 @@ Y = 500 # 6250
 
 class Callback():
     """ 
-        -> evaluate the agent in the testing environment 
-           over training iterations
+        -> evaluate the agent over training iterations
+        -> (testing environment) 
         
     ----------
     X: evaluation frequency over training iterations
@@ -73,7 +73,7 @@ class Callback():
     def _on_step(self, num_episodes, verbose = 1) -> bool:
         """ 
             -> evaluate the agent after X training episodes
-            -> outputs evaluation information after Y episodes
+            -> output evaluation information after Y episodes
 
         ----------
         evaluation metrics: episode rewards, episode lengths
@@ -89,13 +89,14 @@ class Callback():
         return True
         
 
-def rendering(frame, steps, num_episodes, rewards):
+def display(frame, steps, num_episodes, rewards):
     """ 
-        -> render the agent time-step in the testing environment 
-           into a frame for graphic interchange format
+        -> display the (state-action) agent step
+        -> (testing environment)
+        -> output a graphic interchange format frame
 
     ----------
-    image: frame for graphic interchange format
+    image: graphic interchange format frame
     """
     image = Image.fromarray(frame)
     drawer = ImageDraw.Draw(image)
@@ -105,10 +106,10 @@ def rendering(frame, steps, num_episodes, rewards):
     return image
 
 
-def multiprocessing(args, train_env, test_env, sessions = 5):
+def multiprocess(args, train_env, test_env, sessions = 5):
     """ 
-        -> multiprocess sequential training sessions 
-           to counteract variance
+        -> multiprocess sequential training sessions
+        -> (counteract variance)
 
     ----------
     sessions: sequential training sessions to process
@@ -131,7 +132,8 @@ def multiprocessing(args, train_env, test_env, sessions = 5):
 
 def train(args, train_env, test_env, model):
     """ 
-        -> train the agent in the training environment
+        -> train the agent
+        -> (training environment)
 
     ----------
     model: model to train
@@ -168,24 +170,23 @@ def train(args, train_env, test_env, model):
     return callback.episode_rewards, callback.episode_lengths, time.time() - start, policy.state_dict()
 
 
-def aggregate(metric, records):
+def stack(metric, records):
     """ 
-        -> aggregate the training sessions outputs 
+        -> stak training sessions outputs 
 
     """
-    averages = [(statistics.mean(elements), statistics.stdev(elements)) 
-                for elements in list(zip(*records))]
-    xs = np.insert(np.array([(index + 1) * X for index in range(len(averages))]), 0, 0)
-    ys = np.insert(np.array([element[0] for element in averages]), 0, 0)
-    sigmas = np.insert(np.array([element[1] for element in averages]), 0, 0)
+    stacks = [(statistics.mean(elements), statistics.stdev(elements)) 
+              for elements in list(zip(*records))]
+    xs = np.insert(np.array([(index + 1) * X for index in range(len(stacks))]), 0, 0)
+    ys = np.insert(np.array([stack[0] for stack in stacks]), 0, 0)
+    sigmas = np.insert(np.array([stack[1] for stack in stacks]), 0, 0)
     
     return metric, xs, ys, sigmas
 
 
-def plot(metric, xs, ys, sigmas, args):
+def track(metric, xs, ys, sigmas, args):
     """ 
-        -> track the evaluation metric progress 1
-           over the training episodes
+        -> plot the evaluation metric progress over the training episodes
 
     """
     colors = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
@@ -206,7 +207,8 @@ def plot(metric, xs, ys, sigmas, args):
 
 def test(args, test_env):
     """ 
-        -> test the agent in the testing environment
+        -> test the agent
+        -> (testing environment)
         
     """
     env = gym.make(test_env)
@@ -243,7 +245,7 @@ def test(args, test_env):
             steps += 1
             if args.render and num_episodes < 5:
                 frame = env.render(mode = 'rgb_array')
-                frames.append(rendering(frame, steps, num_episodes + 1, rewards))
+                frames.append(display(frame, steps, num_episodes + 1, rewards))
                 
         num_episodes += 1   
         episode_rewards.append(rewards)
@@ -254,6 +256,29 @@ def test(args, test_env):
         imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
 
     env.close()
+
+
+def arrange(stacks):
+    """ 
+        -> arrange policy network weights
+        -> save the model
+        
+    ----------
+    stacks: stacks of network weights
+    """
+    weights = OrderedDict()
+    for key in stacks[0].keys():
+        subkeys = stacks[0][key].keys()
+        weights[key] = OrderedDict()
+        for subkey in subkeys:
+            weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
+                                                           for w in stacks]), dim = 0)
+
+    policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+    policy.load_state_dict(weights)
+        
+    torch.save(policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')
+    print(f'\nmodel checkpoint storage: {args.directory}/A2C-({args.train_env} to {args.test_env}).mdl\n')
 
 
 def main():
@@ -285,25 +310,13 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
         
     if args.train:
-        pool = multiprocessing(args, train_env, test_env)
+        pool = multiprocess(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            metric, xs, ys, sigmas = aggregate(metric, records)
-            plot(metric, xs, ys, sigmas, args)
+            metric, xs, ys, sigmas = stack(metric, records)
+            track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
-        
-        weights = OrderedDict()
-        for key in pool['weights'][0].keys():
-            subkeys = pool['weights'][0][key].keys()
-            weights[key] = OrderedDict()
-            for subkey in subkeys:
-                weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
-                                                               for w in pool['weights']]), dim = 0)
 
-        policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
-        policy.load_state_dict(weights)
-        
-        torch.save(policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')
-        print(f'\nmodel checkpoint storage: {args.directory}/A2C-({args.train_env} to {args.test_env}).mdl\n')
+        arrange(pool['weights'])
         
     if args.test:
         test(args, test_env)
