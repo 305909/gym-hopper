@@ -36,11 +36,11 @@ def parse_args():
 def train(device: str = 'cpu', 
           train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> RF:
-              
-    env = gym.make(train_env)
+    """ 
+        -> train the agent in the training environment
 
-    """ Training """
-              
+    """   
+    env = gym.make(train_env)
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], **kwargs)
     agent = RF(policy, device = device, **kwargs)
               
@@ -62,11 +62,11 @@ def train(device: str = 'cpu',
 def test(agent: RF, 
          test_episodes: int = 100, 
          test_env: str = 'CustomHopper-source-v0') -> float:
-             
+    """ 
+        -> test the agent in the testing environment
+        
+    """       
     env = gym.make(test_env)
-  
-    """ Evaluation """
-
     num_episodes = 0
     episode_rewards = []
     while num_episodes < test_episodes:
@@ -91,23 +91,28 @@ def pooling(kwargs: dict, device, train_episodes, test_episodes):
                   train_episodes = train_episodes, **kwargs)
     
     return test(agent, 
-                test_episodes = test_episodes)
+                test_episodes = test_episodes), kwargs
 
 
-def gridsearch(args, params):
+def gridsearch(args, params, sessions = 5):
     results = []
     keys = list(params.keys())
-    for param in itertools.product(*params.values()):
+    for param in list(itertools.product(*params.values())):
         kwargs = dict(zip(keys, param))
-        er = pooling(kwargs, 
-                     device = args.device,
-                     train_episodes = args.train_episodes,
-                     test_episodes = args.test_episodes)
-        cov = er.std() / er.mean()  # coefficient of variation
-        score = er.mean() * (1 - cov)
+        pool = list()
+        for iter in range(sessions):
+            er, _ = pooling(kwargs, 
+			    device = args.device,
+                            train_episodes = args.train_episodes,
+                            test_episodes = args.test_episodes)
+            pool.append(er)
+        pool = np.array(pool)
+        res = np.mean(pool, axis = 0)
+        cov = res.std() / res.mean()  # coefficient of variation
+        score = res.mean() * (1 - cov)
         print("---------------------------------------------")
-        print(f'Score: {score:.2f} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f} | Parameters: {kwargs}')
-        results.append([score, er.mean(), er.std(), kwargs])
+        print(f'Score: {score:.2f} | Avg. Reward: {res.mean():.2f} +/- {res.std():.2f} | Parameters: {kwargs}')
+        results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
     print("---------------------------------------------")
@@ -124,7 +129,7 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {                                           # | source -> source
-        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | 1e-4
+        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]  # | ...
         }
     
     prime = gridsearch(args, params)
