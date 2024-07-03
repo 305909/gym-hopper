@@ -36,11 +36,11 @@ def parse_args():
 def train(device: str = 'cpu', 
           train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> A2C:
-		  
-    env = gym.make(train_env)
+    """ 
+        -> train the agent in the training environment
 
-    """ Training """
-		  
+    """
+    env = gym.make(train_env)
     policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], **kwargs)
     agent = A2C(policy, device = device, **kwargs)
 
@@ -65,11 +65,11 @@ def train(device: str = 'cpu',
 def test(agent: A2C, 
 	 test_episodes: int = 100, 
 	 test_env: str = 'CustomHopper-source-v0') -> float:
-		 
+    """ 
+        -> test the agent in the testing environment
+        
+    """
     env = gym.make(test_env)
-  
-    """ Evaluation """
-
     num_episodes = 0
     episode_rewards = []
     while num_episodes < test_episodes:
