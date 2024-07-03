@@ -94,23 +94,27 @@ def pooling(kwargs: dict, device, train_episodes, test_episodes):
                   train_episodes = train_episodes, **kwargs)
     
     return test(agent, 
-                test_episodes = test_episodes)
+                test_episodes = test_episodes), kwargs
 
 
-def gridsearch(args, params):
+def gridsearch(args, params, sessions = 5):
     results = []
     keys = list(params.keys())
-    for param in itertools.product(*params.values()):
+    for param in list(itertools.product(*params.values())):
         kwargs = dict(zip(keys, param))
-        er = pooling(kwargs, 
-                     device = args.device,
-                     train_episodes = args.train_episodes,
-                     test_episodes = args.test_episodes)
-        cov = er.std() / er.mean()  # coefficient of variation
-        score = er.mean() * (1 - cov)
+	pool = list()
+	for iter in range(sessions):
+	    er, _ = pooling(kwargs, device = args.device,
+			    train_episodes = args.train_episodes,
+			    test_episodes = args.test_episodes)
+	    pool.append(er)
+	pool = np.array(pool)
+	res = np.mean(pool, axis = 0)
+        cov = res.std() / res.mean()  # coefficient of variation
+        score = res.mean() * (1 - cov)
         print("---------------------------------------------")
-        print(f'Score: {score:.2f} | Avg. Reward: {er.mean():.2f} +/- {er.std():.2f} | Parameters: {kwargs}')
-        results.append([score, er.mean(), er.std(), kwargs])
+        print(f'Score: {score:.2f} | Avg. Reward: {res.mean():.2f} +/- {res.std():.2f} | Parameters: {kwargs}')
+        results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
     print("---------------------------------------------")
