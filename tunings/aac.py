@@ -102,14 +102,14 @@ def gridsearch(args, params, sessions = 5):
     keys = list(params.keys())
     for param in list(itertools.product(*params.values())):
         kwargs = dict(zip(keys, param))
-	pool = list()
-	for iter in range(sessions):
-	    er, _ = pooling(kwargs, device = args.device,
-			    train_episodes = args.train_episodes,
-			    test_episodes = args.test_episodes)
-	    pool.append(er)
-	pool = np.array(pool)
-	res = np.mean(pool, axis = 0)
+        pool = list()
+        for iter in range(sessions):
+            er, _ = pooling(kwargs, device = args.device,
+                            train_episodes = args.train_episodes,
+                            test_episodes = args.test_episodes)
+            pool.append(er)
+        pool = np.array(pool)
+        res = np.mean(pool, axis = 0)
         cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
         print("---------------------------------------------")
