@@ -65,14 +65,14 @@ class Callback():
     X: evaluation frequency over training iterations
     Y: verbose output frequency over training iterations
     """
-    def __init__(self, agent, env, args):
+    def __init__(self, agent, env, args, verbose = 1):
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.agent = agent
         self.env = env
     
-    def _on_step(self, verbose = 1) -> bool:
+    def _on_step(self) -> bool:
         """ 
             -> evaluate the agent after X training episodes
             -> outputs evaluation information after Y episodes
@@ -86,7 +86,7 @@ class Callback():
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
-            if verbose > 0 and self.num_timesteps % Y == 0:
+            if self.verbose > 0 and self.num_timesteps % Y == 0:
                 print(f'training step: {self.num_timesteps} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
 
