@@ -260,7 +260,7 @@ def test(args, test_env):
     env.close()
 
 
-def arrange(stacks):
+def arrange(args, stacks):
     """ 
         -> arrange policy network weights
         -> save the model
@@ -268,6 +268,7 @@ def arrange(stacks):
     ----------
     stacks: stacks of network weights
     """
+    env = gym.make(train_env)
     weights = OrderedDict()
     for key in stacks[0].keys():
         weights[key] = torch.mean(torch.stack([w[key] 
@@ -315,7 +316,7 @@ def main():
             track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}\n')
         
-        arrange(pool['weights'])
+        arrange(args, pool['weights'])
         
     if args.test:
         test(args, test_env)
