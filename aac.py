@@ -51,7 +51,7 @@ def parse_args():
 
 
 X = 10 # 250
-Y = 500 # 6250
+Y = 50 # 6250
 
 
 class Callback():
