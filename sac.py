@@ -288,19 +288,15 @@ def main():
         
         weights = OrderedDict()
         for key in pool['weights'][0].keys():
-            subkeys = pool['weights'][0][key].keys()
-            weights[key] = OrderedDict()
-            for subkey in subkeys:
-                weights[key][subkey] = torch.zeros_like(weights[0][key][subkey])
+            weights[key] = torch.zeros_like(pool['weights'][0][key])
         
         for weight in pool['weights']:
             for key in weight.keys():
                 for subkey in pool['weights'][0][key].keys():
-                    weights[key][subkey] += pool['weights'][0][key][subkey]
+                    weights[key] += weight[key]
                     
         for key in weights.keys():
-            for subkey in weights[key].keys():
-                weights[key][subkey] /= len(weights)
+            weights[key] /= len(weights)
             
         policy = 'MlpPolicy'
         env = gym.make(train_env)
