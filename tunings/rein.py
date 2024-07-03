@@ -123,7 +123,11 @@ def main():
     params = {
         'learning_rate': [1e-3, 1e-4, 1e-5]
         }
-    
+	
+    if args.device == 'cuda' and not torch.cuda.is_available():
+        print('\nWARNING: GPU not available, switch to CPU\n')
+        args.device = 'cpu'
+	    
     prime = gridsearch(args, params)
     print("---------------------------------------------")
     print(f'maximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal parameters: {prime[3]}')
