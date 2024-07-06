@@ -9,15 +9,16 @@ class Policy(torch.nn.Module):
     
     def __init__(self, state_space: int, action_space: int, actor = True, **kwargs):
         super().__init__()
-        """ initializes a neural network that estimates 
-        the mean and standard deviation of a normal distribution 
-        from which to sample an action (actor), or 
-        the mean of a normal distribution (critic)
+        """ initializes a multi-layer neural network 
+        to map observations from the environment into
+        -> elements of a normal distribution (mean and standard deviation) 
+           from which to sample an agent action (actor)      
+        -> estimate of the state value function V(s) (critic)
                
         args:
-            state_spaces: dimension of the observation space
-            action_space: dimension of the action space
-            actor: boolean parameter to set the actor and critic
+            state_spaces: dimension of the observation space (environment)
+            action_space: dimension of the action space (agent)
+            actor: boolean condition to set the actor and critic
         """
         self.action_space = action_space
         self.state_space = state_space
@@ -46,11 +47,10 @@ class Policy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """ from the observation x, 
-        returns the normal distribution 
-        from which to sample an action (actor), or 
-        the mean of a normal distribution (critic)
-
+        """ maps the observation x from the environment into
+        -> a normal distribution N(μ,σ) from which to sample an agent action (actor)
+        -> an estimate of the state value function V(s) (critic)
+        
         args:
             x: observation from the environment
 
@@ -58,7 +58,7 @@ class Policy(torch.nn.Module):
             (actor) normal_dist: normal distribution N(μ,σ)
                                  - μ: action mean
                                  - σ: action standard deviation
-            (critic) action_mean: action mean μ
+            (critic) action_mean: estimate of the state value function V(s)
         """
         x = self.tanh(self.fc1(x))
         x = self.tanh(self.fc2(x))
@@ -66,7 +66,7 @@ class Policy(torch.nn.Module):
 
         if self.actor:
             sigma = self.sigma_activation(self.sigma)
-            normal_dist = Normal(action_mean, sigma)
+            normal_dist = Normal(action_mean + self.eps, sigma + self.eps)
             return normal_dist
         else:
             return action_mean
@@ -81,12 +81,11 @@ class Policy(torch.nn.Module):
 class A2CPolicy:
     
     def __init__(self, state_space, action_space, **kwargs):
-        """ initialize a neural network for the actor 
-        and a neural network for the critic
+        """ initialize a neural network for the actor and the critic
         
         args:
-            state_spaces: dimension of the observation space
-            action_space: dimension of the action space
+            state_spaces: dimension of the observation space (environment)
+            action_space: dimension of the action space (agent)
         """
         self.policies = OrderedDict()
         self.policies['actor'] = Policy(state_space, action_space)
@@ -135,7 +134,6 @@ class A2C:
         """      
         self.device = device
         self.policy = policy.to(self.device)
-
         self.max_grad_norm = max_grad_norm
         self.entropy_coef = entropy_coef
         self.critic_coef = critic_coef
@@ -150,7 +148,9 @@ class A2C:
         self.reset()
 
     def predict(self, obs, state = None, episode_start = None, deterministic = False):
-        """ predicts an action, according to the policy and the observation
+        """ predicts an action, according to
+        -> the policy
+        -> the observation
 
         args:
             obs: observation from the environment
@@ -158,14 +158,14 @@ class A2C:
         returns:
             action: action to perform
             action_log_prob: logarithmic probability value of the action
-            state_value: critic's estimation of the value of the current state
+            state_value: estimate of the state value function V(s)
         """
         x = torch.from_numpy(obs).float().to(self.device)
         normal_dist = self.policy.policies['actor'](x)
 
         if deterministic:
             """ return the mean 
-            of the normal distribution N(μ,σ)
+            of a normal distribution N(μ,σ)
             
             returns:
                 a = μ
@@ -176,7 +176,7 @@ class A2C:
             
         else:
             """ sample an action 
-            from the normal distribution N(μ,σ)
+            from a normal distribution N(μ,σ)
 
             returns:
                 a ~ N(μ,σ)
@@ -202,7 +202,7 @@ class A2C:
         dones = torch.tensor(self.dones, dtype = torch.float32).to(self.device)
         state_values = torch.stack(self.state_values, dim = 0).to(self.device).squeeze(-1)
 
-        """ compute bootstrapped returns """
+        """ compute bootstrapped returns (backwards) """
         bootstrapped_returns = torch.zeros_like(rewards)
         cumulative = 0
         for t in reversed(range(len(rewards))):
