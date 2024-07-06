@@ -109,7 +109,7 @@ def display(frame, steps, num_episodes, rewards):
     return image
 
 
-def multiprocess(args, train_env, test_env, sessions = 5):
+def multiprocess(args, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
     """ 
         -> multiprocess sequential training sessions
         -> (counteract variance)
@@ -125,16 +125,16 @@ def multiprocess(args, train_env, test_env, sessions = 5):
     print(f'\nmodel to train: {model}\n')
 
     pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
-    for iter in range(sessions):
+    for iter, seed in enumerate(seeds):
         print(f'\ntraining session: {iter + 1}')
         print("----------------")
-        for key, value in zip(pool.keys(), train(args, train_env, test_env, model)):
+        for key, value in zip(pool.keys(), train(args, seed, train_env, test_env, model)):
             pool[key].append(value)
     
     return pool
 
 
-def train(args, train_env, test_env, model):
+def train(args, seed, train_env, test_env, model):
     """ 
         -> train the agent
         -> (training environment)
@@ -142,6 +142,9 @@ def train(args, train_env, test_env, model):
     ----------
     model: model to train
     """
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    
     env = gym.make(train_env)
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
 
@@ -157,6 +160,8 @@ def train(args, train_env, test_env, model):
     num_episodes = 0
     start = time.time()
     while num_episodes < args.train_episodes:
+        env.seed(seed)
+        
         done = False
         obs = env.reset()
         while not done:
