@@ -182,13 +182,17 @@ def stack(metric, records):
         -> stak training sessions outputs 
 
     """
-    stacks = [(statistics.mean(elements), statistics.stdev(elements)) 
-              for elements in list(zip(*records))]
-    xs = np.array([(index + 1) * X for index in range(len(stacks))])
-    ys = np.array([stack[0] for stack in stacks])
-    sigmas = np.array([stack[1] for stack in stacks])
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import pandas as pd
     
-    return metric, xs, ys, sigmas
+    rewards_to_plot = [[reward[0] for reward in rewards] for rewards in records]
+    df1 = pd.DataFrame(rewards_to_plot).melt()
+    df1.rename(columns={"variable": "episodes", "value": "reward"}, inplace=True)
+    sns.set(style="darkgrid", context="talk", palette="rainbow")
+    sns.lineplot(x="episodes", y="reward", data=df1).set(
+        title="REINFORCE for InvertedPendulum-v4")
+    plt.savefig(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}-JIJA.png', dpi = 300)
 
 
 def track(metric, xs, ys, sigmas, args):
@@ -318,8 +322,8 @@ def main():
     if args.train:
         pool = multiprocess(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            metric, xs, ys, sigmas = stack(metric, records)
-            track(metric, xs, ys, sigmas, args)
+            stack(metric, records)
+            # track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
         
