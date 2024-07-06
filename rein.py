@@ -191,7 +191,7 @@ def stack(args, metric, records):
     df1 = pd.DataFrame(rewards_to_plot).melt()
     df1.rename(columns={"variable": "episodes", "value": f"{metric}"}, inplace=True)
     sns.set(style="darkgrid", context="talk", palette="rainbow")
-    sns.lineplot(x="episodes", y="{metric}", data=df1).set(
+    sns.lineplot(x="episodes", y=f"{metric}", data=df1).set(
         title="REINFORCE")
     plt.savefig(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}-JIJA.png', dpi = 300)
 
