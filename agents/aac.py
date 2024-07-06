@@ -11,16 +11,16 @@ class Policy(torch.nn.Module):
         super().__init__()
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
-        1. parameters of a normal distribution (mean μ(s(t)) and standard deviation σ(s(t))) 
-           from which to sample the agent's actions (actor)
-           -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
-        2. estimate of the state value function (critic)
-           -> V(s(t))
+        1. (actor): parameters of a normal distribution (mean μ(s(t)) and standard deviation σ(s(t))) 
+           from which to sample the agent's actions -> π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        2. (critic): estimate of the state value function -> V(s(t))
                
         args:
             state_space: dimension of the observation space (environment)
             action_space: dimension of the action space (agent)
-            actor: boolean condition to set the actor and critic
+            actor: boolean condition to initialize 
+                   -> the actor (actor = True)
+                   -> the critic (actor = False)
         """
         self.action_space = action_space
         self.state_space = state_space
@@ -49,11 +49,11 @@ class Policy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """ maps the observation x = s(t) from the environment at time-step t  
-        1. into a normal distribution N(μ(s(t)), σ(s(t))) 
-           from which to sample an agent action at time-step t (actor)
-           -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
-        2. into an estimate of the state value function at time-step t (critic)
+        """ maps the observation x = s(t) from the environment at time-step t into 
+        1. (actor): a normal distribution N(μ(s(t)), σ(s(t))) 
+           from which to sample an agent action at time-step t
+           -> π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        2. (critic): an estimate of the state value function at time-step t
            -> V(s(t))
         
         args:
@@ -86,7 +86,7 @@ class Policy(torch.nn.Module):
 class A2CPolicy:
     
     def __init__(self, state_space, action_space, **kwargs):
-        """ initializes the multi-layer neural networks for the actor and critic
+        """ initializes the multi-layer neural networks for the actor and the critic
         
         args:
             state_space: dimension of the observation space (environment)
@@ -124,26 +124,25 @@ class A2C:
                  batch_size: int = 32,
                  gamma: float = 0.99,
                  **kwargs):
-        """ initializes an agent that learns a policy via Advantage Actor-Critic algorithm 
-        to solve the task at hand (Gym Hopper)
+        """ initializes an agent to learn a policy via Advantage Actor-Critic algorithm 
 
         args:
             policy: A2CPolicy
             device: processing device (e.g. CPU or GPU)
             learning_rate: learning rate for policy optimization
-            max_grad_norm: threshold value for the gradient norm
+            max_grad_norm: threshold value for gradient norm
             entropy_coef: entropy coefficient to balance exploration/exploitation
             critic_coef: critic coefficient to weight the value function loss
-            batch_size: number of time steps to collect before updating the policy
+            batch_size: number of time-steps for policy update
             gamma: discount factor
         """      
         self.device = device
         self.policy = policy.to(self.device)
         self.max_grad_norm = max_grad_norm
-        self.entropy_coef = entropy_coef
-        self.critic_coef = critic_coef
 
         self.learning_rate = learning_rate
+        self.entropy_coef = entropy_coef
+        self.critic_coef = critic_coef
         self.batch_size = batch_size
         self.gamma = gamma
 
@@ -153,8 +152,7 @@ class A2C:
         self.reset()
 
     def predict(self, obs, state = None, episode_start = None, deterministic = False):
-        """ predicts an action according to the observation s(t) 
-        and the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        """ predicts an action based on observation s(t) and policy π(a(t)|s(t))
         -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
@@ -169,8 +167,7 @@ class A2C:
         normal_dist = self.policy.policies['actor'](x)
 
         if deterministic:
-            """ return the mean 
-            of the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+            """ return the mean value of the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
             
             returns:
                 a(t) = μ(s(t))
@@ -180,8 +177,7 @@ class A2C:
             return action, None
             
         else:
-            """ sample an action 
-            from the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+            """ sample an action from the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
 
             returns:
                 a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
