@@ -322,7 +322,7 @@ def main():
     if args.train:
         pool = multiprocess(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            stack(agrs, metric, records)
+            stack(args, metric, records)
             # track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
