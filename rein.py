@@ -37,12 +37,14 @@ def parse_args():
                         help = 'network device [cpu, cuda]')
     parser.add_argument('--train-env', default = 'source', type = str, 
                         help = 'training environment')
-    parser.add_argument('--test-env', default = 'target', type = str, 
+    parser.add_argument('--test-env', default = 'source', type = str, 
                         help = 'testing environment')
     parser.add_argument('--train-episodes', default = 25000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
+    parser.add_argument('--eval-frequency', default = 250, type = int, 
+                        help = 'evaluation frequency over training iterations')
     parser.add_argument('--baseline', default = 'vanilla', type = str, 
                         choices = ['vanilla', 'constant', 'whitening'], 
                         help = 'baseline for the policy update function [vanilla, constant, whitening]')
@@ -53,70 +55,53 @@ def parse_args():
     return parser.parse_args()
 
 
-X = 10 # 250
-Y = 50 # 6250
-
-
 class Callback():
-    """ 
-        -> evaluate the agent over training iterations
-        -> (testing environment) 
-        
-    ----------
-    X: evaluation frequency over training iterations
-    Y: verbose output frequency over training iterations
-    """
+
     def __init__(self, agent, env, args):
+        """ initializes a callback object to evaluate the agent's performance 
+        in the testing environment over training iterations
+
+        evaluation metrics:
+            episode rewards
+            episode lengths
+        """
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.agent = agent
         self.env = env
     
-    def _on_step(self, num_episodes, verbose = 1) -> bool:
-        """ 
-            -> evaluate the agent after X training episodes
-            -> output evaluation information after Y episodes
-
-        ----------
-        evaluation metrics: episode rewards, episode lengths
-        """
-        if num_episodes % X == 0: 
-            episode_rewards, episode_lengths = evaluate_policy(self.agent, self.env, self.test_episodes, 
+    def _on_step(self, num_episodes, args, verbose = 1) -> bool:
+        if num_episodes % args.eval_frequency == 0: 
+            episode_rewards, episode_lengths = evaluate_policy(self.agent, 
+                                                               self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
-            if verbose > 0 and num_episodes % Y == 0:
+            if verbose > 0 and num_episodes % int(args.train_episodes * 0.25) == 0:
                 print(f'training episode: {num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
         
 
-def display(frame, steps, num_episodes, rewards):
-    """ 
-        -> display the (state-action) agent step
-        -> (testing environment)
-        -> output a graphic interchange format frame
-
-    ----------
-    image: graphic interchange format frame
+def display(frame, step, episode, reward):
+    """ renders the (state -> action) agent step in the testing environment 
+    as a graphics interchange format frame
     """
     image = Image.fromarray(frame)
     drawer = ImageDraw.Draw(image)
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
-                f'episode: {num_episodes} | step: {steps} | reward: {rewards:.2f}', fill = color)
+                f'episode: {episode} | step: {step} | reward: {reward:.2f}', fill = color)
     return image
 
 
 def multiprocess(args, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
-    """ 
-        -> multiprocess sequential training sessions
-        -> (counteract variance)
+    """ processes multiple sequential training and testing sessions 
+    with different seeds (to counteract variance)
 
-    ----------
-    sessions: sequential training sessions to process
-    pool: dictionary of training session outputs
+    args:
+        seeds: fibonacci seeds
     """
     model = None
     if args.input_model is not None:
@@ -135,12 +120,11 @@ def multiprocess(args, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
 
 
 def train(args, seed, train_env, test_env, model):
-    """ 
-        -> train the agent
-        -> (training environment)
+    """ trains the agent in the training environment
 
-    ----------
-    model: model to train
+    args:
+        seed: seed of the training session
+        model: model to train
     """
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -158,7 +142,7 @@ def train(args, seed, train_env, test_env, model):
     callback = Callback(agent, gym.make(test_env), args)
     
     num_episodes = 0
-    start = time.time()
+    start_time = time.time()
     while num_episodes < args.train_episodes:
         env.seed(seed)
         
@@ -172,34 +156,37 @@ def train(args, seed, train_env, test_env, model):
             
         num_episodes += 1   
         agent.update_policy()
-        callback._on_step(num_episodes)
+        callback._on_step(num_episodes, args)
+    train_time = time.time() - start
     
-    return callback.episode_rewards, callback.episode_lengths, time.time() - start, policy.state_dict()
+    return callback.episode_rewards, callback.episode_lengths, train_time, policy.state_dict()
         
 
 def stack(args, metric, records):
-    """ 
-        -> stak training sessions outputs 
-
+    """ stacks training sessions outputs 
+    
+    args:
+        metric: evaluation metric
+        records: set of evaluation records
     """
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import pandas as pd
-
-    plt.rcParams["figure.figsize"] = (10, 5)
-    rewards_to_plot = [rewards for rewards in records]
-    df1 = pd.DataFrame(rewards_to_plot).melt()
-    df1.rename(columns={"variable": "episodes", "value": f"{metric}"}, inplace=True)
-    sns.set(style="darkgrid", context="talk", palette="rainbow")
-    sns.lineplot(x="episodes", y=f"{metric}", data=df1).set(
-        title="REINFORCE")
-    plt.savefig(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}-JIJA.png', dpi = 300)
+    stacks = [(statistics.mean(elements), statistics.stdev(elements)) 
+              for elements in list(zip(*records))]
+    xs = np.array([(index + 1) * args.eval_frequency for index in range(len(stacks))])
+    ys = np.array([stack[0] for stack in stacks])
+    sigmas = np.array([stack[1] for stack in stacks])
+    
+    return metric, xs, ys, sigmas
 
 
 def track(metric, xs, ys, sigmas, args):
-    """ 
-        -> plot the evaluation metric progress over the training episodes
-
+    """ plots the agent's performance in the testing environment 
+    (according to the evaluation metric) over the training episodes
+    
+    args:
+        metric: evaluation metric
+        xs: training episodes (x-axis values)
+        ys: set of evaluation records (y-axis values)
+        sigmas: set of evaluation records variances
     """
     colors = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
               '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
@@ -211,6 +198,7 @@ def track(metric, xs, ys, sigmas, args):
     plt.xlabel('episodes')
     plt.ylabel(f'episode {metric}')
     plt.title(f'average episode {metric} over training iterations', loc = 'left')
+    plt.grid(True)
     plt.legend()
   
     plt.savefig(f'{args.directory}/RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
@@ -218,11 +206,7 @@ def track(metric, xs, ys, sigmas, args):
 
 
 def test(args, test_env):
-    """ 
-        -> test the agent
-        -> (testing environment)
-        
-    """
+    """ tests the agent in the testing environment """
     env = gym.make(test_env)
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
     model = None
@@ -258,8 +242,10 @@ def test(args, test_env):
             steps += 1
             if args.render and num_episodes < 5:
                 frame = env.render(mode = 'rgb_array')
-                frames.append(display(frame, steps, num_episodes + 1, rewards))
-                
+                frames.append(display(frame, 
+                                      step = steps, 
+                                      reward = rewards,
+                                      episode = num_episodes + 1))
         num_episodes += 1   
         episode_rewards.append(rewards)
     er = np.array(episode_rewards)
@@ -272,13 +258,12 @@ def test(args, test_env):
 
 
 def arrange(args, stacks, train_env):
-    """ 
-        -> arrange policy network weights
-        -> save the model
+    """ arranges policy network weights
         
-    ----------
-    stacks: stacks of network weights
+    args:
+        stacks: stacks of network weights
     """
+    env = gym.make(train_env)
     env = gym.make(train_env)
     weights = OrderedDict()
     for key in stacks[0].keys():
@@ -308,7 +293,7 @@ def main():
         args.device = 'cpu'
         
     # validate environment registration
-    try: env = gym.make(train_env)  
+    try: env = gym.make(train_env)
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {train_env} not found')
         
@@ -323,11 +308,11 @@ def main():
     if args.train:
         pool = multiprocess(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            stack(args, metric, records)
-            # track(metric, xs, ys, sigmas, args)
+            metric, xs, ys, sigmas = stack(args, metric, records)
+            track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
-        
+
         arrange(args, pool['weights'], train_env)
         
     if args.test:
