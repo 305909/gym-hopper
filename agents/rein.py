@@ -11,8 +11,7 @@ class RFPolicy(torch.nn.Module):
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
         parameters of a normal distribution (mean μ(s(t)) and standard deviation σ(s(t))) 
-        from which to sample the agent's actions
-        -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        from which to sample the agent's actions -> π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
             state_space: dimension of the observation space (environment)
@@ -43,18 +42,18 @@ class RFPolicy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """ maps the observation x = s(t) from the environment at time-step t  
-        into a normal distribution N(μ(s(t)), σ(s(t))) 
+        """ maps the observation x = s(t) from the environment at time-step t into 
+        a normal distribution N(μ(s(t)), σ(s(t))) 
         from which to sample an agent action at time-step t
-        -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        -> π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
             x: observation s(t) from the environment at time-step t 
 
         returns:
-            normal_dist: normal distribution N(μ(s(t)) + ε, σ(s(t)) + ε)
-                         - μ(s(t)): action mean
-                         - σ(s(t)): action standard deviation
+            (actor) normal_dist: normal distribution N(μ(s(t)) + ε, σ(s(t)) + ε)
+                                 - μ(s(t)): action mean
+                                 - σ(s(t)): action standard deviation
         """
         x = self.tanh(self.fc1(x))
         x = self.tanh(self.fc2(x))
@@ -80,15 +79,14 @@ class RF:
                  max_grad_norm: float = 0.5, 
                  gamma: float = 0.99,  
                  **kwargs):
-        """ initializes an agent that learns a policy via REINFORCE algorithm 
-        to solve the task at hand (Gym Hopper)
+        """ initializes an agent to learn a policy via REINFORCE algorithm 
 
         args:
             policy: RFPolicy
             device: processing device (e.g. CPU or GPU)
             baseline: algorithm baseline
             learning_rate: learning rate for policy optimization
-            max_grad_norm: threshold value for the gradient norm
+            max_grad_norm: threshold value for gradient norm
             gamma: discount factor
         """
         self.device = device
@@ -104,8 +102,7 @@ class RF:
         self.reset()
 
     def predict(self, obs, state = None, episode_start = None, deterministic = False):
-        """ predicts an action according to the observation s(t) 
-        and the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        """ predicts an action based on observation s(t) and policy π(a(t)|s(t))
         -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
@@ -119,8 +116,7 @@ class RF:
         normal_dist = self.policy(x)
 
         if deterministic:
-            """ return the mean 
-            of the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+            """ return the mean value of the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
             
             returns:
                 a(t) = μ(s(t))
@@ -130,8 +126,7 @@ class RF:
             return action, None
             
         else:
-            """ sample an action 
-            from the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+            """ sample an action from the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
 
             returns:
                 a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
