@@ -156,7 +156,7 @@ def train(args, seed, train_env, test_env, model):
                 
         num_episodes += 1   
         callback._on_step(num_episodes, args)
-    train_time = time.time() - start
+    train_time = time.time() - start_time
     
     return callback.episode_rewards, callback.episode_lengths, train_time, policy.state_dict()
 
