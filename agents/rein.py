@@ -8,13 +8,14 @@ class RFPolicy(torch.nn.Module):
 
     def __init__(self, state_space: int, action_space: int, **kwargs):
         super().__init__()
-        """ initializes a neural network that estimates 
-        the mean and standard deviation of a normal distribution 
-        from which to sample an action
+        """ initializes a multi-layer neural network 
+        to map observations from the environment into
+        -> elements of a normal distribution (mean and standard deviation) 
+           from which to sample an agent action
         
         args:
-            state_spaces: dimension of the observation space
-            action_space: dimension of the action space
+            state_spaces: dimension of the observation space (environment)
+            action_space: dimension of the action space (agent)
         """
         self.action_space = action_space
         self.state_space = state_space
@@ -41,10 +42,9 @@ class RFPolicy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """ from the observation x, 
-        returns the normal distribution 
-        from which to sample an action
-
+        """ maps the observation x from the environment into 
+        -> a normal distribution N(μ,σ) from which to sample an agent action
+        
         args:
             x: observation from the environment
 
@@ -88,10 +88,10 @@ class RF:
             max_grad_norm: threshold value for the gradient norm
             gamma: discount factor
         """
-
         self.device = device
         self.policy = policy.to(self.device)
         self.max_grad_norm = max_grad_norm
+                     
         self.learning_rate = learning_rate
         self.baseline = baseline
         self.gamma = gamma
@@ -101,7 +101,9 @@ class RF:
         self.reset()
 
     def predict(self, obs, state = None, episode_start = None, deterministic = False):
-        """ predicts an action, according to the policy and the observation
+        """ predicts an action, according to 
+        -> the policy
+        -> the observation
 
         args:
             obs: observation from the environment
@@ -115,7 +117,7 @@ class RF:
 
         if deterministic:
             """ return the mean 
-            of the normal distribution N(μ,σ)
+            of a normal distribution N(μ,σ)
             
             returns:
                 a = μ
@@ -126,7 +128,7 @@ class RF:
             
         else:
             """ sample an action 
-            from the normal distribution N(μ,σ)
+            from a normal distribution N(μ,σ)
 
             returns:
                 a ~ N(μ,σ)
