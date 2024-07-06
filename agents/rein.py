@@ -9,12 +9,13 @@ class RFPolicy(torch.nn.Module):
     def __init__(self, state_space: int, action_space: int, **kwargs):
         super().__init__()
         """ initializes a multi-layer neural network 
-        to map observations from the environment into
-        -> elements of a normal distribution (mean and standard deviation) 
-           from which to sample an agent action
+        to map observations s(t) from the environment into
+        parameters of a normal distribution (mean μ(s(t)) and standard deviation σ(s(t))) 
+        from which to sample the agent's actions
+        -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
-            state_spaces: dimension of the observation space (environment)
+            state_space: dimension of the observation space (environment)
             action_space: dimension of the action space (agent)
         """
         self.action_space = action_space
@@ -23,12 +24,12 @@ class RFPolicy(torch.nn.Module):
         self.hidden = 64
         self.eps = 1e-6
 
-        """ policy mean specific layers """
+        """ multi-layer neural network to output μ(s(t)) """
         self.fc1 = torch.nn.Linear(state_space, self.hidden)
         self.fc2 = torch.nn.Linear(self.hidden, self.hidden)
         self.fc3 = torch.nn.Linear(self.hidden, action_space)
 
-        """ policy standard deviation specific layer """
+        """ direct learnable parameter to output σ(s(t)) """
         init_sigma = 0.5
         self.sigma = torch.nn.Parameter(torch.zeros(self.action_space) + init_sigma)
         self.sigma_activation = F.softplus
@@ -42,16 +43,18 @@ class RFPolicy(torch.nn.Module):
                 torch.nn.init.zeros_(m.bias)
 
     def forward(self, x):
-        """ maps the observation x from the environment into 
-        -> a normal distribution N(μ,σ) from which to sample an agent action
+        """ maps the observation x = s(t) from the environment at time-step t  
+        into a normal distribution N(μ(s(t)), σ(s(t))) 
+        from which to sample an agent action at time-step t
+        -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
         
         args:
-            x: observation from the environment
+            x: observation s(t) from the environment at time-step t 
 
         returns:
-            normal_dist: normal distribution N(μ,σ)
-                         - μ: action mean
-                         - σ: action standard deviation
+            normal_dist: normal distribution N(μ(s(t)) + ε, σ(s(t)) + ε)
+                         - μ(s(t)): action mean
+                         - σ(s(t)): action standard deviation
         """
         x = self.tanh(self.fc1(x))
         x = self.tanh(self.fc2(x))
@@ -101,26 +104,26 @@ class RF:
         self.reset()
 
     def predict(self, obs, state = None, episode_start = None, deterministic = False):
-        """ predicts an action, according to 
-        -> the policy
-        -> the observation
-
+        """ predicts an action according to the observation s(t) 
+        and the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        -> a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+        
         args:
-            obs: observation from the environment
+            obs: observation from the environment s(t)
 
         returns:
-            action: action to perform
-            action_log_prob: logarithmic probability value of the action
+            action: action to perform -> a(t)
+            action_log_prob: logarithmic probability value of the action -> log(π(a(t)|s(t)))
         """
         x = torch.from_numpy(obs).float().to(self.device)
         normal_dist = self.policy(x)
 
         if deterministic:
             """ return the mean 
-            of a normal distribution N(μ,σ)
+            of the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
             
             returns:
-                a = μ
+                a(t) = μ(s(t))
             """
             action = normal_dist.mean
             action = action.detach().cpu().numpy()
@@ -128,10 +131,11 @@ class RF:
             
         else:
             """ sample an action 
-            from a normal distribution N(μ,σ)
+            from the policy π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
 
             returns:
-                a ~ N(μ,σ)
+                a(t) ~ π(a(t)|s(t)) = N(μ(s(t)), σ(s(t)))
+                log(π(a(t)|s(t)))
             """
             action = normal_dist.sample()
             action_log_prob = normal_dist.log_prob(action).sum()
