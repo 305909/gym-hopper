@@ -11,7 +11,7 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, bound = 0.5):
+    def __init__(self, domain = None, randomize = False, bound = None):
         MujocoEnv.__init__(self, 4, randomize)
         utils.EzPickle.__init__(self)
 
