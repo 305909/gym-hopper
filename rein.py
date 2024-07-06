@@ -185,7 +185,7 @@ def stack(args, metric, records):
     import matplotlib.pyplot as plt
     import seaborn as sns
     import pandas as pd
-    
+    print(records)
     rewards_to_plot = [rewards for rewards in records]
     df1 = pd.DataFrame(rewards_to_plot).melt()
     df1.rename(columns={"variable": "episodes", "value": "reward"}, inplace=True)
