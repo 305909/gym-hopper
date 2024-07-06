@@ -177,7 +177,7 @@ def train(args, seed, train_env, test_env, model):
     return callback.episode_rewards, callback.episode_lengths, time.time() - start, policy.state_dict()
         
 
-def stack(metric, records):
+def stack(args, metric, records):
     """ 
         -> stak training sessions outputs 
 
@@ -322,7 +322,7 @@ def main():
     if args.train:
         pool = multiprocess(args, train_env, test_env)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            stack(metric, records)
+            stack(agrs, metric, records)
             # track(metric, xs, ys, sigmas, args)
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
