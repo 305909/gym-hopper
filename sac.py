@@ -72,6 +72,8 @@ class Callback(BaseCallback):
             episode rewards
             episode lengths
         """
+        self.train_timesteps = args.train_timesteps
+        self.eval_frequency = args.eval_frequency
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
@@ -79,14 +81,14 @@ class Callback(BaseCallback):
         self.env = env
     
     def _on_step(self) -> bool:
-        if self.num_timesteps % args.eval_frequency == 0: 
+        if self.num_timesteps % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
-            if self.verbose > 0 and self.num_timesteps % int(args.train_timesteps * 0.25) == 0:
+            if self.verbose > 0 and self.num_timesteps % int(self.train_timesteps * 0.25) == 0:
                 print(f'training step: {self.num_timesteps} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
         return True
 
