@@ -55,8 +55,14 @@ def parse_args():
 class Callback():
     
     def __init__(self, agent, env, args):
-        """ initializes a callback object to evaluate the agent's performance 
-        in the testing environment over training iterations
+        """ initializes a callback object to access the internal state 
+        of the reinforcement learning agent over training iterations 
+        for performance monitoring
+
+        args:
+            agent: reinforcement learning agent
+            env: testing environment for performance evaluation
+            args: argument parser
 
         evaluation metrics:
             episode rewards
@@ -98,6 +104,8 @@ def multiprocess(args, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
     with different seeds (to counteract variance)
 
     args:
+        train_env: training environment
+        test_env: testing environment
         seeds: fibonacci seeds
     """
     model = None
@@ -179,7 +187,7 @@ def stack(args, metric, records):
 
 def track(metric, xs, ys, sigmas, args):
     """ plots the agent's performance in the testing environment 
-    (according to the evaluation metric) over the training episodes
+    (according to the evaluation metric) over training episodes
     
     args:
         metric: evaluation metric
