@@ -131,7 +131,7 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
-        'learning_rate': [1e-3, 1e-4, 1e-5]
+        'learning_rate': [7e-4, 3e-4]
         }
 	
     if args.device == 'cuda' and not torch.cuda.is_available():
