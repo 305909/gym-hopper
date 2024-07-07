@@ -131,10 +131,12 @@ def train(args, seed, train_env, test_env, model):
         seed: seed of the training session
         model: model to train
     """
+    env = gym.make(train_env)
+    
+    env.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    
-    env = gym.make(train_env)
+
     policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
 
     if model is not None:
@@ -143,7 +145,10 @@ def train(args, seed, train_env, test_env, model):
     agent = A2C(policy, 
                 device = args.device)
     
-    callback = Callback(agent, gym.make(test_env), args)
+    test_env = gym.make(test_env)
+    test_env.seed(seed)
+    
+    callback = Callback(agent, test_env, args)
     
     num_episodes = 0
     num_timesteps = 0
