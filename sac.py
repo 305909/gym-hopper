@@ -146,12 +146,12 @@ def train(args, seed, train_env, test_env, model):
     if model is not None:
         agent = SAC.load(model, 
                          env = env, 
-                         seed = seed 
+                         seed = seed, 
                          device = args.device)
     else:
         agent = SAC(policy, 
                     env = env, 
-                    seed = seed
+                    seed = seed,
                     device = args.device, 
                     learning_rate = args.learning_rate,
                     batch_size = 256, 
