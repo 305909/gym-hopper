@@ -19,28 +19,34 @@ from env.custom_hopper import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train-env', default = 'source', type = str, 
-			help = 'Training environment')
+			help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
-			help = 'Testing environment')
+			help = 'testing environment')
     parser.add_argument('--train-timesteps', default = 100000, type = int, 
-			help = 'Number of training timesteps')
+			help = 'number of training timesteps')
     parser.add_argument('--test-episodes', default = 100, type = int, 
-			help = 'Number of testing episodes')
+			help = 'number of testing episodes')
     parser.add_argument('--device', default = 'cpu', type = str, 
-			help = 'Network device [cpu, cuda]')
+			help = 'network device [cpu, cuda]')
     return parser.parse_args()
 
 
-def train(device = 'cpu', 
+def train(seed = seed,
+	  device = 'cpu', 
           train_timesteps: int = 100000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> SAC:
-    """ 
-        -> train the agent in the training environment
-
-    """
+    """ trains the agent in the training environment """ 
     env = gym.make(train_env)
+		  
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+		  
     policy = 'MlpPolicy'
-    agent = SAC(policy = policy, env = env, device = device, **kwargs)
+    agent = SAC(policy, 
+		env = env, 
+		seed = seed, 
+		device = device, **kwargs)
     
     agent.learn(total_timesteps = train_timesteps)
       
@@ -48,16 +54,21 @@ def train(device = 'cpu',
 
 
 def test(agent: SAC, 
+	 seed = seed,
          test_episodes: int = 100, 
-         test_env: str = 'CustomHopper-source-v0') -> float:
-    """ 
-        -> test the agent in the testing environment
-        
-    """  
+	 test_env: str = 'CustomHopper-source-v0') -> float:
+    """ tests the agent in the testing environment """ 
     env = gym.make(test_env)
+		  
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+		 
     num_episodes = 0
     episode_rewards = []
     while num_episodes < test_episodes:
+        env.seed(seed)
+	    
         done = False
         obs = env.reset()
         rewards, steps = (0, 0)
@@ -73,26 +84,30 @@ def test(agent: SAC,
     return er
 
 
-def pooling(kwargs: dict, device, train_timesteps, test_episodes, train_env, test_env):
+def pooling(kwargs: dict, seed, device, train_timesteps, test_episodes, 
+	    train_env, test_env):
     
-    agent = train(device = device, 
+    agent = train(seed = seed, 
+		  device = device, 
                   train_timesteps = train_timesteps, 
                   train_env = train_env, **kwargs)
     
     return test(agent, 
+		seed = seed,
                 test_episodes = test_episodes, 
                 test_env = test_env), kwargs
 
 
 
-def gridsearch(args, params, train_env, test_env, sessions = 5):
+def gridsearch(args, params, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
     results = []
     keys = list(params.keys())
     for param in list(itertools.product(*params.values())):
         kwargs = dict(zip(keys, param))
         pool = list()
-        for iter in range(sessions):
+        for iter, seed in enumerate(seeds):
             er, _ = pooling(kwargs, 
+			    seed = seed,
 			    device = args.device,
                             train_timesteps = args.train_timesteps,
                             test_episodes = args.test_episodes, 
