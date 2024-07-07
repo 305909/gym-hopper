@@ -133,7 +133,7 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
-        'learning_rate': [1e-3, 7e-4, 5e-4, 3e-4, 1e-4]
+        'learning_rate': [7e-4, 3e-4]
         }
     
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
