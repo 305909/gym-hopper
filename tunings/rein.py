@@ -17,27 +17,33 @@ from env.custom_hopper import *
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train-episodes', default = 10000, type = int, 
-                        help = 'Number of training episodes')
+                        help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 100, type = int, 
-                        help = 'Number of testing episodes')
+                        help = 'number of testing episodes')
     parser.add_argument('--device', default = 'cpu', type = str, 
-			help = 'Network device [cpu, cuda]')
+			help = 'network device [cpu, cuda]')
     return parser.parse_args()
 
 
-def train(device: str = 'cpu', 
+def train(seed = seed,
+	  device: str = 'cpu', 
           train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> RF:
-    """ 
-        -> train the agent in the training environment
-
-    """   
+    """ trains the agent in the training environment """   
     env = gym.make(train_env)
+		  
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+		  
     policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], **kwargs)
-    agent = RF(policy, device = device, **kwargs)
+    agent = RF(policy, 
+	       device = device, **kwargs)
               
     num_episodes = 0
     while num_episodes < train_episodes:
+        env.seed(seed)
+	    
         done = False
         obs = env.reset()
         while not done:
@@ -52,16 +58,21 @@ def train(device: str = 'cpu',
 
 
 def test(agent: RF, 
+	 seed = seed,
          test_episodes: int = 100, 
          test_env: str = 'CustomHopper-source-v0') -> float:
-    """ 
-        -> test the agent in the testing environment
-        
-    """       
+    """ tests the agent in the testing environment """     
     env = gym.make(test_env)
+		  
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+		 
     num_episodes = 0
     episode_rewards = []
     while num_episodes < test_episodes:
+        env.seed(seed)
+	    
         done = False
         obs = env.reset()
         rewards, steps = (0, 0)
@@ -77,23 +88,26 @@ def test(agent: RF,
     return er
 
 
-def pooling(kwargs: dict, device, train_episodes, test_episodes):
+def pooling(kwargs: dict, seed, device, train_episodes, test_episodes):
     
-    agent = train(device = device, 
+    agent = train(seed = seed,
+		  device = device, 
                   train_episodes = train_episodes, **kwargs)
     
-    return test(agent, 
+    return test(agent,
+		seed = seed,
                 test_episodes = test_episodes), kwargs
 
 
-def gridsearch(args, params, sessions = 5):
+def gridsearch(args, params, seeds = [1, 2, 3, 5, 8]):
     results = []
     keys = list(params.keys())
     for param in list(itertools.product(*params.values())):
         kwargs = dict(zip(keys, param))
         pool = list()
-        for iter in range(sessions):
+        for iter, seed in enumerate(seeds):
             er, _ = pooling(kwargs, 
+			    seed = seed,
 			    device = args.device,
                             train_episodes = args.train_episodes,
                             test_episodes = args.test_episodes)
