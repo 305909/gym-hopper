@@ -1,6 +1,7 @@
 import os
 import sys
 import gym
+import torch
 import argparse
 import warnings
 import itertools
