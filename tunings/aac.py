@@ -25,8 +25,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def train(seed = seed,
-	  device: str = 'cpu', 
+def train(seed: int, 
+	  device: str = 'cpu',  
           train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> A2C:
     """ trains the agent in the training environment """ 
@@ -60,8 +60,7 @@ def train(seed = seed,
     return agent
 
 
-def test(agent: A2C, 
-	 seed = seed,
+def test(seed: int, agent: A2C, 
 	 test_episodes: int = 100, 
 	 test_env: str = 'CustomHopper-source-v0') -> float:
     """ tests the agent in the testing environment """
@@ -97,8 +96,7 @@ def pooling(kwargs: dict, seed, device, train_episodes, test_episodes):
 		  device = device, 
                   train_episodes = train_episodes, **kwargs)
     
-    return test(agent, 
-		seed = seed,
+    return test(seed, agent,
                 test_episodes = test_episodes), kwargs
 
 
