@@ -194,7 +194,11 @@ def stack(args, metric, records):
     xs = np.array([(index + 1) * args.eval_frequency for index in range(len(stacks))])
     ys = np.array([stack[0] for stack in stacks])
     sigmas = np.array([stack[1] for stack in stacks])
-    
+
+    if metric == 'reward':
+        path = os.path.join(args.directory, f'SAC-({args.train_env} to {args.test_env})-rewards.npy')
+        np.save(path, ys)
+        
     return metric, xs, ys, sigmas
 
 
