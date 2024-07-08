@@ -40,11 +40,11 @@ def parse_args():
                         help = 'training environment')
     parser.add_argument('--test-env', default = 'source', type = str, 
                         help = 'testing environment')
-    parser.add_argument('--train-episodes', default = 10000, type = int, 
+    parser.add_argument('--train-episodes', default = 2500, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 10, type = int, 
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 100, type = int, 
+    parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--baseline', default = 'vanilla', type = str, 
                         choices = ['vanilla', 'constant', 'whitening'], 
@@ -217,7 +217,6 @@ def track(metric, xs, ys, sigmas, args):
   
     plt.xlabel('episodes')
     plt.ylabel(f'episode {metric}')
-    plt.title(f'average episode {metric} over training iterations', loc = 'left')
     plt.grid(True)
     plt.legend()
   
