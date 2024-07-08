@@ -27,16 +27,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def set_random_parameters(self):
         """ set random masses """
-        if self.automatic:  # ADR 
-            # log the cumulative reward of the episode
-            if self.cumulative > 0: 
-                self.queue.append(self.cumulative)
-            self.cumulative = 0
-            if len(self.queue) == self.m: 
-                self.update_phi()
-            self.set_parameters(*self.sample_parameters(phi = self.phi))
-        else:  # UDR
-            self.set_parameters(*self.sample_parameters(phi = self.phi))
+        self.set_parameters(*self.sample_parameters(phi = self.phi))
         if self.debug:
             self.print_parameters()
 
@@ -48,11 +39,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         masses.insert(0, self.sim.model.body_mass[1])
         return masses
 
-    def update_phi(self):
-        performance = np.mean(self.queue)
-        if self.debug:
-            print(f"performance: {performance:.2f} | lower bound: {self.data_buffers['L'][self.i]:.2f}, upper bound: {self.data_buffers['H'][self.i]:.2f}")
-        # adjust phi
+    def update_phi(self, performance):
         if performance > self.data_buffers['H'][self.i]:
             self.phi -= self.delta
         elif performance > self.data_buffers['L'][self.i]:
@@ -60,12 +47,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         elif performance < self.data_buffers['L'][self.i]:
             self.phi = self.phi
         self.i += 1
-        # clip phi
-        self.phi = np.clip(self.phi, 0.0, self.upper_bound)
-        # reset
-        self.queue.clear()
-        if self.debug:
-            print(f'phi: {self.phi}')
+        self.phi = np.clip(self.phi, 0.0, self.upper_bound)  # clip phi
         
     def get_parameters(self):
         """ get mass value for each link """
