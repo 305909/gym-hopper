@@ -319,7 +319,7 @@ def main():
         os.mkdir(args.directory)
 
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
-                                for x in ['source-ADR', 'target'])
+                                for x in ['source-UDR', 'target'])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         print('\nWARNING: GPU not available, switch to CPU\n')
