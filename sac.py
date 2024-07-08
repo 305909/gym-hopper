@@ -87,6 +87,8 @@ class Callback(BaseCallback):
             dones = self.locals['dones']
             self.num_episodes += np.sum(dones)
             print(self.num_episodes)
+            print(self.locals['dones'])
+            print(self.locals['num_collected_episodes'])
         if self.num_episodes % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
