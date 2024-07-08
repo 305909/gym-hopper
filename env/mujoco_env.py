@@ -12,7 +12,7 @@ try:
 
 except ImportError as e:
     raise error.DependencyNotInstalled(
-        "Requirement: install mujoco_py (https://mujoco.org/)")
+        "requirement: install mujoco_py (https://mujoco.org/)")
 
 def convert_observation_to_space(observation):
     if isinstance(observation, dict):
@@ -47,7 +47,6 @@ class MujocoEnv(gym.Env):
             self.phi = 0.25
             
         if automatic:  # ADR parameters
-            self.num_episodes = 0
             self.upper_bound = 2.0
             self.cumulative = 0
             self.delta = 0.05
@@ -55,8 +54,8 @@ class MujocoEnv(gym.Env):
             self.m = 25
             self.i = 0
             self.queue = deque(maxlen = self.m)
-            self.data_buffers = {'lower': self.load('archive/SAC-(source to target)-rewards.npy'), 
-                                 'upper': self.load('archive/SAC-(target to target)-rewards.npy')}
+            self.data_buffers = {'L': self.load('archive/SAC-(source to target)-rewards.npy'), 
+                                 'H': self.load('archive/SAC-(target to target)-rewards.npy')}
         
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
