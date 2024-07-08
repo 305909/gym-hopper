@@ -69,7 +69,7 @@ class MujocoEnv(gym.Env):
         self.seed()
 
     def load(self, filename):
-        file = os.path.join(os.path.dirname(__file__), "records", filename)
+        file = os.path.join(os.path.dirname(__file__), "assets", filename)
         if path.exists(file):
             try:
                 data_buffers = np.load(file, allow_pickle = True)
