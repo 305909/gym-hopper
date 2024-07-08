@@ -11,8 +11,8 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, bound = None):
-        MujocoEnv.__init__(self, 4, randomize)
+    def __init__(self, domain = None, randomize = False, automatic = False):
+        MujocoEnv.__init__(self, 4, randomize, automatic)
         utils.EzPickle.__init__(self)
 
         # default link masses
@@ -23,30 +23,57 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         self.bound = bound
 
         # torso mass shift from source to target environment
-        if domain == 'source': # (1kg shift)
+        if domain == 'source':  # (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
 
     def set_random_parameters(self):
         """ set random masses """
-        self.set_parameters(*self.sample_parameters())
+        if self.automatic:  # ADR 
+            # log the cumulative reward of the episode
+            if self.cumulative > 0: 
+                self.queue.append(self.cumulative)
+            self.cumulative = 0
+            if len(self.queue) == self.m: 
+                self.update_phi()
+            self.set_parameters(*self.sample_parameters(phi = self.phi))
+        else:  # UDR
+            self.set_parameters(*self.sample_parameters(phi = self.phi))
         if self.debug:
             self.print_parameters()
 
-    def sample_parameters(self):
-        """ sample masses according to a domain randomization distribution """
-        masses = [np.random.uniform((1 - self.bound) * mass, 
-                                    (1 + self.bound) * mass) 
+    def sample_parameters(self, phi):
+        """ sample masses according to a uniform domain distribution """
+        masses = [np.random.uniform((1 - phi) * mass, 
+                                    (1 + phi) * mass) 
                   for mass in self.original_masses[1:]]
         masses.insert(0, self.sim.model.body_mass[1])
         return masses
 
+    def update_phi(self):
+        performance = np.mean(self.queue)
+        if self.debug:
+            print(f"performance: {performance:.2f} | lower bound: {self.data_buffers['L'][self.i]:.2f}, upper bound: {self.data_buffers['H'][self.i]:.2f}")
+        # adjust phi
+        if performance > self.data_buffers['H'][self.i]:
+            self.phi -= self.delta
+        elif performance > self.data_buffers['L'][self.i]:
+            self.phi += self.delta
+        elif performance < self.data_buffers['L'][self.i]:
+            self.phi = self.phi
+        self.i += 1
+        # clip phi
+        self.phi = np.clip(self.phi, 0.0, self.upper_bound)
+        # reset
+        self.queue.clear()
+        if self.debug:
+            print(f'phi: {self.phi}')
+        
     def get_parameters(self):
-        """ get value of mass for each link """
+        """ get mass value for each link """
         masses = np.array(self.sim.model.body_mass[1:])
         return masses
 
     def set_parameters(self, *task):
-        """ set each hopper link's mass to a new value """
         self.sim.model.body_mass[1:] = task
 
     def step(self, a):
@@ -70,6 +97,10 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
                     and (height > .7) and (abs(ang) < .2))
         ob = self._get_obs()
 
+        if self.automatic:
+            # accumulate reward
+            self.cumulative += reward
+            
         return ob, reward, done, {}
 
     def _get_obs(self):
@@ -151,5 +182,12 @@ gym.envs.register(
     id = "CustomHopper-source-UDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "bound": 0.25}
+    kwargs = {"domain": "source", "randomize": True}
+)
+
+gym.envs.register(
+    id = "CustomHopper-source-ADR-v0",
+    entry_point = "%s:CustomHopper" % __name__,
+    max_episode_steps = 500,
+    kwargs = {"domain": "source", "randomize": True, "adaptive": True}
 )
