@@ -93,8 +93,8 @@ class Callback(BaseCallback):
                 self.episode_lengths.append(el.mean())
               
                 self.auto.update_phi(performance = er.mean())
-                # if self.verbose > 0 and self.num_episodes % self.eval_frequency == 0:
-                if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
+                # if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
+                if self.verbose > 0 and self.num_episodes % self.eval_frequency == 0: 
                     print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
                     print(f'performance: {er.mean():.2f} | bounds: ({self.auto.data_buffers["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers["H"][self.auto.i - 1]:.2f}) | phi: {self.auto.phi}')
                 self.flag = True  # mark evaluation as due
