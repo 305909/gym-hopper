@@ -6,7 +6,6 @@ import numpy as np
 from gym import utils
 from copy import deepcopy
 from .mujoco_env import MujocoEnv
-from gym.envs.registration import register
 
 """ Custom Hopper class for Gym Hopper """
 
