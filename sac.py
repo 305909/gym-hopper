@@ -84,7 +84,7 @@ class Callback(BaseCallback):
     
     def _on_step(self) -> bool:
         self.num_episodes += np.sum(self.locals['dones'])
-        if self.num_episodes % self.eval_frequency == 0: 
+        if self.num_episodes > 0 and self.num_episodes % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
