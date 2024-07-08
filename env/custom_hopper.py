@@ -11,8 +11,8 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, automatic = False):
-        MujocoEnv.__init__(self, 4, randomize, automatic)
+    def __init__(self, domain = None, randomize = False, adaptive = False):
+        MujocoEnv.__init__(self, 4, randomize, adaptive)
         utils.EzPickle.__init__(self)
 
         # default link masses
@@ -170,5 +170,5 @@ gym.envs.register(
     id = "CustomHopper-source-ADR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "automatic‎": True}
+    kwargs = {"domain": "source", "randomize": True, "adaptive‎": True}
 )
