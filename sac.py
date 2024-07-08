@@ -80,19 +80,24 @@ class Callback(BaseCallback):
         self.episode_lengths = list()
         self.num_episodes = 0
         self.agent = agent
+        self.flag = False
         self.env = env
     
     def _on_step(self) -> bool:
         self.num_episodes += np.sum(self.locals['dones'])
         if self.num_episodes > 0 and self.num_episodes % self.eval_frequency == 0: 
-            episode_rewards, episode_lengths = evaluate_policy(self.agent, 
-                                                               self.env, self.test_episodes, 
-                                                               return_episode_rewards = True)
-            er, el = np.array(episode_rewards), np.array(episode_lengths)
-            self.episode_rewards.append(er.mean())
-            self.episode_lengths.append(el.mean())
-            if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
-                print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
+            if not self.flag:
+                episode_rewards, episode_lengths = evaluate_policy(self.agent, 
+                                                                   self.env, self.test_episodes, 
+                                                                   return_episode_rewards = True)
+                er, el = np.array(episode_rewards), np.array(episode_lengths)
+                self.episode_rewards.append(er.mean())
+                self.episode_lengths.append(el.mean())
+                if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
+                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
+                self.flag = True  # mark evaluation as due
+        if self.num_episodes % self.eval_frequency != 0:
+            self.flag = False  # reset evaluation flag
         if self.num_episodes >= self.train_episodes: 
             return False  # stop training
         return True
