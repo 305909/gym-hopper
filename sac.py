@@ -41,11 +41,11 @@ def parse_args():
                         help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
                         help = 'testing environment')
-    parser.add_argument('--train-timesteps', default = 250000, type = int, 
-                        help = 'number of training timesteps')
+    parser.add_argument('--train-episodes', default = 25000, type = int, 
+                        help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 2500, type = int, 
+    parser.add_argument('--eval-frequency', default = 250, type = int, 
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--learning-rate', default = 7e-4, type = float, 
                         help = 'learning rate')
@@ -73,7 +73,7 @@ class Callback(BaseCallback):
             episode rewards
             episode lengths
         """
-        self.train_timesteps = args.train_timesteps
+        self.train_episodes = args.train_episodes
         self.eval_frequency = args.eval_frequency
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
@@ -85,15 +85,17 @@ class Callback(BaseCallback):
     def _on_step(self) -> bool:
         if self.locals.get("dones") and self.locals["dones"][0]:
             self.num_episodes += 1
-        if self.num_timesteps % self.eval_frequency == 0: 
+        if self.num_episodes % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
             er, el = np.array(episode_rewards), np.array(episode_lengths)
             self.episode_rewards.append(er.mean())
             self.episode_lengths.append(el.mean())
-            if self.verbose > 0 and self.num_timesteps % int(self.train_timesteps * 0.25) == 0:
-                print(f'training step: {self.num_timesteps} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
+            if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
+                print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
+        if self.num_episodes % self.train_episodes == 0: 
+            return False
         return True
 
 
@@ -168,8 +170,9 @@ def train(args, seed, train_env, test_env, model):
     
     callback = Callback(agent, test_env, args)
 
+    total_timesteps = args.train_episodes * 500
     start_time = time.time()
-    agent.learn(total_timesteps = args.train_timesteps, callback = callback)
+    agent.learn(total_timesteps = total_timesteps, callback = callback)
     train_time = time.time() - start_time
     
     return callback.episode_rewards, callback.episode_lengths, train_time, agent.policy.state_dict()
@@ -193,11 +196,11 @@ def stack(args, metric, records):
 
 def track(metric, xs, ys, sigmas, args):
     """ plots the agent's performance in the testing environment 
-    (according to the evaluation metric) over training time-steps
+    (according to the evaluation metric) over training episodes
     
     args:
         metric: evaluation metric
-        xs: training time-steps (x-axis values)
+        xs: training episodes (x-axis values)
         ys: set of evaluation records (y-axis values)
         sigmas: set of evaluation records variances
     """
@@ -208,7 +211,7 @@ def track(metric, xs, ys, sigmas, args):
     plt.plot(xs, ys, alpha = 1, label = f'SAC')
     plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
-    plt.xlabel('time-steps')
+    plt.xlabel('episodes')
     plt.ylabel(f'episode {metric}')
     plt.title(f'average episode {metric} over training iterations', loc = 'left')
     plt.grid(True)
