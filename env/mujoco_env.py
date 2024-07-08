@@ -54,8 +54,8 @@ class MujocoEnv(gym.Env):
             self.m = 25
             self.i = 0
             self.queue = deque(maxlen = self.m)
-            self.data_buffers = {'L': self.load('archive/SAC-(source to target)-rewards.npy'), 
-                                 'H': self.load('archive/SAC-(target to target)-rewards.npy')}
+            self.data_buffers = {'L': self.load('SAC-(source to target)-rewards.npy'), 
+                                 'H': self.load('SAC-(target to target)-rewards.npy')}
         
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
@@ -75,7 +75,8 @@ class MujocoEnv(gym.Env):
 
         self.seed()
 
-    def load(self, file):
+    def load(self, filename):
+        file = os.path.join(os.path.dirname(__file__), "records", filename)
         if path.exists(file):
             try:
                 data_buffer = np.load(file, allow_pickle = True)
