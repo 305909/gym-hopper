@@ -47,7 +47,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         elif performance < self.data_buffers['L'][self.i]:
             self.phi = self.phi
         self.i += 1
-        self.phi = np.clip(self.phi, 0.0, self.upper_bound)  # clip phi
+        self.phi = np.clip(self.phi, 0.0, self.upper_bound)
         
     def get_parameters(self):
         """ get mass value for each link """
