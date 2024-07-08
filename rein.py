@@ -156,6 +156,8 @@ def train(args, seed, train_env, test_env, model):
     callback = Callback(agent, test_env, args)
     
     num_episodes = 0
+    callback._on_step(num_episodes, args)
+    
     start_time = time.time()
     while num_episodes < args.train_episodes:
         env.seed(seed)
