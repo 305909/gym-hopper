@@ -93,8 +93,8 @@ class Callback(BaseCallback):
             self.episode_lengths.append(el.mean())
             if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
                 print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
-        if self.num_episodes == self.train_episodes: 
-            return False
+        if self.num_episodes >= self.train_episodes: 
+            return False  # stop training
         return True
 
 
