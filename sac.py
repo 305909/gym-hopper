@@ -77,11 +77,14 @@ class Callback(BaseCallback):
         self.test_episodes = args.test_episodes
         self.episode_rewards = list()
         self.episode_lengths = list()
+        self.num_episodes = 0
         self.agent = agent
         self.env = env
     
     def _on_step(self) -> bool:
-        if self.num_timesteps % self.eval_frequency == 0: 
+        if self.locals.get("dones") and self.locals["dones"][0]:
+            self.num_episodes += 1
+        if self.num_episodes % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
