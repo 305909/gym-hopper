@@ -1,5 +1,6 @@
 """ SAC algorithm
-Custom Hopper MuJoCo environment
+Custom Hopper 
+MuJoCo environment
 """
 
 import os
@@ -44,7 +45,7 @@ def parse_args():
                         help = 'number of training timesteps')
     parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 250, type = int, 
+    parser.add_argument('--eval-frequency', default = 2500, type = int, 
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--learning-rate', default = 7e-4, type = float, 
                         help = 'learning rate')
@@ -84,9 +85,7 @@ class Callback(BaseCallback):
     def _on_step(self) -> bool:
         if self.locals.get("dones") and self.locals["dones"][0]:
             self.num_episodes += 1
-            if self.num_episodes > 25:
-                return False
-        if self.num_episodes % self.eval_frequency == 0: 
+        if self.num_timesteps % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                self.env, self.test_episodes, 
                                                                return_episode_rewards = True)
