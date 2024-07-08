@@ -12,7 +12,7 @@ from .mujoco_env import MujocoEnv
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def __init__(self, domain = None, randomize = False, automatic = False):
-        MujocoEnv.__init__(self, frame_skip = 4, randomize = randomize, automatic = automatic)
+        MujocoEnv.__init__(self, 4, randomize, automatic)
         utils.EzPickle.__init__(self)
 
         # default link masses
