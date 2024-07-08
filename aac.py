@@ -1,5 +1,6 @@
 """ A2C algorithm
-Custom Hopper MuJoCo environment
+Custom Hopper 
+MuJoCo environment
 """
 
 import os
