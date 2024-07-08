@@ -80,6 +80,8 @@ class Callback(BaseCallback):
         self.flag = False
         self.auto = auto
         self.env = env
+        
+        print(self.auto.data_buffers["L"], self.auto.data_buffers["H"])
     
     def _on_step(self) -> bool:
         self.num_episodes += np.sum(self.locals['dones'])
