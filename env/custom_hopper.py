@@ -20,7 +20,6 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
         self.domain = domain
         self.debug = False
-        self.bound = bound
 
         # torso mass shift from source to target environment
         if domain == 'source':  # (1kg shift)
