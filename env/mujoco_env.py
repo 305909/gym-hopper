@@ -35,7 +35,7 @@ def convert_observation_to_space(observation):
 class MujocoEnv(gym.Env):
     """ interface for MuJoCo environments """
 
-    def __init__(self, frame_skip, randomize: bool = False, adaptive: bool = False):
+    def __init__(self, frame_skip, randomize: bool = False):
 
         self.frame_skip = frame_skip
         self.build_model()
@@ -43,10 +43,7 @@ class MujocoEnv(gym.Env):
         self.randomize = randomize
         self.adaptive = adaptive
         
-        if randomize:  # UDR parameter
-            self.phi = 0.25
-            
-        if adaptive:  # ADR parameters
+        if randomize:  # UDR and ADR parameters
             self.upper_bound = 2.0
             self.delta = 0.05
             self.phi = 0.25
