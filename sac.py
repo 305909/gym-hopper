@@ -41,7 +41,7 @@ def parse_args():
                         help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
                         help = 'testing environment')
-    parser.add_argument('--train-episodes', default = 2500, type = int, 
+    parser.add_argument('--train-episodes', default = 1000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 10, type = int, 
                         help = 'number of testing episodes')
