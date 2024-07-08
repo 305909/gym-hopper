@@ -83,7 +83,7 @@ class Callback(BaseCallback):
         self.env = env
     
     def _on_step(self) -> bool:
-        if if 'dones' in self.locals:
+        if 'dones' in self.locals:
             dones = self.locals['dones']
             self.num_episodes += np.sum(dones)
             print(self.num_episodes)
