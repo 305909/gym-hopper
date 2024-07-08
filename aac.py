@@ -190,6 +190,10 @@ def stack(args, metric, records):
     ys = np.array([stack[0] for stack in stacks])
     sigmas = np.array([stack[1] for stack in stacks])
     
+    if metric == 'reward':
+        path = os.path.join(args.directory, f'A2C-({args.train_env} to {args.test_env})-rewards.npy')
+        np.save(path, ys)
+        
     return metric, xs, ys, sigmas
 
 
