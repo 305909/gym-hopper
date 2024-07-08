@@ -170,5 +170,5 @@ gym.envs.register(
     id = "CustomHopper-source-ADR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "adaptive": True}
+    kwargs = {"domain": "source", "randomize": True, "automatic‎": True}
 )
