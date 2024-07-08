@@ -76,7 +76,7 @@ class MujocoEnv(gym.Env):
                 return data_buffers
             except Exception as e:
                 print(f"ERROR: file {file} not found")
-        return [0] * self.m
+        return [0]
         
     def build_model(self):
         self.model = mujoco_py.load_model_from_path(os.path.join(os.path.dirname(__file__), 
