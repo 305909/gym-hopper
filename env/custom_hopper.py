@@ -76,12 +76,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         done = not (np.isfinite(s).all() 
                     and (np.abs(s[2:]) < 100).all() 
                     and (height > .7) and (abs(ang) < .2))
-        ob = self._get_obs()
-
-        if self.automatic:
-            # accumulate reward
-            self.cumulative += reward
-            
+        ob = self._get_obs()            
         return ob, reward, done, {}
 
     def _get_obs(self):
