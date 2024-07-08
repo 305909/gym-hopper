@@ -48,12 +48,9 @@ class MujocoEnv(gym.Env):
             
         if automatic:  # ADR parameters
             self.upper_bound = 2.0
-            self.cumulative = 0
             self.delta = 0.05
             self.phi = 0.25
-            self.m = 25
             self.i = 0
-            self.queue = deque(maxlen = self.m)
             self.data_buffers = {'L': self.load('SAC-(source to target)-rewards.npy'), 
                                  'H': self.load('SAC-(target to target)-rewards.npy')}
         
