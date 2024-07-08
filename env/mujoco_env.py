@@ -51,8 +51,8 @@ class MujocoEnv(gym.Env):
             self.delta = 0.05
             self.phi = 0.25
             self.i = 0
-            self.data_buffers = {'L': self.load('SAC-(source to target)-rewards.npy'), 
-                                 'H': self.load('SAC-(target to target)-rewards.npy')}
+            self.data_buffers = {'L': self.load('data_buffers_lower.npy'), 
+                                 'H': self.load('data_buffers_upper.npy')}
         
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
@@ -76,8 +76,8 @@ class MujocoEnv(gym.Env):
         file = os.path.join(os.path.dirname(__file__), "records", filename)
         if path.exists(file):
             try:
-                data_buffer = np.load(file, allow_pickle = True)
-                return data_buffer
+                data_buffers = np.load(file, allow_pickle = True)
+                return data_buffers
             except Exception as e:
                 print(f"ERROR: file {file} not found")
         return [0] * self.m
