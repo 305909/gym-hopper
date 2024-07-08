@@ -86,7 +86,6 @@ class Callback(BaseCallback):
         if 'dones' in self.locals:
             dones = self.locals['dones']
             self.num_episodes += np.sum(dones)
-            print(self.locals)
             print(self.num_episodes)
         if self.num_episodes % self.eval_frequency == 0: 
             episode_rewards, episode_lengths = evaluate_policy(self.agent, 
@@ -97,7 +96,7 @@ class Callback(BaseCallback):
             self.episode_lengths.append(el.mean())
             if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
                 print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
-        if self.num_episodes % self.train_episodes == 0: 
+        if self.num_episodes == self.train_episodes: 
             return False
         return True
 
