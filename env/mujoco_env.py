@@ -41,7 +41,6 @@ class MujocoEnv(gym.Env):
         self.build_model()
         self.data = self.sim.data
         self.randomize = randomize
-        self.adaptive = adaptive
         
         if randomize:  # UDR and ADR parameters
             self.upper_bound = 2.0
