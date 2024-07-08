@@ -30,18 +30,34 @@ def convert_observation_to_space(observation):
 
     return space
 
-""" Wrapper class for MuJoCo environments """
+""" wrapper class for MuJoCo environments """
 
 class MujocoEnv(gym.Env):
     """ interface for MuJoCo environments """
 
-    def __init__(self, frame_skip, randomize: bool = False):
+    def __init__(self, frame_skip, randomize: bool = False, automatic: bool = False):
 
         self.frame_skip = frame_skip
         self.build_model()
         self.data = self.sim.data
         self.randomize = randomize
-
+        self.automatic = automatic
+        
+        if randomize:  # UDR parameter
+            self.phi = 0.25
+            
+        if automatic:  # ADR parameters
+            self.num_episodes = 0
+            self.upper_bound = 2.0
+            self.cumulative = 0
+            self.delta = 0.05
+            self.phi = 0.25
+            self.m = 25
+            self.i = 0
+            self.queue = deque(maxlen = self.m)
+            self.data_buffers = {'lower': self.load('archive/SAC-(source to target)-rewards.npy'), 
+                                 'upper': self.load('archive/SAC-(target to target)-rewards.npy')}
+        
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
             'video.frames_per_second': int(np.round(1.0 / self.dt))
@@ -60,6 +76,15 @@ class MujocoEnv(gym.Env):
 
         self.seed()
 
+    def load(self, file):
+        if path.exists(file):
+            try:
+                data_buffer = np.load(file, allow_pickle = True)
+                return data_buffer
+            except Exception as e:
+                print(f"ERROR: file {file} not found")
+        return [0] * self.m
+        
     def build_model(self):
         self.model = mujoco_py.load_model_from_path(os.path.join(os.path.dirname(__file__), 
                                                                  "assets/hopper.xml"))
