@@ -174,7 +174,7 @@ def train(args, seed, train_env, test_env, model):
     test_env = gym.make(test_env)
     test_env.seed(seed)
     
-    callback = Callback(agent, test_env, args)
+    callback = Callback(agent, test_env, env, args)
 
     total_timesteps = args.train_episodes * 500
     start_time = time.time()
