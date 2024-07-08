@@ -197,7 +197,7 @@ def stack(args, metric, records):
     sigmas = np.array([stack[1] for stack in stacks])
 
     if metric == 'reward':
-        path = os.path.join(args.directory, f'SAC-({args.train_env} to {args.test_env})-rewards.npy')
+        path = os.path.join(args.directory, f'SAC-ADR-rewards.npy')
         np.save(path, ys)
         
     return metric, xs, ys, sigmas
@@ -226,7 +226,7 @@ def track(metric, xs, ys, sigmas, args):
     plt.grid(True)
     plt.legend()
   
-    plt.savefig(f'{args.directory}/SAC-({args.train_env} to {args.test_env})-{metric}.png', dpi = 300)
+    plt.savefig(f'{args.directory}/SAC-ADR-{metric}.png', dpi = 300)
     plt.close()
 
 
@@ -237,7 +237,7 @@ def test(args, test_env):
     model = None
 
     if args.train:
-        model = f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/SAC-ADR.mdl'
         agent = SAC.load(model, 
                          env = env, 
                          device = args.device)
@@ -276,7 +276,7 @@ def test(args, test_env):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/SAC-ADR-test.gif', frames, fps = 30)
 
     env.close()
 
@@ -306,8 +306,8 @@ def arrange(args, stacks, train_env):
                 gamma = 0.99)
         
     agent.policy.load_state_dict(weights)
-    agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/SAC-({args.train_env} to {args.test_env}).mdl\n')
+    agent.save(f'{args.directory}/SAC-ADR.mdl')
+    print(f'\nmodel checkpoint storage: {args.directory}/SAC-ADR.mdl\n')
 
 
 def main():
