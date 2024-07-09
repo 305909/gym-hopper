@@ -131,14 +131,14 @@ This project also implements parameter tuning for the algorithms under investiga
 Search for the optimal parameter configuration for each algorithm by running the following commands:
 
 ```python
-# run the tuning algorithm on the REINFORCE model
+# run gridsearch algorithm for the REINFORCE model
 !python /content/gym-hopper/tunings/REF.py
 ```
 ```python
-# run the tuning algorithm on the A2C model
+# run gridsearch algorithm for the A2C model
 !python /content/gym-hopper/tunings/A2C.py`
 ```
 ```python
-# run the tuning algorithm on the REINFORCE model
+# run gridsearch algorithm for the SAC model
 !python /content/gym-hopper/tunings/SAC.py
 ```
