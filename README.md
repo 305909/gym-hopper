@@ -36,8 +36,8 @@ This work demonstrates the effectiveness of domain randomization in developing r
 
 Clone the repository and install the required packages by running the following commands:
 
-- `!git clone https://github.com/305909/gym-hopper.git`
-- `!bash gym-hopper/setups.sh`
+`!git clone https://github.com/305909/gym-hopper.git`  
+`!bash gym-hopper/setups.sh`
 
 ## Environment
 
@@ -60,7 +60,7 @@ Three variations of the REINFORCE (Vanilla Policy Gradient) algorithm. The imple
 
 Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/REF.py --train \`
+`!python /content/gym-hopper/algorithms/REF.py --train \`  
 `                                               --test`
 
 with the possibility of setting different execution flags:
