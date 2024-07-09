@@ -26,7 +26,7 @@ from env.custom_hopper import *
 
 from stable_baselines3 import SAC
 from collections import OrderedDict
-from utils import display, multiprocess, stack, track
+from utils import display, stack, track
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.evaluation import evaluate_policy
 
@@ -114,6 +114,31 @@ class Callback(BaseCallback):
         return True
 
 
+def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
+    """ processes multiple sequential training and testing sessions 
+    with different seeds (to counteract variance)
+
+    args:
+        train_env: training environment
+        test_env: testing environment
+        seeds: fibonacci seeds
+    """
+    model = None
+    if args.input_model is not None:
+        model = args.input_model
+
+    print(f'\nmodel to train: {model}\n')
+
+    pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
+    for iter, seed in enumerate(seeds):
+        print(f'\ntraining session: {iter + 1}')
+        print("----------------")
+        for key, value in zip(pool.keys(), train(args, seed, train_env, test_env, model)):
+            pool[key].append(value)
+    
+    return pool
+
+
 def train(args, seed, train_env, test_env, model):
     """ trains the agent in the training environment
 
@@ -153,7 +178,7 @@ def train(args, seed, train_env, test_env, model):
     agent.learn(total_timesteps = total_timesteps, callback = callback)
     train_time = time.time() - start_time
     
-    return callback.episode_rewards, callback.episode_lengths, train_time, agent.policy.state_dict()
+    return callback.episode_rewards, callback.episode_lengths, callback.masses, train_time, agent.policy.state_dict()
 
 
 def test(args, test_env):
@@ -236,6 +261,48 @@ def arrange(args, stacks, train_env):
     print(f'\nmodel checkpoint storage: {args.directory}/SAC-ADR.mdl\n')
 
 
+def plot(args, records):
+    # initialize dictionaries
+    stacks = {key: [] for key in records[0]}
+    
+    # calculate averages for each key across each record
+    for key in records[0]:
+        for i in range(len(records[0][key])):
+            # calculate average of the first and second elements separately
+            lower = np.mean([record[key][i][0] for record in records])
+            upper = np.mean([record[key][i][1] for record in records])
+            stacks[key].append((lower, upper))
+    
+    # stack averages into xs and ys arrays
+    xs = np.array([(index + 1) * args.eval_frequency for index in range(len(stacks[key]))])
+    ys = dict()
+    for key in records[0]:
+        ys[key] = stacks[key]
+	
+    colors = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
+              '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
+    plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
+	
+    # iterate over each key and plot lower and upper values separately
+    for key, values in ys.items():
+        lowers = [y[0] for y in values]
+        uppers = [y[1] for y in values]
+        
+        # plot lower values
+        plt.plot(xs, lowers, alpha = 1, label = f'{key} lower')
+        
+        # plot upper values
+        plt.plot(xs, uppers, alpha = 1, label = f'{key} upper')
+
+    plt.xlabel('episodes')
+    plt.ylabel(f'mass (kg)')
+    plt.grid(True)
+    plt.legend()
+	
+    plt.savefig(f'{args.directory}/ADR-masses.png', dpi = 300)
+    plt.close()
+
+
 def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
@@ -273,6 +340,7 @@ def main():
             track(metric, xs, ys, sigmas, args, 
                   label = 'ADR', 
                   filename = f'SAC-ADR-{metric}')
+	plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
