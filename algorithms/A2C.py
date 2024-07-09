@@ -11,10 +11,8 @@ import torch
 import imageio
 import argparse
 import warnings
-import statistics
 import numpy as np
 import matplotlib.pyplot as plt
-import PIL.ImageDraw as ImageDraw
 
 import stable_baselines3
 
