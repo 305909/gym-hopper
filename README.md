@@ -51,12 +51,14 @@ The repository contains several implementations of RL algorithms, differing in c
 
 ### REINFORCE
 
-Three variations of the REINFORCE (Vanilla Policy Gradient) algorithm. The implementations differ for the usage of the baseline term:
+This project implements the REINFORCE (Vanilla Policy Gradient) algorithm with three variations that differ for the usage of the baseline term:
 1. without baseline
 2. with constant baseline
 3. whitening transformation baseline
 
-#### How to run the code
+For more details, check out our custom implementation of the REINFORCE (Vanilla Policy Gradient) algorithm located in the `rein.py` file within the `agents` folder.
+
+#### How to run the code on Google Colab
 
 Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
@@ -79,3 +81,44 @@ with the possibility of setting different execution parameters:
 `--directory: set path to the output location for checkpoint storage (model and rendering)`  
 
 ### A2C
+
+This project implements the Advantage-Actor-Critic algorithm with a batch update method of the policy network, set to 32 time-steps per update, and two multi-layer neural networks with 3 hidden layers of 64 hidden neurons for the actor and the critic.
+For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm located in the `aac.py` file within the `agents` folder.
+
+#### How to run the code on Google Colab
+
+Train and test the A2C algorithm by running the following command:
+
+`!python /content/gym-hopper/algorithms/A2C.py --train \`  
+`                                              --test`
+
+with the possibility of setting different execution parameters as in the previous REINFORCE algorithm.
+
+### SAC
+
+This project implements the Soft-Actor-Critic algorithm using the implementation of the open-source reinforcement learning library [stable-baselines3](https://github.com/DLR-RM/stable-baselines3).
+
+#### How to run the code on Google Colab
+
+Train and test the SAC algorithm by running the following command:
+
+`!python /content/gym-hopper/algorithms/SAC.py --train \`  
+`                                              --test`
+
+with the possibility of setting different execution parameters as in the previous REINFORCE and A2C algorithms.
+
+### Hyperparameters Tuning
+
+This project also implements parameter tuning for the algorithms under investigation. The `tunings` folder contains the tuning code for each algorithm:
+
+- `REF.py`: gridsearch algorithm for REINFORCE;
+- `A2C.py`: gridsearch algorithm for A2C;
+- `SAC.py`: gridsearch algorithm for SAC;
+
+#### How to run the code on Google Colab
+
+Search for the optimal parameter configuration for each algorithm by running the following commands:
+
+`!python /content/gym-hopper/tunings/REF.py`  
+`!python /content/gym-hopper/tunings/A2C.py`  
+`!python /content/gym-hopper/tunings/SAC.py`
