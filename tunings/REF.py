@@ -112,11 +112,12 @@ def gridsearch(args, params, seeds = [1, 2, 3]):
                             test_episodes = args.test_episodes)
             pool.append(er)
         pool = np.array(pool)
-        res = np.mean(pool, axis = 0)
-        cov = res.std() / res.mean()  # coefficient of variation
-        score = res.mean() * (1 - cov)
-        print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}')
-        results.append([score, res.mean(), res.std(), kwargs])
+        res_std = np.std(pool, axis = 0)
+        res_mean = np.mean(pool, axis = 0)
+        cov = res_std / res_mean  # coefficient of variation
+        score = res_mean * (1 - cov)
+        print(f'score: {score:.2f} | reward: {res_mean:.2f} +/- {res_std:.2f} | parameters: {kwargs}')
+        results.append([score, res_mean, res_std, kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
     print(f'\ngrid search - ranking scores:')
