@@ -42,6 +42,7 @@ class Callback():
             self.episode_lengths.append(el.mean())
             if verbose > 0 and num_episodes % int(args.train_episodes * 0.25) == 0:
                 print(f'training episode: {num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
+        
         return True
 
 
@@ -54,6 +55,7 @@ def display(frame, step, episode, reward):
     color = (255, 255, 255) if np.mean(image) < 128 else (0, 0, 0)
     drawer.text((image.size[0] / 20, image.size[1] / 18), 
                 f'episode: {episode} | step: {step} | reward: {reward:.2f}', fill = color)
+    
     return image
 
 
@@ -100,7 +102,6 @@ def stack(args, metric, records):
         np.save(path, ys)
         
     return metric, xs, ys, sigmas
-
 
 
 def track(metric, xs, ys, sigmas, args, filename):
