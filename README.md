@@ -148,7 +148,7 @@ This project implements a `CustomHopper-source-UDR-v0` custom environment to int
 
 #### How to run the code on Google Colab
 
-To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. by setting the execution parameter `test_env` to `source-UDR`. For instance, train and test the SAC algorithm with uniform domain randomization by running the following command:
+To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. by setting the execution parameter `test_env` to `'source-UDR'`. For instance, train and test the SAC algorithm with uniform domain randomization by running the following command:
 
 ```python
 # run SAC (Soft-Actor-Critic) algorithm with UDR
