@@ -65,7 +65,7 @@ For more details, check out our custom implementation of the REINFORCE (Vanilla 
 Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
 ```python
-# Run REINFORCE (Vanilla Policy Gradient) algorithm
+# run REINFORCE (Vanilla Policy Gradient) algorithm
 !python /content/gym-hopper/algorithms/REF.py --train \
                                               --test
 ```
@@ -87,17 +87,20 @@ with the possibility of setting different execution parameters:
 
 ### A2C
 
-This project implements the Advantage-Actor-Critic algorithm with a batch update method of the policy network, set to 32 time-steps per update, and two multi-layer neural networks with 3 hidden layers of 64 hidden neurons for the actor and the critic.
+This project implements the Advantage-Actor-Critic algorithm with a batch update method of the policy network, set to `32` time-steps per update, and two multi-layer neural networks with 3 hidden layers of `64` hidden neurons for the actor and the critic.
 For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm located in the `aac.py` file within the `agents` folder.
 
 #### How to run the code on Google Colab
 
 Train and test the A2C algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/A2C.py --train \  
-                                               --test`
+```python
+# run A2C (Advantage-Actor-Critic) algorithm
+!python /content/gym-hopper/algorithms/A2C.py --train \
+                                              --test
+```
 
-with the possibility of setting different execution parameters as in the previous REINFORCE algorithm.
+with the possibility of setting different execution parameters as in the previous `REINFORCE` algorithm.
 
 ### SAC
 
@@ -107,10 +110,13 @@ This project implements the Soft-Actor-Critic algorithm using the implementation
 
 Train and test the SAC algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/SAC.py --train \  
-                                               --test`
+```python
+# run SAC (Soft-Actor-Critic) algorithm
+!python /content/gym-hopper/algorithms/SAC.py --train \
+                                              --test
+```
 
-with the possibility of setting different execution parameters as in the previous REINFORCE and A2C algorithms.
+with the possibility of setting different execution parameters as in the previous `REINFORCE` and `A2C` algorithms.
 
 ### Hyperparameters Tuning
 
@@ -124,6 +130,15 @@ This project also implements parameter tuning for the algorithms under investiga
 
 Search for the optimal parameter configuration for each algorithm by running the following commands:
 
-- `!python /content/gym-hopper/tunings/REF.py`
-- `!python /content/gym-hopper/tunings/A2C.py`
-- `!python /content/gym-hopper/tunings/SAC.py`
+```python
+# run the tuning algorithm on the REINFORCE model
+!python /content/gym-hopper/tunings/REF.py
+```
+```python
+# run the tuning algorithm on the A2C model
+!python /content/gym-hopper/tunings/A2C.py`
+```
+```python
+# run the tuning algorithm on the REINFORCE model
+!python /content/gym-hopper/tunings/SAC.py
+```
