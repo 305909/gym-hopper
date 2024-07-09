@@ -121,5 +121,5 @@ def track(metric, xs, ys, sigmas, args, filename):
     plt.grid(True)
     plt.legend()
   
-    plt.savefig(f'{args.directory}/{filename}', dpi = 300)
+    plt.savefig(f'{args.directory}/{filename}.png', dpi = 300)
     plt.close()
