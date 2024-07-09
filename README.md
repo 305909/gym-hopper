@@ -42,7 +42,7 @@ Clone the repository and install the required packages by running the following 
 ## Environment
 
 The [Hopper](https://www.gymlibrary.ml/environments/mujoco/hopper/) of MuJoCo, a two-dimensional figure with one leg, comprises four primary body parts: a top torso, a middle thigh, a bottom leg, and a single foot supporting the entire body. The objective involves generating forward (rightward) movement through torque application at the three hinges connecting these body segments.
-In this study, we implemented two customized versions of the Gym Hopper environment: CustomHopper-source-v0 and CustomHopper-target-v0. The main distinction between these environments concerns the mass of the Hopper's torso. Specifically, CustomHopper-source-v0 sets the torso mass at 2.53429174 units, while CustomHopper-target-v0 raises it to 3.53429174 units. 
+In this study, we implemented two customized versions of the Gym Hopper environment: `CustomHopper-source-v0` and `CustomHopper-target-v0`. The main distinction between these environments concerns the mass of the Hopper's torso. Specifically, `CustomHopper-source-v0` sets the torso mass at `2.53429174` kg, while `CustomHopper-target-v0` raises it to `3.53429174` kg. 
 The transition from the source to the target environment embodies the essence of sim-to-real transferability. This project aims to create algorithms capable of learning within simulated environments (source) and successfully applying acquired knowledge in real-world situations (target).
 
 ## Algorithms
@@ -67,18 +67,18 @@ Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the 
 
 with the possibility of setting different execution parameters:
 
-`--train: flag to start training the model`  
-`--test: flag to start testing the model`  
-`--render: flag to render the environment over training/testing`  
-`--device: set the processing device ('cuda' for GPU, 'cpu' for CPU)`  
-`--train-env: set the training environment`  
-`--test-env: set the testing environment`  
-`--train-episodes: set the number of training episodes`  
-`--test-episodes: set the number of testing episodes`  
-`--eval-frequency: set the evaluation frequency over training iterations`  
-`--baseline: set the baseline for the policy update function [vanilla, constant, whitening]`  
-`--input-model: set the pre-trained input model (in .mdl format)`  
-`--directory: set path to the output location for checkpoint storage (model and rendering)`  
+- `--train`: flag to start training the model
+- `--test`: flag to start testing the model
+- `--render`: flag to render the environment over training/testing
+- `--device`: set the processing device ('cuda' for GPU, 'cpu' for CPU)
+- `--train-env`: set the training environment
+- `--test-env`: set the testing environment
+- `--train-episodes`: set the number of training episodes
+- `--test-episodes`: set the number of testing episodes
+- `--eval-frequency`: set the evaluation frequency over training iterations
+- `--baseline`: set the baseline for the policy update function (vanilla, constant, whitening)
+- `--input-model`: set the pre-trained input model (in .mdl format)
+- `--directory`: set path to the output location for checkpoint storage (model and rendering)`  
 
 ### A2C
 
