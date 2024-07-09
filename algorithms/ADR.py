@@ -1,4 +1,4 @@
-""" SAC algorithm with ADR
+""" SAC algorithm - ADR
 Custom Hopper 
 MuJoCo environment
 """
@@ -47,7 +47,7 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--learning-rate', default = 7e-4, type = float, 
+    parser.add_argument('--learning-rate', default = 3e-4, type = float, 
                         help = 'learning rate')
     parser.add_argument('--input-model', default = None, type = str, 
                         help = 'pre-trained input model (in .mdl format)')
@@ -65,7 +65,7 @@ class Callback(BaseCallback):
         args:
             agent: reinforcement learning agent
             env: testing environment for performance evaluation
-            auto: training environment with automatic domain randomization
+            auto: training environment with automatic domain randomization (ADR)
             args: argument parser
 
         evaluation metrics:
@@ -305,7 +305,7 @@ def plot(args, records):
     plt.grid(True)
     plt.legend()
 	
-    plt.savefig(f'{args.directory}/ADR-masses.png', dpi = 300)
+    plt.savefig(f'{args.directory}/SAC-ADR-masses.png', dpi = 300)
     plt.close()
 
 
