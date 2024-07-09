@@ -58,7 +58,7 @@ def display(frame, step, episode, reward):
     return image
 
 
-def multiprocess(args, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
+def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3, 5, 8]):
     """ processes multiple sequential training and testing sessions 
     with different seeds (to counteract variance)
 
