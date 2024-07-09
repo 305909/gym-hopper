@@ -62,8 +62,8 @@ For more details, check out our custom implementation of the REINFORCE (Vanilla 
 
 Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/REF.py --train \`  
-`                                              --test`
+`!python /content/gym-hopper/algorithms/REF.py --train \  
+                                               --test`
 
 with the possibility of setting different execution parameters:
 
@@ -89,8 +89,8 @@ For more details, check out our custom implementation of the Advantage-Actor-Cri
 
 Train and test the A2C algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/A2C.py --train \`  
-`                                              --test`
+`!python /content/gym-hopper/algorithms/A2C.py --train \  
+                                               --test`
 
 with the possibility of setting different execution parameters as in the previous REINFORCE algorithm.
 
@@ -102,8 +102,8 @@ This project implements the Soft-Actor-Critic algorithm using the implementation
 
 Train and test the SAC algorithm by running the following command:
 
-`!python /content/gym-hopper/algorithms/SAC.py --train \`  
-`                                              --test`
+`!python /content/gym-hopper/algorithms/SAC.py --train \  
+                                               --test`
 
 with the possibility of setting different execution parameters as in the previous REINFORCE and A2C algorithms.
 
@@ -119,6 +119,6 @@ This project also implements parameter tuning for the algorithms under investiga
 
 Search for the optimal parameter configuration for each algorithm by running the following commands:
 
-`!python /content/gym-hopper/tunings/REF.py`  
-`!python /content/gym-hopper/tunings/A2C.py`  
-`!python /content/gym-hopper/tunings/SAC.py`
+- `!python /content/gym-hopper/tunings/REF.py`
+- `!python /content/gym-hopper/tunings/A2C.py`
+- `!python /content/gym-hopper/tunings/SAC.py`
