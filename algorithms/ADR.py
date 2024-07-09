@@ -283,8 +283,7 @@ def plot(args, records):
     for key in records[0]:
         ys[key] = stacks[key]
 	
-    colors = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
-              '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
+    colors = ['#4E79A7', '#E15759', '#59A14F']
     plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
 	
     # iterate over each key and plot lower and upper values separately
