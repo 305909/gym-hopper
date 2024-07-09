@@ -41,11 +41,14 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
 
     def update_phi(self, performance):
         if performance > self.data_buffers['H'][self.i]:
+            # decrease phi
             self.phi -= self.delta
-        elif performance > self.data_buffers['L'][self.i]:
+        elif self.data_buffers['L'][self.i] <= performance <= self.data_buffers['H'][self.i]:
+            # increase phi
             self.phi += self.delta
         elif performance < self.data_buffers['L'][self.i]:
-            self.phi = self.phi
+            # maintain phi
+            pass
         self.i += 1
         self.phi = np.clip(self.phi, 0.0, self.upper_bound)
         
