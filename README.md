@@ -154,5 +154,5 @@ To enable uniform domain randomization, set the custom environment `CustomHopper
 # run SAC (Soft-Actor-Critic) algorithm with UDR
 !python /content/gym-hopper/algorithms/SAC.py --train \
                                               --test \
-                                              --train-env source-UDR
+                                              --train-env 'source-UDR'
 ```
