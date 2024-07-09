@@ -97,7 +97,7 @@ def stack(args, metric, records):
     return metric, xs, ys, sigmas
 
 
-def track(metric, xs, ys, sigmas, args, filename):
+def track(metric, xs, ys, sigmas, args, label, filename):
     """ plots the RL agent's performance in the testing environment 
     (according to the evaluation metric) over training episodes
     
@@ -111,7 +111,7 @@ def track(metric, xs, ys, sigmas, args, filename):
               '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC']
     plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
 
-    plt.plot(xs, ys, alpha = 1, label = f'A2C')
+    plt.plot(xs, ys, alpha = 1, label = label)
     plt.fill_between(xs, ys - sigmas, ys + sigmas, alpha = 0.5)
   
     plt.xlabel('episodes')
