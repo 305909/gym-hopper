@@ -32,6 +32,13 @@ This work demonstrates the effectiveness of domain randomization in developing r
 - [mujoco-py](https://github.com/openai/mujoco-py)
 - [stable-baselines3](https://github.com/DLR-RM/stable-baselines3)
 
+#### Setup for Google Colab
+
+To clone the repository and install the requirements, follow these steps:
+
+`!git clone https://github.com/305909/gym-hopper.git`
+`!bash gym-hopper/setups.sh`
+
 ## Environment
 
 The [Hopper](https://www.gymlibrary.ml/environments/mujoco/hopper/) of MuJoCo, a two-dimensional figure with one leg, comprises four primary body parts: a top torso, a middle thigh, a bottom leg, and a single foot supporting the entire body. The objective involves generating forward (rightward) movement through torque application at the three hinges connecting these body segments.
@@ -51,7 +58,7 @@ Three variations of the REINFORCE (Vanilla Policy Gradient) algorithm. The imple
 
 #### How to run the code
 
-Running 'REF.py' inside the 'algorithms' folder will start a training by episodes on the specifiable environment, with the possibility to:
+Running `REF.py` inside the `algorithms` folder will start a training by episodes on the specifiable environment, with the possibility to:
 
 - set the training environment;
 - set the testing environment;
