@@ -51,7 +51,7 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--learning-rate', default = 7e-4, type = float, 
+    parser.add_argument('--learning-rate', default = 3e-4, type = float, 
                         help = 'learning rate')
     parser.add_argument('--input-model', default = None, type = str, 
                         help = 'pre-trained input model (in .mdl format)')
