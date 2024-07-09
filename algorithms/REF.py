@@ -8,7 +8,6 @@ import sys
 import gym
 import time
 import torch
-import utils
 import imageio
 import argparse
 import warnings
@@ -27,8 +26,10 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
+from utils import Callback
 from collections import OrderedDict
 from agents.rein import RF, RFPolicy
+from utils import display, multiprocess, stack, track
 from stable_baselines3.common.evaluation import evaluate_policy
 
 
@@ -87,7 +88,7 @@ def train(args, seed, train_env, test_env, model):
     test_env = gym.make(test_env)
     test_env.seed(seed)
     
-    callback = utils.Callback(agent, test_env, args)
+    callback = Callback(agent, test_env, args)
     
     num_episodes = 0
     callback._on_step(num_episodes, args)
@@ -149,10 +150,10 @@ def test(args, test_env):
             steps += 1
             if args.render and num_episodes < 5:
                 frame = env.render(mode = 'rgb_array')
-                frames.append(utils.display(frame, 
-                                            step = steps, 
-                                            reward = rewards,
-                                            episode = num_episodes + 1))
+                frames.append(display(frame, 
+				      step = steps, 
+				      reward = rewards,
+				      episode = num_episodes + 1))
         num_episodes += 1   
         episode_rewards.append(rewards)
     er = np.array(episode_rewards)
@@ -212,13 +213,13 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
       
     if args.train:
-        pool = utils.multiprocess(args, train_env, test_env)
+        pool = multiprocess(args, train_env, test_env, train)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
-            metric, xs, ys, sigmas = utils.stack(args, metric, records)
+            metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward': 
                 path = os.path.join(args.directory, f'RF-{args.baseline}-({args.train_env} to {args.test_env})-rewards.npy')
                 np.save(path, ys)
-            utils.track(metric, xs, ys, sigmas, args, f'RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}')
+            track(metric, xs, ys, sigmas, args, f'RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}')
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
