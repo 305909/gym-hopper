@@ -340,7 +340,7 @@ def main():
             track(metric, xs, ys, sigmas, args, 
                   label = 'ADR', 
                   filename = f'SAC-ADR-{metric}')
-	plot(args, records = pool['masses'])
+            plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
