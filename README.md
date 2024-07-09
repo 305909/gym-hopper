@@ -34,10 +34,10 @@ This work demonstrates the effectiveness of domain randomization in developing r
 
 #### Setup for Google Colab
 
-To clone the repository and install the requirements, follow these steps:
+Clone the repository and install the required packages by running the following commands:
 
-`!git clone https://github.com/305909/gym-hopper.git`
-`!bash gym-hopper/setups.sh`
+- `!git clone https://github.com/305909/gym-hopper.git`
+- `!bash gym-hopper/setups.sh`
 
 ## Environment
 
@@ -58,13 +58,18 @@ Three variations of the REINFORCE (Vanilla Policy Gradient) algorithm. The imple
 
 #### How to run the code
 
-Running `REF.py` inside the `algorithms` folder will start a training by episodes on the specifiable environment, with the possibility to:
+Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
-- set the training environment;
-- set the testing environment;
-- set the number of training episodes;
-- set the number of testing episodes;
-- set the evaluation frequency over training iterations;
-- resume training from a previous model;
+`!python /content/gym-hopper/algorithms/REF.py --train \
+                                               --test`
 
-It is recommended to run the file with '--help' to list all available options.
+with the possibility of setting different execution flags:
+`
+--train: Flag to start training the model.
+--test: Flag to start testing the model.
+--render: Flag to render the environment during training/testing.
+--device: Specify the device to run on ('cuda' for GPU, 'cpu' for CPU).
+--train-env: Specify the training environment.
+--test-env: Specify the testing environment.
+--learning-rate: Set the learning rate for the algorithm.
+--directory: Set the directory where models and logs will be saved.`
