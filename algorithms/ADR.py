@@ -78,8 +78,12 @@ class Callback(BaseCallback):
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.num_episodes = 0
-        self.original_masses = {'thigh': 3.9269908169872427, 'leg': 2.7143360527015816, 'foot': 5.0893800988154645}
-        self.masses = {'thigh': list(), 'leg': list(), 'foot': list()}
+        self.original_masses = {'thigh': 3.9269908169872427, 
+				'foot': 5.0893800988154645,
+				'leg': 2.7143360527015816}
+        self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
+		       'foot': [(5.0893800988154645, 5.0893800988154645)], 
+		       'leg': [(2.7143360527015816, 2.7143360527015816)]}
         self.agent = agent
         self.flag = False
         self.auto = auto
@@ -284,15 +288,17 @@ def plot(args, records):
     plt.rcParams['axes.prop_cycle'] = cycler(color = colors)
 	
     # iterate over each key and plot lower and upper values separately
-    for key, values in ys.items():
+    for index, (key, values) in enumerate(ys.items()):
         lowers = [y[0] for y in values]
         uppers = [y[1] for y in values]
         
         # plot lower values
-        plt.plot(xs, lowers, alpha = 1, label = f'{key} lower')
+        plt.plot(xs, lowers, alpha = 1, 
+		 label = f'{key} lower', color = colors[index % len(colors)])
         
         # plot upper values
-        plt.plot(xs, uppers, alpha = 1, label = f'{key} upper')
+        plt.plot(xs, uppers, alpha = 1, 
+		 label = f'{key} upper', color = colors[index % len(colors)])
 
     plt.xlabel('episodes')
     plt.ylabel(f'mass (kg)')
