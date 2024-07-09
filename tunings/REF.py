@@ -113,10 +113,9 @@ def gridsearch(args, params, seeds = [1, 2, 3]):
             pool.append(er)
         pool = np.array(pool)
         res = np.mean(pool, axis = 0)
-        var = np.std(pool, axis = 0)	    
-        cov = var.mean() / res.mean()  # coefficient of variation
+        cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
-        print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {var.mean():.2f} | parameters: {kwargs}')
+        print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}')
         results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
