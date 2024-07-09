@@ -37,7 +37,7 @@ Clone the repository and install the required packages by running the following 
 
 ```python
 !git clone https://github.com/305909/gym-hopper.git
-!bash gym-hopper/setups.sh`
+!bash gym-hopper/setups.sh
 ```
 
 ## Environment
