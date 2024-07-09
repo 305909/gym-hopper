@@ -141,3 +141,10 @@ Search for the optimal parameter configuration for each algorithm by running the
 # run gridsearch algorithm for the SAC model
 !python /content/gym-hopper/tunings/SAC.py
 ```
+
+## Uniform Domain Randomization
+
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce uniform domain randomization. The environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode.
+To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as the test environment, i.e. by setting the test_env execution parameter to:
+
+- `--test-env CustomHopper-source-UDR-v0`
