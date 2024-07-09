@@ -22,12 +22,18 @@
 
 ## Report Abstract
 
-In this project, we focus on enhancing reinforcement learning (RL) agents for the Gym Hopper environment, utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn to jump and maintain balance while optimizing its horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Actor-Critic, and Soft Actor-Critic (SAC).
+This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Actor-Critic, and Soft Actor-Critic (SAC).
 To improve the agent’s performance and robustness, we introduced Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. This method encourages the agent to generalize its policy across different environments, enhancing adaptability and performance.
-Additionally, we implemented a curriculum learning method for Domain Randomization named AutoDR, which systematically increases the difficulty of training scenarios. Separately, we are exploring an Adaptive Domain Randomization method called SimOpt, which dynamically adjusts domain parameters during training. These two approaches are implemented independently to compare their effectiveness. Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios.
-This work demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings have the potential to inform future research and applications in robotic control and autonomous systems.
+Additionally, we implemented a curriculum learning method for Domain Randomization named AutoDR, which systematically increases the difficulty of training scenarios. Separately, we explored an Adaptive Domain Randomization method called SimOpt, which dynamically adjusts domain parameters during training. These two approaches were implemented independently to compare their effectiveness. Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios.
+This work demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings hold the potential to inform future research and applications in robotic control and autonomous systems.
 
 ## Requirements
 
-- Mujoco-py
-- stable-baselines3
+- [mujoco-py](https://github.com/openai/mujoco-py)
+- [stable-baselines3](https://github.com/DLR-RM/stable-baselines3)
+
+## Environment
+
+The [hopper](https://www.gymlibrary.ml/environments/mujoco/hopper/) of MuJoCo, a two-dimensional figure with one leg, comprises four primary body parts: a top torso, a middle thigh, a bottom leg, and a single foot supporting the entire body. The objective involves generating forward (rightward) movement through torque application at the three hinges connecting these body segments.
+In this study, we implemented two customized versions of the Gym Hopper environment: CustomHopper-source-v0 and CustomHopper-target-v0. The main distinction between these environments concerns the mass of the Hopper's torso. Specifically, CustomHopper-source-v0 sets the torso mass at 2.53429174 units, while CustomHopper-target-v0 raises it to 3.53429174 units. 
+The transition from the source to the target environment embodies the essence of sim-to-real transferability. This project aims to create algorithms capable of learning within simulated environments (source) and successfully applying acquired knowledge in real-world situations (target).
