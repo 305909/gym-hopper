@@ -1,5 +1,3 @@
-import os
-import imageio
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
