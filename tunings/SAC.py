@@ -23,7 +23,7 @@ def parse_args():
 			help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
 			help = 'testing environment')
-    parser.add_argument('--train-episodes', default = 10000, type = int, 
+    parser.add_argument('--train-episodes', default = 1000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 100, type = int, 
                         help = 'number of testing episodes')
@@ -45,7 +45,7 @@ class Callback(BaseCallback):
 	    
 def train(seed: int, 
 	  device: str = 'cpu', 
-          train_episodes: int = 10000, 
+          train_episodes: int = 1000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> SAC:
     """ trains the agent in the training environment """ 
     env = gym.make(train_env)
@@ -99,12 +99,12 @@ def test(seed: int, agent: SAC,
     return er
 
 
-def pooling(kwargs: dict, seed, device, train_timesteps, test_episodes, 
+def pooling(kwargs: dict, seed, device, train_episodes, test_episodes, 
 	    train_env, test_env):
     
     agent = train(seed = seed, 
 		  device = device, 
-                  train_timesteps = train_timesteps, 
+                  train_episodes = train_episodes, 
                   train_env = train_env, **kwargs)
     
     return test(seed, agent,
@@ -113,7 +113,7 @@ def pooling(kwargs: dict, seed, device, train_timesteps, test_episodes,
 
 
 
-def gridsearch(args, params, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
+def gridsearch(args, params, train_env, test_env, seeds = [1, 2, 3]):
     results = []
     keys = list(params.keys())
     for param in list(itertools.product(*params.values())):
@@ -123,7 +123,7 @@ def gridsearch(args, params, train_env, test_env, seeds = [1, 2, 3, 5, 8]):
             er, _ = pooling(kwargs, 
 			    seed = seed,
 			    device = args.device,
-                            train_timesteps = args.train_timesteps,
+                            train_episodes = args.train_episodes,
                             test_episodes = args.test_episodes, 
 			    train_env = train_env, 
 			    test_env = test_env)
