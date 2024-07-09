@@ -144,7 +144,15 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce uniform domain randomization. The environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode.
-To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as the test environment, i.e. by setting the test_env execution parameter to:
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce uniform domain randomization. The environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode. For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment located in the `custom_hopper.py` file within the `env` folder.
 
-- `--test-env CustomHopper-source-UDR-v0`
+#### How to run the code on Google Colab
+
+To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. by setting the execution parameter `test_env` to `source-UDR`. For instance, train and test the SAC algorithm with uniform domain randomization by running the following command:
+
+```python
+# run SAC (Soft-Actor-Critic) algorithm
+!python /content/gym-hopper/algorithms/SAC.py --train \
+                                              --test \
+                                              --train-env source-UDR
+```
