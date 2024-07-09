@@ -67,6 +67,7 @@ Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the 
 !python /content/gym-hopper/algorithms/REF.py --train \
                                               --test
 
+
 with the possibility of setting different execution parameters:
 
 - `--train`: flag to start training the model
