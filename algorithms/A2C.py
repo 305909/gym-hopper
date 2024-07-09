@@ -218,7 +218,9 @@ def main():
             if metric == 'reward':
                 path = os.path.join(args.directory, f'A2C-({args.train_env} to {args.test_env})-rewards.npy')
                 np.save(path, ys)
-            track(metric, xs, ys, sigmas, args, f'A2C-({args.train_env} to {args.test_env})-{metric}')
+            track(metric, xs, ys, sigmas, args, 
+		  label = 'A2C', 
+		  filename = f'A2C-({args.train_env} to {args.test_env})-{metric}')
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
