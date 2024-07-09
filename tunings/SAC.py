@@ -65,7 +65,7 @@ def train(seed: int,
 
     total_timesteps = train_episodes * 500
 		  
-    agent.learn(total_timesteps = total_timesteps)
+    agent.learn(total_timesteps = total_timesteps, callback = callback)
       
     return agent
 
