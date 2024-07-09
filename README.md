@@ -63,7 +63,7 @@ Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the 
 `!python /content/gym-hopper/algorithms/REF.py --train \`  
 `                                              --test`
 
-with the possibility of setting different execution flags:
+with the possibility of setting different execution parameters:
 
 `--train: flag to start training the model`  
 `--test: flag to start testing the model`  
@@ -71,8 +71,11 @@ with the possibility of setting different execution flags:
 `--device: set the processing device ('cuda' for GPU, 'cpu' for CPU)`  
 `--train-env: set the training environment`  
 `--test-env: set the testing environment`  
+`--train-episodes: set the number of training episodes`  
+`--test-episodes: set the number of testing episodes`  
+`--eval-frequency: set the evaluation frequency over training iterations`  
 `--baseline: set the baseline for the policy update function [vanilla, constant, whitening]`  
 `--input-model: set the pre-trained input model (in .mdl format)`  
 `--directory: set path to the output location for checkpoint storage (model and rendering)`  
 
-
+### A2C
