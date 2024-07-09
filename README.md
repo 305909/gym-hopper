@@ -10,7 +10,7 @@
 - [Algorithms](#algorithms)
   - [REINFORCE](#reinforce)
   - [A2C](#a2c)
-  - [SAC and ADR](#sac-and-adr)
+  - [SAC](#sac)
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
 - [Automatic Domain Randomization](#automatic-domain-randomization)
