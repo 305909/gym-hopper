@@ -23,18 +23,29 @@ def parse_args():
 			help = 'training environment')
     parser.add_argument('--test-env', default = 'target', type = str, 
 			help = 'testing environment')
-    parser.add_argument('--train-timesteps', default = 100000, type = int, 
-			help = 'number of training timesteps')
+    parser.add_argument('--train-episodes', default = 10000, type = int, 
+                        help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 100, type = int, 
-			help = 'number of testing episodes')
+                        help = 'number of testing episodes')
     parser.add_argument('--device', default = 'cpu', type = str, 
 			help = 'network device [cpu, cuda]')
     return parser.parse_args()
 
-
+class Callback(BaseCallback):
+    def __init__(self, train_episodes, verbose = 0):
+        super(Callback, self).__init__(verbose)
+        self.train_episodes = train_episodes
+        self.num_episodes = 0
+    
+    def _on_step(self) -> bool:
+        self.num_episodes += np.sum(self.locals['dones'])
+        if self.num_episodes >= self.train_episodes: 
+            return False  # stop training
+        return True
+	    
 def train(seed: int, 
 	  device: str = 'cpu', 
-          train_timesteps: int = 100000, 
+          train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> SAC:
     """ trains the agent in the training environment """ 
     env = gym.make(train_env)
@@ -48,8 +59,12 @@ def train(seed: int,
 		env = env, 
 		seed = seed, 
 		device = device, **kwargs)
-    
-    agent.learn(total_timesteps = train_timesteps)
+		  
+    callback = Callback(train_episodes)
+
+    total_timesteps = train_episodes * 500
+		  
+    agent.learn(total_timesteps = total_timesteps)
       
     return agent
 
