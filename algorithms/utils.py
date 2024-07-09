@@ -11,7 +11,6 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 
 class Callback():
-    
     def __init__(self, agent, env, args):
         """ initializes a callback object to access 
         the internal state of the RL agent over training iterations
@@ -96,10 +95,6 @@ def stack(args, metric, records):
     xs = np.array([(index + 1) * args.eval_frequency for index in range(len(stacks))])
     ys = np.array([stack[0] for stack in stacks])
     sigmas = np.array([stack[1] for stack in stacks])
-    
-    if metric == 'reward':
-        path = os.path.join(args.directory, f'A2C-({args.train_env} to {args.test_env})-rewards.npy')
-        np.save(path, ys)
         
     return metric, xs, ys, sigmas
 
