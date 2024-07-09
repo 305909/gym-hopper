@@ -101,7 +101,7 @@ def pooling(kwargs: dict, seed, device, train_episodes, test_episodes):
                 test_episodes = test_episodes), kwargs
 
 
-def gridsearch(args, params, seeds = [1, 2, 3, 5, 8]):
+def gridsearch(args, params, seeds = [1, 2, 3]):
     results = []
     keys = list(params.keys())
     for param in list(itertools.product(*params.values())):
