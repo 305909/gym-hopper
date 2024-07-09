@@ -15,6 +15,7 @@ import stable_baselines3
 
 from stable_baselines3 import SAC
 from env.custom_hopper import *
+from stable_baselines3.common.callbacks import BaseCallback
 
 
 def parse_args():
