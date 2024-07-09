@@ -217,7 +217,9 @@ def main():
             if metric == 'reward': 
                 path = os.path.join(args.directory, f'RF-{args.baseline}-({args.train_env} to {args.test_env})-rewards.npy')
                 np.save(path, ys)
-            track(metric, xs, ys, sigmas, args, f'RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}')
+            track(metric, xs, ys, sigmas, args, 
+		  label = f'RF-{args.baseline}', 
+		  filename = f'RF-{args.baseline}-({args.train_env} to {args.test_env})-{metric}')
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
