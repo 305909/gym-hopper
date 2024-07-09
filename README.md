@@ -62,9 +62,10 @@ For more details, check out our custom implementation of the REINFORCE (Vanilla 
 
 Train and test the REINFORCE (Vanilla Policy Gradient) algorithm by running the following command:
 
-** Run REINFORCE (Vanilla Policy Gradient) algorithm
+```python
+# Run REINFORCE (Vanilla Policy Gradient) algorithm
 !python /content/gym-hopper/algorithms/REF.py --train \  
-                                              --test**
+                                              --test
 
 with the possibility of setting different execution parameters:
 
