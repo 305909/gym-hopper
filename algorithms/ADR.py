@@ -294,11 +294,11 @@ def plot(args, records):
         
         # plot lower values
         plt.plot(xs, lowers, alpha = 1, 
-		 label = f'{key} lower', color = colors[index % len(colors)])
+		 label = f'{key}', color = colors[index % len(colors)])
         
         # plot upper values
         plt.plot(xs, uppers, alpha = 1, 
-		 label = f'{key} upper', color = colors[index % len(colors)])
+		 color = colors[index % len(colors)])
 
     plt.xlabel('episodes')
     plt.ylabel(f'mass (kg)')
