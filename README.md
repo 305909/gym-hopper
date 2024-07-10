@@ -152,7 +152,7 @@ $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
-- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation parameter
+- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
@@ -178,5 +178,31 @@ At initialization the environment sets the ADR parameters:
 
 - $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor
 - $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor (phi)
-- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor
-- $\mathit{{D_i^{L}, D_i^{H}}} \rightarrow$ self.data_buffers: pre-loaded performance data storing the lower and upper bounds of performance for each episode
+- $\mathit{\phi^0 = 0.1} \rightarrow$ initial distribution variation factor
+- $\mathit{{D_i^{L}, D_i^{H}}} \rightarrow$ pre-loaded performance data that stores the lower and upper performance bounds for each episode
+
+### Domain Randomization
+
+For each mass separately, the environment randomly samples parameters at the beginning of each episode:
+
+$$
+m_i \sim \mathbb{U}((1 - \phi^t) \cdot m_{i_0}, (1 + \phi^t) \cdot m_{i_0})
+$$
+
+where:
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
+- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor at the current time $t$
+- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
+
+### Performance Evaluation and $\mathit{\phi} Update:
+
+ADR pauses the training process every $x$ number of episodes to evaluate the agent's performance in the test environment, i.e. iterates over several test episodes to collect cumulative rewards. The algorithm then updates the $\mathit{\phi} variation factor according to the agent's performance:
+
+\[
+\phi_{\text{new}} =
+\begin{cases}
+    \phi - \delta & \text{if } \text{performance} > \text{upper threshold} \\
+    \phi + \delta & \text{if } \text{lower threshold} \leq \text{performance} \leq \text{upper threshold} \\
+    \phi & \text{otherwise}
+\end{cases}
+\]
