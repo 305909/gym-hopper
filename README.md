@@ -201,13 +201,15 @@ ADR pauses the training process every $x$ number of episodes to evaluate the age
 $$
 p = \sum_{i = 0}^{i = n}G_{T_{i}}
 $$
+
 $$
-\[ \phi_{\text{new}} = \begin{cases} 
+\phi_{\text{new}} = \begin{cases} 
 \phi - \delta & \text{if } \text{performance} > \text{upper threshold} \\
 \phi + \delta & \text{if } \text{lower threshold} \leq \text{performance} \leq \text{upper threshold} \\
 \phi & \text{otherwise}
-\end{cases} \]
+\end{cases}
 $$
+
 where:
 - \( \phi_{\text{new}} \) denotes the updated value of \( \phi \),
 - \( \phi \) is the current variation factor,
