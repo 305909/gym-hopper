@@ -74,14 +74,15 @@ def train(args, seed, train_env, test_env, model):
     np.random.seed(seed)
     torch.manual_seed(seed)
     
-    policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+    policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], seed)
 
     if model is not None:
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     agent = RF(policy, 
                device = args.device, 
-               baseline = args.baseline)
+               baseline = args.baseline, 
+	       seed = seed)
 
     test_env = gym.make(test_env)
     test_env.seed(seed)
