@@ -88,7 +88,7 @@ class Policy(torch.nn.Module):
 
 class A2CPolicy:
     
-    def __init__(self, state_space, action_space, seed: int, **kwargs):
+    def __init__(self, state_space: int, action_space: int, seed: int, **kwargs):
         """ initializes the multi-layer neural networks for the actor and the critic
         
         args:
