@@ -99,8 +99,8 @@ class A2CPolicy:
         torch.manual_seed(seed)
                      
         self.policies = OrderedDict()
-        self.policies['actor'] = Policy(state_space, action_space, seed)
-        self.policies['critic'] = Policy(state_space, 1, actor = False, seed)
+        self.policies['actor'] = Policy(state_space, action_space, seed = seed)
+        self.policies['critic'] = Policy(state_space, 1, actor = False, seed = seed)
 
     def to(self, device):
         """ move parameters to device """
