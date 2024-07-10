@@ -7,7 +7,8 @@ from torch.distributions import Normal
 
 class Policy(torch.nn.Module):
     
-    def __init__(self, state_space: int, action_space: int, actor = True, **kwargs):
+    def __init__(self, state_space: int, action_space: int, actor = True, 
+                 seed: int = 42, **kwargs):
         super().__init__()
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
@@ -22,6 +23,8 @@ class Policy(torch.nn.Module):
                    -> the actor (actor = True)
                    -> the critic (actor = False)
         """
+        torch.manual_seed(seed)
+                     
         self.action_space = action_space
         self.state_space = state_space
         self.tanh = torch.nn.Tanh()
@@ -85,7 +88,7 @@ class Policy(torch.nn.Module):
 
 class A2CPolicy:
     
-    def __init__(self, state_space, action_space, **kwargs):
+    def __init__(self, state_space, action_space, seed: int, **kwargs):
         """ initializes the multi-layer neural networks for the actor and the critic
         
         args:
@@ -93,8 +96,8 @@ class A2CPolicy:
             action_space: dimension of the action space (agent)
         """
         self.policies = OrderedDict()
-        self.policies['actor'] = Policy(state_space, action_space)
-        self.policies['critic'] = Policy(state_space, 1, actor = False)
+        self.policies['actor'] = Policy(state_space, action_space, seed)
+        self.policies['critic'] = Policy(state_space, 1, actor = False, seed)
 
     def to(self, device):
         """ move parameters to device """
@@ -123,6 +126,7 @@ class A2C:
                  critic_coef: float = 0.5,
                  batch_size: int = 32,
                  gamma: float = 0.99,
+                 seed: int = 42,
                  **kwargs):
         """ initializes an agent to learn a policy via Advantage Actor-Critic algorithm 
 
@@ -135,7 +139,9 @@ class A2C:
             critic_coef: critic coefficient to weight the value function loss
             batch_size: number of time-steps for policy update
             gamma: discount factor
-        """      
+        """   
+        torch.manual_seed(seed)
+                     
         self.device = device
         self.policy = policy.to(self.device)
         self.max_grad_norm = max_grad_norm
