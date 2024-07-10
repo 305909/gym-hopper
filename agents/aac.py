@@ -123,9 +123,8 @@ class A2C:
     
     def __init__(self, policy, 
                  device: str = 'cpu',
-                 learning_rate: float = 7e-4,
-                 max_grad_norm: float = 0.5,
-                 entropy_coef: float = 0.0,
+                 learning_rate: float = 1e-3,
+                 entropy_coef: float = 0.25,
                  critic_coef: float = 0.5,
                  batch_size: int = 32,
                  gamma: float = 0.99,
@@ -137,7 +136,6 @@ class A2C:
             policy: A2CPolicy
             device: processing device (e.g. CPU or GPU)
             learning_rate: learning rate for policy optimization
-            max_grad_norm: threshold value for gradient norm
             entropy_coef: entropy coefficient to balance exploration/exploitation
             critic_coef: critic coefficient to weight the value function loss
             batch_size: number of time-steps for policy update
@@ -147,7 +145,6 @@ class A2C:
                      
         self.device = device
         self.policy = policy.to(self.device)
-        self.max_grad_norm = max_grad_norm
 
         self.learning_rate = learning_rate
         self.entropy_coef = entropy_coef
@@ -240,8 +237,6 @@ class A2C:
         """ updates the policy network's weights """
         self.optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.policy.policies['actor'].parameters(), self.max_grad_norm)
-        torch.nn.utils.clip_grad_norm_(self.policy.policies['critic'].parameters(), self.max_grad_norm)
         self.optimizer.step()
 
         self.reset()
