@@ -144,27 +144,17 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution (phi) and randomly samples parameters at the beginning of each episode according to the following formula:  
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode according to the following formula:  
 
 $$
-m \sim \mathbb{U}((1 - \phi) \cdot m_0, (1 + \phi) \cdot m_0)
+m_i \sim \mathbb{U}((1 - \phi) \cdot m_0, (1 + \phi) \cdot m_0)
 $$
 
-dove:
-- $m_0$ è la massa di riferimento.
-- $\phi$ è un parametro che determina l'intervallo di variazione.
-- $\mathbb{U}(a, b)$ rappresenta una distribuzione uniforme continua tra $a$ e $b$.
+where:
+- $m_0$ refers to the original mass of the i-th link of the Hopper robot
+- $\phi$ refers to the range variation parameter
+- $\mathbb{U}(a, b)$ represents a continuous uniform distribution between $a$ and $b$.
   
-$$
-masses = \left[ m_i \mid m_i \in \mathbb{U}((1 - \phi) \cdot m, (1 + \phi) \cdot m) \right]
-$$
-
-dove:
-- $m$ è la massa di riferimento.
-- $\phi$ è un parametro che determina l'intervallo di variazione.
-- $\mathbb{U}(a, b)$ rappresenta una distribuzione uniforme tra $a$ e $b$.
-- $m_i$ è una massa generata casualmente all'interno dell'intervallo specificato.
-- 
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
 #### How to run the code on Google Colab
