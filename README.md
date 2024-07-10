@@ -144,22 +144,22 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode.  
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode:  
 
 $$
-m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_0)
+m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
 $$
 
 where:
-- $m_0$ refers to the original mass of the i-th link of the Hopper robot
-- $\phi$ refers to the range variation parameter
+- $m_{i_0}$ is the original mass of the i-th link of the Hopper robot
+- $\phi$ is the distribution variation parameter
 - $\mathbb{U}(a, b)$ represents a continuous uniform distribution between $a$ and $b$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
 #### How to run the code on Google Colab
 
-To enable uniform domain randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. by setting the execution parameter `test_env` to `'source-UDR'`. For instance, train and test the SAC algorithm with uniform domain randomization by running the following command:
+To enable Uniform Domain Randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. the execution parameter `test_env` to `'source-UDR'`. Train and test the SAC algorithm with UDR by running the following command:
 
 ```python
 # run SAC (Soft-Actor-Critic) algorithm with UDR
