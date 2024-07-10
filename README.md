@@ -214,4 +214,4 @@ where:
 - $\mathit{\phi^{e+1}} \rightarrow$ the updated value of $\phi$,
 - $\mathit{\phi^e} \rightarrow$ the current variation factor,
 
-The thresholds determine whether $\phi^{e+1}$ increases, decreases, or remains unchanged based on the agent's performance.
+The thresholds $\mathit{{D^{L}, D^{H}}} determine whether $\phi^{e+1}$ increases, decreases, or remains unchanged.
