@@ -152,8 +152,8 @@ $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
-- $\mathit{\phi}$, the distribution variation parameter
-- $\mathbb{U}(a, b)$, representing a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
+- $\mathit{\phi}$ \rightarrow$ the distribution variation parameter
+- $\mathbb{U}(a, b)$ \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
