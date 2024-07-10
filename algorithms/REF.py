@@ -93,8 +93,6 @@ def train(args, seed, train_env, test_env, model):
     
     start_time = time.time()
     while num_episodes < args.train_episodes:
-        env.seed(seed)
-        
         done = False
         obs = env.reset()
         while not done:
