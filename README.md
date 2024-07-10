@@ -181,10 +181,10 @@ Upon initialization, the ADR module initializes the following parameters:
 - $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor applied to the physical parameters;
 - $\mathit{D^{L}, D^{H}} \rightarrow$ data buffers storing the lower and upper performance thresholds for parameter adjustment.
 
-Within the ADR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the thresholds coming from the performance metrics of two benchmark agents:
+Within the ADR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the thresholds coming from the performance metrics of two benchmark policies:
 
-- simulation agent $\pi_{s}$: trained in the `source` environment (simulation) without domain randomization;
-- real-world agent $\pi_{r}$: trained in the `target` environment (real world).
+- simulation policy $\pi_{s}$: trained in the `source` environment (simulation) without domain randomization;
+- real-world policy $\pi_{r}$: trained in the `target` environment (real world).
 
 ### Domain Randomization
 
@@ -201,16 +201,16 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G}$, i.e. the average cumulative reward over the $N$ testing episodes:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G_\pi}$, i.e. the average cumulative reward over the $N$ testing episodes:
 
 $$
-\bar{G} = \frac{1}{N} \sum_{n=1}^{N}G_{T_n}
+\bar{G_\pi} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi}^{T_n}
 $$
 
 $$
 \phi^{j+1} = \begin{cases} 
-\phi^j - \delta & \text{if } \bar{G} > D_j^{H} \\
-\phi^j + \delta & \text{if } D_j^{L} \leq \bar{G} \leq D_j^{H} \\
+\phi^j - \delta & \text{if } \bar{G_\pi} > D_j^{H} \\
+\phi^j + \delta & \text{if } D_j^{L} \leq \bar{G_\pi} \leq D_j^{H} \\
 \phi^j & \text{otherwise}
 \end{cases}
 $$
@@ -218,11 +218,11 @@ $$
 where:
 
 $$
-D_j^{L} = \bar{G_{a_s}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_s}^{T_{n}}
+D_j^{L} = \bar{G_{\pi_s}} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi_s}^{T_{n}}
 $$  
 
 $$
-D_j^{H} = \bar{G_{a_r}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_r}^{T_{n}}
+D_j^{H} = \bar{G_{\pi_r}} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi_r}^{T_{n}}
 $$
 
 
