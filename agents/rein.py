@@ -6,7 +6,8 @@ from torch.distributions import Normal
 
 class RFPolicy(torch.nn.Module):
 
-    def __init__(self, state_space: int, action_space: int, **kwargs):
+    def __init__(self, state_space: int, action_space: int, 
+                 seed: int = 42, **kwargs):
         super().__init__()
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
@@ -17,6 +18,8 @@ class RFPolicy(torch.nn.Module):
             state_space: dimension of the observation space (environment)
             action_space: dimension of the action space (agent)
         """
+        torch.manual_seed(seed)
+                     
         self.action_space = action_space
         self.state_space = state_space
         self.tanh = torch.nn.Tanh()
@@ -77,7 +80,8 @@ class RF:
                  baseline: str = 'vanilla',
                  learning_rate: float = 7e-4, 
                  max_grad_norm: float = 0.5, 
-                 gamma: float = 0.99,  
+                 gamma: float = 0.99, 
+                 seed: int = 42,
                  **kwargs):
         """ initializes an agent to learn a policy via REINFORCE algorithm 
 
@@ -89,6 +93,8 @@ class RF:
             max_grad_norm: threshold value for gradient norm
             gamma: discount factor
         """
+        torch.manual_seed(seed)
+                     
         self.device = device
         self.policy = policy.to(self.device)
         self.max_grad_norm = max_grad_norm
