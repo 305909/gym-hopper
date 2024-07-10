@@ -188,43 +188,42 @@ Within the ADR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the th
 
 ### Domain Randomization
 
-For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the current variation factor $\phi^c$: 
+For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the current variation factor $\phi^k$: 
 
 $$
-m_i \sim \mathbb{U_{\phi^c}}((1 - \phi^c) \cdot m_{i_0}, (1 + \phi^c) \cdot m_{i_0})
+m_i \sim \mathbb{U_{\phi^k}}((1 - \phi^k) \cdot m_{i_0}, (1 + \phi^k) \cdot m_{i_0})
 $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
-- $\mathit{\phi^c} \rightarrow$ the current variation factor;
-- $\mathbb{U_{\phi^c}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^c$.
+- $\mathit{\phi^k} \rightarrow$ the current variation factor;
+- $\mathbb{U_{\phi^k}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^k$.
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^c$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
+ADR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift into the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
 
 $$
 \mathbb{E}[G^\pi] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi}
 $$
 
 $$
-\phi^{c+1} = \begin{cases} 
-\phi^c - \delta & \text{if } \mathbb{E}[G^\pi] > D_c^{H} \\
-\phi^c + \delta & \text{if } D_c^{L} \leq \mathbb{E}[G^\pi] \leq D_c^{H} \\
-\phi^c & \text{otherwise}
+\phi^{k+1} = \begin{cases} 
+\phi^k - \delta & \text{if } \mathbb{E}[G^\pi] > D_k^{H} \\
+\phi^k + \delta & \text{if } D_k^{L} \leq \mathbb{E}[G^\pi] \leq D_k^{H} \\
+\phi^k & \text{otherwise}
 \end{cases}
 $$
 
 where:
 
 $$
-D_c^{L} = \mathbb{E}[G^{\pi_s}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_s}
+D_k^{L} = \mathbb{E}[G^{\pi_s}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_s}
 $$  
 
 $$
-D_c^{H} = \mathbb{E}[G^{\pi_r}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_r}
+D_k^{H} = \mathbb{E}[G^{\pi_r}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_r}
 $$
-
 
 #### How to run the code on Google Colab
 
