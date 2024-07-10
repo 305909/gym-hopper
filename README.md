@@ -144,16 +144,16 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the physical parameter distribution ($\mathbb{U}_\phi$) and randomly samples parameters at the beginning of each episode:  
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each link $i$, the environment instantiates the boundaries of the physical parameter distribution ($\mathbb{U}_\phi$) and randomly samples the $i$-th link mass at the beginning of each episode:
 
 $$
-m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
+m_i \sim \mathbb{U}_\phi((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
-- $\mathit{\phi = 0.25} \rightarrow$ the variation factor,
-- $\mathbb{U}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
+- $\mathit{\phi = 0.25} \rightarrow$ the variation factor;
+- $\mathbb{U}_\phi(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor &\phi$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
@@ -170,23 +170,23 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## Automatic Domain Randomization
 
-Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
+Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the variation factor $\phi$ for physical parameter distributions according to the agent's performance, thus facilitating optimal management of exploration and exploitation across different environmental contexts.
 
 ### Initialization and Domain Configuration
 
-At initialization the environment sets the ADR parameters:
+Upon initialization, the ADR module initializes the following parameters:
 
-- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor,
-- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor,
-- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor,
-- $\mathit{{D^{L}, D^{H}}} \rightarrow$ performance data buffers storing the lower and upper performance bounds for each episode.
+- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor, defining the range of parameter adjustments;
+- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor $\phi^e$ based on performance feedback;
+- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor applied to the physical parameters;
+- $\mathit{{D^{L}, D^{H}}} \rightarrow$ data buffers storing the lower and upper performance thresholds for parameter adjustment.
 
 ### Domain Randomization
 
-For each mass separately, the environment randomly samples parameters at the beginning of each episode according to the the current variation factor $\phi^e$:  
+For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the the current variation factor $\phi^e$: 
 
 $$
-m_i \sim \mathbb{U}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
+m_i \sim \mathbb{U}_\phi^e((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
 $$
 
 where:
