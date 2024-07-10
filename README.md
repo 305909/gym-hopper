@@ -170,7 +170,7 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## Automatic Domain Randomization
 
-Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass. The algorithm systematically adapts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
+Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass. The algorithm systematically adjusts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
 
 ### Initialization and Domain Configuration
 
@@ -183,7 +183,7 @@ At initialization the environment sets the ADR parameters:
 
 ### Domain Randomization
 
-For each mass separately, the environment randomly samples parameters at the beginning of each episode:
+For each mass separately, the environment randomly samples parameters at the beginning of each episode according to the the current variation factor $\phi^e$:  
 
 $$
 m_i \sim \mathbb{U}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
@@ -196,7 +196,7 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance $\bar{G}$, i.e. the average cumulative reward over the $N$ testing episodes:
 
 $$
 \bar{G} = \frac{1}{N} \sum_{e=1}^{N}G_{T_e}
