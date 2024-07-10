@@ -218,11 +218,11 @@ $$
 where:
 
 $$
-\mathit{D_j^{L}} = \bar{G_{a_{s}}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_{s}}_{T_n}
+\mathit{D_j^{L}} = \bar{G_{a_{s}}} = \frac{1}{N} \sum_{n=1}^{N}G_a_{s}_{T_n}
 $$
 
 $$
-\mathit{D_j^{H}} = \bar{G_{a_{r}}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_{r}}_{T_n}
+\mathit{D_j^{H}} = \bar{G_{a_{r}}} = \frac{1}{N} \sum_{n=1}^{N}G_a_{r}_{T_n}
 $$
 
 
