@@ -204,14 +204,14 @@ $$
 
 $$
 \phi^{i+1} = \begin{cases} 
-\phi^i - \delta & \text{if } \bar{G} > D_i^{H} \\
-\phi^i + \delta & \text{if } D_i^{L} \leq \bar{G}} \leq D_i^{H} \\
+\phi^i - \delta & \text{if} \bar{G} > D_i^{H} \\
+\phi^i + \delta & \text{if} D_i^{L} \leq \bar{G} \leq D_i^{H} \\
 \phi^i & \text{otherwise}
 \end{cases}
 $$
 
 where:
-- $\mathit{\phi^i+1} \rightarrow$ the updated value of \( \phi \),
+- $\mathit{\phi^{i+1}} \rightarrow$ the updated value of \( \phi \),
 - $\mathit{\phi^i} \rightarrow$ the current distribution variation factor,
 
 The thresholds determine whether $\mathit{\phi^i+1} increases, decreases, or remains unchanged based on the agent's performance.
