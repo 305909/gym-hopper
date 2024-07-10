@@ -144,14 +144,14 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode according to the following formula:  
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode.  
 
 $$
 m_i \sim \mathbb{U}((1 - \phi) \cdot m_0, (1 + \phi) \cdot m_0)
 $$
 
 where:
-- $m_0$ refers to the original mass of the i-th link of the Hopper robot
+- $m_0$ refers to the original mass of the \textit{i}-th link of the Hopper robot
 - $\phi$ refers to the range variation parameter
 - $\mathbb{U}(a, b)$ represents a continuous uniform distribution between $a$ and $b$.
   
