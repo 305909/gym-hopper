@@ -199,7 +199,7 @@ where:
 ADR pauses the training process every $x$ number of episodes to evaluate the agent's performance in the test environment, i.e. iterates over several test episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
-\bar{G} = \frac{1}{n} \sum_{i=1}^{n} G_{T_i}
+\bar{G} = \frac{1}{n} \sum_{i=1}^{n}G_{T_i}
 $$
 
 $$
