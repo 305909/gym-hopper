@@ -197,7 +197,7 @@ def test(args, test_env):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/SAC-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/PPO-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
 
     env.close()
 
