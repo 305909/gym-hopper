@@ -183,8 +183,8 @@ Upon initialization, the ADR module initializes the following parameters:
 
 Within the ADR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the thresholds coming from the performance metrics of two benchmark agents:
 
-- simulation agent: trained in the `source` environment (simulation) without domain randomization;
-- real-world agent: trained in the `target` environment (real world).
+- simulation agent $a_{s}$: trained in the `source` environment (simulation) without domain randomization;
+- real-world agent $a_{r}$: trained in the `target` environment (real world).
 
 ### Domain Randomization
 
@@ -218,7 +218,11 @@ $$
 where:
 
 $$
-\mathit{D_j^{L}} = \bar{G_{a_s}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_s}_{T_n}
+\mathit{D_j^{L}} = \bar{G_{a_{s}}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_{s}}_{T_n}
+$$
+
+$$
+\mathit{D_j^{H}} = \bar{G_{a_{r}}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_{r}}_{T_n}
 $$
 
 
