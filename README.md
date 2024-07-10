@@ -170,7 +170,7 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## Automatic Domain Randomization
 
-Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the variation factor $\phi$ for physical parameter distributions according to the agent's performance, thus facilitating optimal management of exploration and exploitation across different environmental contexts.
+Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the variation factor $\phi$ of the physical parameter distribution based on the agent's performance, thus facilitating optimal management of exploration and exploitation in different environmental contexts.
 
 ### Initialization and Domain Configuration
 
@@ -181,38 +181,42 @@ Upon initialization, the ADR module initializes the following parameters:
 - $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor applied to the physical parameters;
 - $\mathit{{D^{L}, D^{H}}} \rightarrow$ data buffers storing the lower and upper performance thresholds for parameter adjustment.
 
+Within the ADR framework, $\mathit{{D^{L}, D^{H}}}$ represent the thresholds coming from the performance metrics of two benchmark agents:
+
+- simulation agent: trained in the `source` environment (simulation) without domain randomization;
+- real world agent: trained in the `target` environment (real world).
+
 ### Domain Randomization
 
-For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the the current variation factor $\phi^e$: 
+For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the current variation factor $\phi^j$: 
 
 $$
-m_i \sim \mathbb{U_{\phi^e}}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
+m_i \sim \mathbb{U_{\phi^j}}((1 - \phi^j) \cdot m_{i_0}, (1 + \phi^j) \cdot m_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
-- $\mathit{\phi^e} \rightarrow$ the current variation factor,
-- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
+- $\mathit{\phi^j} \rightarrow$ the current variation factor;
+- $\mathbb{U_{\phi^j}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^j$.
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance $\bar{G}$, i.e. the average cumulative reward over the $N$ testing episodes:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G}$, i.e. the average cumulative reward over the $N$ testing episodes:
 
 $$
-\bar{G} = \frac{1}{N} \sum_{e=1}^{N}G_{T_e}
+\bar{G} = \frac{1}{N} \sum_{n=1}^{N}G_{T_n}
 $$
 
 $$
-\phi^{e+1} = \begin{cases} 
-\phi^e - \delta & \text{if } \bar{G} > D_e^{H} \\
-\phi^e + \delta & \text{if } D_e^{L} \leq \bar{G} \leq D_e^{H} \\
-\phi^e & \text{otherwise}
+\phi^{j+1} = \begin{cases} 
+\phi^j - \delta & \text{if } \bar{G} > D_j^{H} \\
+\phi^j + \delta & \text{if } D_j^{L} \leq \bar{G} \leq D_j^{H} \\
+\phi^j & \text{otherwise}
 \end{cases}
 $$
 
 where:
-- $\mathit{\phi^{e+1}} \rightarrow$ the updated value of $\phi$,
-- $\mathit{\phi^e} \rightarrow$ the current variation factor,
+- $\mathit{D_j^{L}}$ \rightarrow$ \bar{G} = \frac{1}{N} \sum_{n=1}^{N}G_{T_n}
 
 The thresholds $\mathit{{D^{L}, D^{H}}}$ determine whether $\phi^{e+1}$ increases, decreases, or remains unchanged.
 
