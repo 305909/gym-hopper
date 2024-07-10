@@ -177,8 +177,8 @@ Automatic Domain Randomization (ADR) automates the domain randomization process.
 At initialization the environment sets the ADR parameters:
 
 - $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor,
-- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor ($\phi$),
-- $\mathit{\phi^0 = 0.1} \rightarrow$ initial distribution variation factor,
+- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor,
+- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor,
 - $\mathit{{D^{L}, D^{H}}} \rightarrow$ pre-loaded performance data that stores the lower and upper performance bounds for each episode.
 
 ### Domain Randomization
@@ -191,7 +191,7 @@ $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
-- $\mathit{\phi^i} \rightarrow$ the current distribution variation factor,
+- $\mathit{\phi^i} \rightarrow$ the current variation factor,
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
 
 ### Performance Evaluation and $\phi$ Update:
@@ -211,7 +211,7 @@ $$
 $$
 
 where:
-- $\mathit{\phi^{i+1}} \rightarrow$ the updated value of \( \phi \),
-- $\mathit{\phi^i} \rightarrow$ the current distribution variation factor,
+- $\mathit{\phi^{i+1}} \rightarrow$ the updated value of $\phi$,
+- $\mathit{\phi^i} \rightarrow$ the current variation factor,
 
 The thresholds determine whether $\mathit{\phi^i+1} increases, decreases, or remains unchanged based on the agent's performance.
