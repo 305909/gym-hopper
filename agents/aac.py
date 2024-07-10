@@ -8,7 +8,7 @@ from torch.distributions import Normal
 class Policy(torch.nn.Module):
     
     def __init__(self, state_space: int, action_space: int, actor = True, 
-                 seed: int, **kwargs):
+                 seed: int = 42, **kwargs):
         super().__init__()
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
