@@ -199,7 +199,7 @@ where:
 ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
-\bar{G} = \frac{1}{n} \sum_{e=1}^{N}G_{T_e}
+\bar{G} = \frac{1}{N} \sum_{e=1}^{N}G_{T_e}
 $$
 
 $$
