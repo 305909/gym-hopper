@@ -151,9 +151,9 @@ m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
-- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor
-- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
+- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor,
+- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
@@ -176,43 +176,42 @@ Automatic Domain Randomization (ADR) automates the domain randomization process.
 
 At initialization the environment sets the ADR parameters:
 
-- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor
-- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor (phi)
-- $\mathit{\phi^0 = 0.1} \rightarrow$ initial distribution variation factor
-- $\mathit{{D_i^{L}, D_i^{H}}} \rightarrow$ pre-loaded performance data that stores the lower and upper performance bounds for each episode
+- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor,
+- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor (phi),
+- $\mathit{\phi^0 = 0.1} \rightarrow$ initial distribution variation factor,
+- $\mathit{{D^{L}, D^{H}}} \rightarrow$ pre-loaded performance data that stores the lower and upper performance bounds for each episode.
 
 ### Domain Randomization
 
 For each mass separately, the environment randomly samples parameters at the beginning of each episode:
 
 $$
-m_i \sim \mathbb{U}((1 - \phi^t) \cdot m_{i_0}, (1 + \phi^t) \cdot m_{i_0})
+m_i \sim \mathbb{U}((1 - \phi^i) \cdot m_{i_0}, (1 + \phi^t) \cdot m_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
-- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor at the current time $t$
-- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
+- $\mathit{\phi^i} \rightarrow$ the current distribution variation factor,
+- $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
 
 ### Performance Evaluation and $\phi$ Update:
 
 ADR pauses the training process every $x$ number of episodes to evaluate the agent's performance in the test environment, i.e. iterates over several test episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
-p = \sum_{i = 0}^{i = n}G_{T_{i}}
+\bar{G} = \frac{1}{n} \sum_{i=1}^{n} G_{T_i}
 $$
 
 $$
-\phi_{\text{new}} = \begin{cases} 
-\phi - \delta & \text{if } \text{performance} > \text{upper threshold} \\
-\phi + \delta & \text{if } \text{lower threshold} \leq \text{performance} \leq \text{upper threshold} \\
-\phi & \text{otherwise}
+\phi^{i+1} = \begin{cases} 
+\phi^i - \delta & \text{if } \bar{G} > D_i^{H} \\
+\phi^i + \delta & \text{if } D_i^{L} \leq \bar{G}} \leq D_i^{H} \\
+\phi^i & \text{otherwise}
 \end{cases}
 $$
 
 where:
-- \( \phi_{\text{new}} \) denotes the updated value of \( \phi \),
-- \( \phi \) is the current variation factor,
-- \( \delta \) is a predefined adjustment parameter,
-- \( \text{performance} \) refers to the agent's performance metric,
-- The thresholds determine whether \( \phi \) increases, decreases, or remains unchanged based on the agent's performance.
+- $\mathit{\phi^i+1} \rightarrow$ the updated value of \( \phi \),
+- $\mathit{\phi^i} \rightarrow$ the current distribution variation factor,
+
+The thresholds determine whether $\mathit{\phi^i+1} increases, decreases, or remains unchanged based on the agent's performance.
