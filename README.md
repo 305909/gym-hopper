@@ -194,7 +194,7 @@ where:
 - $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor at the current time $t$
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
 
-### Performance Evaluation and $\phi}$ Update:
+### Performance Evaluation and $\phi$ Update:
 
 ADR pauses the training process every $x$ number of episodes to evaluate the agent's performance in the test environment, i.e. iterates over several test episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
