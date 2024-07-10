@@ -179,7 +179,7 @@ At initialization the environment sets the ADR parameters:
 - $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor,
 - $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor,
 - $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor,
-- $\mathit{{D^{L}, D^{H}}} \rightarrow$ pre-loaded performance data buffers storing the lower and upper performance bounds for each episode.
+- $\mathit{{D^{L}, D^{H}}} \rightarrow$ performance data buffers storing the lower and upper performance bounds for each episode.
 
 ### Domain Randomization
 
