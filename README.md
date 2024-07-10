@@ -86,8 +86,8 @@ The `REF.py` code offers the chance to set several execution parameters:
 ### A2C
 
 This project implements the A2C (Advantage-Actor-Critic) algorithm with two variations that differ for the update method of the policy network:
-1. stepwise fashion
-2. batch fashion
+1. `stepwise` fashion
+2. `batch` fashion
 
 For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm in the `aac.py` file inside the `agents` folder.
 
