@@ -152,7 +152,7 @@ $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
-- $\mathit{\phi} \rightarrow$ the distribution variation parameter
+- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation parameter
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
@@ -176,8 +176,7 @@ Automatic Domain Randomization (ADR) automates the domain randomization process.
 
 At initialization the environment sets the ADR parameters:
 
-- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor.
-- self.delta = 0.05: Step size for updating the variation factor (phi).
-self.phi = 0.25: Initial variation factor.
-self.i = 0: Index for accessing performance buffers.
-self.data_buffers: Pre-loaded performance data from files data_buffers_lower.npy and data_buffers_upper.npy.
+- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor
+- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor (phi)
+- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor
+- $\mathit{{D_i^{L}, D_i^{H}}} \rightarrow$ self.data_buffers: pre-loaded performance data storing the lower and upper bounds of performance for each episode
