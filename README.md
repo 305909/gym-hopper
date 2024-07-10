@@ -153,7 +153,7 @@ $$
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi = 0.25} \rightarrow$ the variation factor;
-- $\mathbb{U_\phi}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor &\phi$.
+- $\mathbb{U_\phi}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
@@ -186,7 +186,7 @@ Upon initialization, the ADR module initializes the following parameters:
 For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the the current variation factor $\phi^e$: 
 
 $$
-m_i \sim \mathbb{U_\phi^e}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
+m_i \sim \mathbb{U_{\phi^e}}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
 $$
 
 where:
