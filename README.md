@@ -218,9 +218,9 @@ $$
 where:
 
 $$
-\mathit{D_{j}^{L}} = \bar{G}_{a_s} = \frac{1}{N} \sum_{n=1}^{N} G_{a_s}^{T_{n}}
+\bar{G}_{a_s} = \frac{1}{N} \sum_{n=1}^{N} G_{a_s}^{T_{n}}
 
-\mathit{D_{j}^{H}} = \bar{G}_{a_r} = \frac{1}{N} \sum_{n=1}^{N} G_{a_r}^{T_{n}}
+\bar{G}_{a_r} = \frac{1}{N} \sum_{n=1}^{N} G_{a_r}^{T_{n}}
 $$
 
 
