@@ -23,7 +23,7 @@
 
 This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Advantage-Actor-Critic (A2C), and Soft Actor-Critic (SAC).
 To improve the agent’s performance and robustness, we introduced Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. This method encourages the agent to generalize its policy across different environments, enhancing adaptability and performance.
-Additionally, we implemented a curriculum learning method for Domain Randomization named AutoDR, which systematically increases the difficulty of training scenarios. Separately, we explored an Adaptive Domain Randomization method called SimOpt, which dynamically adjusts domain parameters during training. These two approaches were implemented independently to compare their effectiveness. Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios.
+Additionally, we implemented a curriculum learning method for Domain Randomization named ADR, which systematically increases the difficulty of training scenarios. Separately, we explored an Adaptive Domain Randomization method called SimOpt, which dynamically adjusts domain parameters during training. These two approaches were implemented independently to compare their effectiveness. Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios.
 This work demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings hold the potential to inform future research and applications in robotic control and autonomous systems.
 
 ## Requirements
@@ -80,13 +80,15 @@ The `REF.py` code offers the chance to set several execution parameters:
 - `--train-episodes`: set the number of training episodes
 - `--test-episodes`: set the number of testing episodes
 - `--eval-frequency`: set the evaluation frequency over training iterations
-- `--baseline`: set the baseline for the policy update function (vanilla, constant, whitening)
 - `--input-model`: set the pre-trained input model (in .mdl format)
 - `--directory`: set path to the output location for checkpoint storage (model and rendering)`  
 
 ### A2C
 
-This project implements the Advantage-Actor-Critic algorithm with a batch update method of the policy network, set to `32` time-steps per update, and two multi-layer neural networks with 3 hidden layers for the actor and the critic.
+This project implements the A2C (Advantage-Actor-Critic) algorithm with two variations that differ for the update method of the policy network:
+1. stepwise fashion
+2. batch fashion
+
 For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm in the `aac.py` file inside the `agents` folder.
 
 #### How to run the code on Google Colab
