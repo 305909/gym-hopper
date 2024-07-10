@@ -51,6 +51,8 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
+    parser.add_argument('--batch-size', default = 32, type = int, 
+                        help = 'number of time-steps for policy update')
     parser.add_argument('--input-model', default = None, type = str, 
                         help = 'pre-trained input model (in .mdl format)')
     parser.add_argument('--directory', default = 'results', type = str, 
@@ -77,7 +79,8 @@ def train(args, seed, train_env, test_env, model):
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     agent = A2C(policy, 
-                device = args.device)
+                device = args.device, 
+		batch_size = args.batch_size)
     
     test_env = gym.make(test_env)
     test_env.seed(seed)
@@ -126,7 +129,8 @@ def test(args, test_env):
             policy.load_state_dict(torch.load(model), 
                                    strict = True)
     agent = A2C(policy, 
-                device = args.device)
+                device = args.device, 
+		batch_size = args.batch_size)
     
     print(f'\nmodel to test: {model}\n')
 
