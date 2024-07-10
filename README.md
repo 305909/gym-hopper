@@ -167,3 +167,17 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
                                               --test \
                                               --train-env 'source-UDR'
 ```
+
+## Automatic Domain Randomization
+
+Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass. The algorithm systematically adapts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
+
+### Initialization and Domain Configuration
+
+At initialization the environment sets the ADR parameters:
+
+- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor.
+- self.delta = 0.05: Step size for updating the variation factor (phi).
+self.phi = 0.25: Initial variation factor.
+self.i = 0: Index for accessing performance buffers.
+self.data_buffers: Pre-loaded performance data from files data_buffers_lower.npy and data_buffers_upper.npy.
