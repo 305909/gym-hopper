@@ -8,7 +8,7 @@ from torch.distributions import Normal
 class Policy(torch.nn.Module):
     
     def __init__(self, state_space: int, action_space: int, actor = True, 
-                 seed: int = 42, **kwargs):
+                 seed: int, **kwargs):
         super().__init__()
         """ initializes a multi-layer neural network 
         to map observations s(t) from the environment into
@@ -88,13 +88,16 @@ class Policy(torch.nn.Module):
 
 class A2CPolicy:
     
-    def __init__(self, state_space: int, action_space: int, seed: int, **kwargs):
+    def __init__(self, state_space: int, action_space: int, 
+                 seed: int = 42, **kwargs):
         """ initializes the multi-layer neural networks for the actor and the critic
         
         args:
             state_space: dimension of the observation space (environment)
             action_space: dimension of the action space (agent)
         """
+        torch.manual_seed(seed)
+                     
         self.policies = OrderedDict()
         self.policies['actor'] = Policy(state_space, action_space, seed)
         self.policies['critic'] = Policy(state_space, 1, actor = False, seed)
