@@ -144,7 +144,19 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce uniform domain randomization. The environment instantiates the boundaries of the parameter distribution and randomly samples parameters at the beginning of each episode. For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment located in the `custom_hopper.py` file within the `env` folder.
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the parameter distribution (phi) and randomly samples parameters at the beginning of each episode according to the following formula:  
+
+$$
+masses = \left[ m_i \mid m_i \in \mathbb{U}((1 - \phi) \cdot m, (1 + \phi) \cdot m) \right]
+$$
+
+dove:
+- $m$ è la massa di riferimento.
+- $\phi$ è un parametro che determina l'intervallo di variazione.
+- $\mathbb{U}(a, b)$ rappresenta una distribuzione uniforme tra $a$ e $b$.
+- $m_i$ è una massa generata casualmente all'interno dell'intervallo specificato.
+- 
+For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
 #### How to run the code on Google Colab
 
