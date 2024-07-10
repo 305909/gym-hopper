@@ -177,7 +177,7 @@ Automatic Domain Randomization (ADR) automates the domain randomization process.
 Upon initialization, the ADR module initializes the following parameters:
 
 - $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor, defining the range of parameter adjustments;
-- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor $\phi^e$ based on performance feedback;
+- $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor $\phi^k$ based on performance feedback;
 - $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor applied to the physical parameters;
 - $\mathit{D^{L}, D^{H}} \rightarrow$ data buffers storing the lower and upper performance thresholds for parameter adjustment.
 
