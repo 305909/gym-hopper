@@ -152,7 +152,7 @@ $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
-- $\mathit{\phi = 0.25} \rightarrow$ the distribution variation factor,
+- $\mathit{\phi = 0.25} \rightarrow$ the variation factor,
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
