@@ -217,13 +217,9 @@ $$
 
 where:
 
-$$
-\mathit{D_{j}^{L}} = \bar{G}_{a_{s}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_{s}}^{T_{n}}
-$$
+$\mathit{D_{j}^{L}} = \bar{G}_{a_{s}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_{s}}^{T_{n}}$
 
-$$
-\mathit{D_{j}^{H}} = \bar{G}_{a_{r}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_{r}}^{T_{n}}
-$$
+$\mathit{D_{j}^{H}} = \bar{G}_{a_{r}} = \frac{1}{N} \sum_{n=1}^{N} G_{a_{r}}^{T_{n}}$
 
 
 #### How to run the code on Google Colab
