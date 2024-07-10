@@ -151,9 +151,9 @@ m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}}$, the original mass of the $i$-th link of the Hopper robot;
-- $\mathit{\phi}$, the distribution variation parameter;
-- $\mathbb{U}(a, b)$, representing a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
+- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot
+- $\mathit{\phi}$, the distribution variation parameter
+- $\mathbb{U}(a, b)$, representing a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
