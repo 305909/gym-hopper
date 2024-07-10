@@ -186,17 +186,17 @@ At initialization the environment sets the ADR parameters:
 For each mass separately, the environment randomly samples parameters at the beginning of each episode:
 
 $$
-m_i \sim \mathbb{U}((1 - \phi^i) \cdot m_{i_0}, (1 + \phi^t) \cdot m_{i_0})
+m_i \sim \mathbb{U}((1 - \phi^e) \cdot m_{i_0}, (1 + \phi^e) \cdot m_{i_0})
 $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
-- $\mathit{\phi^i} \rightarrow$ the current variation factor,
+- $\mathit{\phi^e} \rightarrow$ the current variation factor,
 - $\mathbb{U}(a, b) \rightarrow$ a continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $m$ number of episodes to evaluate the agent's performance in the test environment, iterates over $n$ testing episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
+ADR pauses the training process every $m$ number of episodes and iterates over $n$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
 \bar{G} = \frac{1}{n} \sum_{i=1}^{n}G_{T_i}
