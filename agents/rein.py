@@ -79,7 +79,6 @@ class RF:
                  device: str = 'cpu', 
                  baseline: str = 'vanilla',
                  learning_rate: float = 7e-4, 
-                 max_grad_norm: float = 0.5, 
                  gamma: float = 0.99, 
                  seed: int = 42,
                  **kwargs):
@@ -90,14 +89,12 @@ class RF:
             device: processing device (e.g. CPU or GPU)
             baseline: algorithm baseline
             learning_rate: learning rate for policy optimization
-            max_grad_norm: threshold value for gradient norm
             gamma: discount factor
         """
         torch.manual_seed(seed)
                      
         self.device = device
         self.policy = policy.to(self.device)
-        self.max_grad_norm = max_grad_norm
                      
         self.learning_rate = learning_rate
         self.baseline = baseline
@@ -173,7 +170,6 @@ class RF:
         """ updates the policy network's weights """
         self.optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm)
         self.optimizer.step()
 
         self.reset()
