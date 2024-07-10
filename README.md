@@ -201,7 +201,7 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G^\pi}$, i.e. the average cumulative reward over the $N$ testing episodes:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
 
 $$
 \bar{G^\pi} = \frac{1}{N} \sum_{n=1}^{N} G_{T_n}^{\pi}
