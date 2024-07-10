@@ -196,22 +196,22 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $m$ number of episodes and iterates over $n$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting the environment). The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
-\bar{G} = \frac{1}{n} \sum_{i=1}^{n}G_{T_i}
+\bar{G} = \frac{1}{n} \sum_{e=1}^{N}G_{T_e}
 $$
 
 $$
-\phi^{i+1} = \begin{cases} 
-\phi^i - \delta & \text{if } \bar{G} > D_i^{H} \\
-\phi^i + \delta & \text{if } D_i^{L} \leq \bar{G} \leq D_i^{H} \\
-\phi^i & \text{otherwise}
+\phi^{e+1} = \begin{cases} 
+\phi^e - \delta & \text{if } \bar{G} > D_e^{H} \\
+\phi^e + \delta & \text{if } D_e^{L} \leq \bar{G} \leq D_e^{H} \\
+\phi^e & \text{otherwise}
 \end{cases}
 $$
 
 where:
-- $\mathit{\phi^{i+1}} \rightarrow$ the updated value of $\phi$,
-- $\mathit{\phi^i} \rightarrow$ the current variation factor,
+- $\mathit{\phi^{e+1}} \rightarrow$ the updated value of $\phi$,
+- $\mathit{\phi^e} \rightarrow$ the current variation factor,
 
-The thresholds determine whether $\mathit{\phi^i+1} increases, decreases, or remains unchanged based on the agent's performance.
+The thresholds determine whether $\mathit{\phi^e+1} increases, decreases, or remains unchanged based on the agent's performance.
