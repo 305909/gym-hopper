@@ -204,13 +204,13 @@ where:
 ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
 
 $$
-\bar{G^\pi} = \frac{1}{N} \sum_{n=1}^{N} G_{T_n}^{\pi}
+\mathbb{E}[G^\pi] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi}
 $$
 
 $$
 \phi^{j+1} = \begin{cases} 
-\phi^j - \delta & \text{if } \bar{G_\pi} > D_j^{H} \\
-\phi^j + \delta & \text{if } D_j^{L} \leq \bar{G_\pi} \leq D_j^{H} \\
+\phi^j - \delta & \text{if } \mathbb{E}[G^\pi] > D_j^{H} \\
+\phi^j + \delta & \text{if } D_j^{L} \leq \mathbb{E}[G^\pi] \leq D_j^{H} \\
 \phi^j & \text{otherwise}
 \end{cases}
 $$
@@ -218,11 +218,11 @@ $$
 where:
 
 $$
-D_j^{L} = \bar{G^{\pi_s}} = \frac{1}{N} \sum_{n=1}^{N} G_{T_{n}}^{\pi_s}
+D_j^{L} = \mathbb{E}[G^{\pi_s}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_s}
 $$  
 
 $$
-D_j^{H} = \bar{G^{\pi_r}} = \frac{1}{N} \sum_{n=1}^{N} G_{T_{n}}^{\pi_r}
+D_j^{H} = \mathbb{E}[G^{\pi_r}]} = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_r}
 $$
 
 
