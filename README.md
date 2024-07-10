@@ -196,7 +196,7 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $x$ number of episodes to evaluate the agent's performance in the test environment, i.e. iterates over several test episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
+ADR pauses the training process every $m$ number of episodes to evaluate the agent's performance in the test environment, iterates over $n$ testing episodes to collect cumulative rewards. The algorithm then updates the $\phi$ variation factor according to the agent's performance:
 
 $$
 \bar{G} = \frac{1}{n} \sum_{i=1}^{n}G_{T_i}
@@ -204,8 +204,8 @@ $$
 
 $$
 \phi^{i+1} = \begin{cases} 
-\phi^i - \delta & \text{if} \bar{G} > D_i^{H} \\
-\phi^i + \delta & \text{if} D_i^{L} \leq \bar{G} \leq D_i^{H} \\
+\phi^i - \delta & \text{if } \bar{G} > D_i^{H} \\
+\phi^i + \delta & \text{if } D_i^{L} \leq \bar{G} \leq D_i^{H} \\
 \phi^i & \text{otherwise}
 \end{cases}
 $$
