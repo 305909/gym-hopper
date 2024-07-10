@@ -179,7 +179,7 @@ At initialization the environment sets the ADR parameters:
 - $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor,
 - $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor,
 - $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor,
-- $\mathit{{D^{L}, D^{H}}} \rightarrow$ pre-loaded performance data that stores the lower and upper performance bounds for each episode.
+- $\mathit{{D^{L}, D^{H}}} \rightarrow$ pre-loaded performance data buffers storing the lower and upper performance bounds for each episode.
 
 ### Domain Randomization
 
@@ -215,3 +215,15 @@ where:
 - $\mathit{\phi^e} \rightarrow$ the current variation factor,
 
 The thresholds $\mathit{{D^{L}, D^{H}}}$ determine whether $\phi^{e+1}$ increases, decreases, or remains unchanged.
+
+#### How to run the code on Google Colab
+
+Train and test the SAC algorithm with ADR by running the following command:
+
+```python
+# run SAC (Soft-Actor-Critic) algorithm
+!python /content/gym-hopper/algorithms/ADR.py --train \
+                                              --test
+```
+
+The `ADR.py` code offers the chance to set several execution parameters as in the previous code for the `SAC` algorithm.
