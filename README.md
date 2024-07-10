@@ -144,7 +144,7 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the physical parameter distribution (according to \phi) and randomly samples parameters at the beginning of each episode:  
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each mass separately, the environment instantiates the boundaries of the physical parameter distribution (\mathbb{U}_\phi) and randomly samples parameters at the beginning of each episode:  
 
 $$
 m_i \sim \mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
@@ -153,7 +153,7 @@ $$
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot,
 - $\mathit{\phi = 0.25} \rightarrow$ the variation factor,
-- $\mathbb{U}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0}) \rightarrow$ continuous uniform distribution between $\mathit{(1 - \phi) \cdot m_{i_0}}$ and $\mathit{(1 + \phi) \cdot m_{i_0}}$.
+- $\mathbb{U}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
@@ -170,7 +170,7 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## Automatic Domain Randomization
 
-Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass. The algorithm systematically adjusts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
+Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the randomization parameters according to the agent's performance, thereby facilitating optimal management of exploration and exploitation across diverse environmental settings.
 
 ### Initialization and Domain Configuration
 
