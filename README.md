@@ -222,7 +222,7 @@ D_j^{L} = \mathbb{E}[G^{\pi_s}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_s}
 $$  
 
 $$
-D_j^{H} = \mathbb{E}[G^{\pi_r}]} = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_r}
+D_j^{H} = \mathbb{E}[G^{\pi_r}] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi_r}
 $$
 
 
