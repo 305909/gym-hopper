@@ -216,7 +216,7 @@ $$
 $$
 
 where:
-- $\mathit{D_j^{L}}$ \rightarrow$ $\bar{G_{a_s}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_s}_{T_n}$
+- $\mathit{D_j^{L}}$ \rightarrow$ $\bar{G_{a_s}} = \frac{1}{N} \sum_{n=1}^{N}G_{a_s}_{T_n}
 
 The thresholds $\mathit{{D^{L}, D^{H}}}$ determine whether $\phi^{e+1}$ increases, decreases, or remains unchanged.
 
