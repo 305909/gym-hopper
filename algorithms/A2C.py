@@ -73,14 +73,15 @@ def train(args, seed, train_env, test_env, model):
     np.random.seed(seed)
     torch.manual_seed(seed)
 
-    policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+    policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], seed)
 
     if model is not None:
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     agent = A2C(policy, 
                 device = args.device, 
-		batch_size = args.batch_size)
+		batch_size = args.batch_size, 
+		seed = seed)
     
     test_env = gym.make(test_env)
     test_env.seed(seed)
