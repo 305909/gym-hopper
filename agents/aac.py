@@ -121,7 +121,7 @@ class A2C:
                  max_grad_norm: float = 0.5,
                  entropy_coef: float = 0.0,
                  critic_coef: float = 0.5,
-                 batch_size: int = 32,
+                 batch_size: int = 1, # 32
                  gamma: float = 0.99,
                  **kwargs):
         """ initializes an agent to learn a policy via Advantage Actor-Critic algorithm 
