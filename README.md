@@ -201,10 +201,10 @@ where:
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G_\pi}$, i.e. the average cumulative reward over the $N$ testing episodes:
+ADR pauses the training process every $M$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shifting to the `target` environment). The algorithm then updates the current variation factor $\phi^j$ based on agent's performance $\bar{G^\pi}$, i.e. the average cumulative reward over the $N$ testing episodes:
 
 $$
-\bar{G_\pi} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi}^{T_n}
+\bar{G^\pi} = \frac{1}{N} \sum_{n=1}^{N} G_{T_n}^{\pi}
 $$
 
 $$
@@ -218,11 +218,11 @@ $$
 where:
 
 $$
-D_j^{L} = \bar{G_{\pi_s}} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi_s}^{T_{n}}
+D_j^{L} = \bar{G^{\pi_s}} = \frac{1}{N} \sum_{n=1}^{N} G_{T_{n}}^{\pi_s}
 $$  
 
 $$
-D_j^{H} = \bar{G_{\pi_r}} = \frac{1}{N} \sum_{n=1}^{N} G_{\pi_r}^{T_{n}}
+D_j^{H} = \bar{G^{\pi_r}} = \frac{1}{N} \sum_{n=1}^{N} G_{T_{n}}^{\pi_r}
 $$
 
 
