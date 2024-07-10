@@ -78,7 +78,7 @@ class RF:
     def __init__(self, policy, 
                  device: str = 'cpu', 
                  baseline: str = 'vanilla',
-                 learning_rate: float = 7e-4, 
+                 learning_rate: float = 1e-3, 
                  gamma: float = 0.99, 
                  seed: int = 42,
                  **kwargs):
