@@ -107,7 +107,7 @@ class Callback(BaseCallback):
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
               
-                self.auto.update_phi(self.model, performance = er.mean())
+                self.auto.update_phi(model = self.model, performance = er.mean())
                 for key in self.original_masses.keys():
                     self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
                                              (1 + self.auto.phi) * self.original_masses[key]))
