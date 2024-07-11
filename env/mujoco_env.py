@@ -47,9 +47,10 @@ class MujocoEnv(gym.Env):
             self.delta = 0.05
             self.phi = 0.25
             self.i = 0
-            self.data_buffers = {'L': self.load('data_buffers_lower.npy'), 
-                                 'H': self.load('data_buffers_upper.npy')}
-        
+            self.data_buffers = {'SAC': {'L': self.load('SAC_lowers.npy'), 
+                                         'H': self.load('SAC_uppers.npy')}, 
+                                 'PPO': {'L': self.load('PPO_lowers.npy'), 
+                                         'H': self.load('PPO_uppers.npy')}}
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
             'video.frames_per_second': int(np.round(1.0 / self.dt))
