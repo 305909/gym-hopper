@@ -83,6 +83,7 @@ class Callback(BaseCallback):
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.num_episodes = 0
+        self.mod = args.model
         self.original_masses = {'thigh': 3.9269908169872427, 
 				'foot': 5.0893800988154645,
 				'leg': 2.7143360527015816}
@@ -92,7 +93,6 @@ class Callback(BaseCallback):
         self.agent = agent
         self.flag = False
         self.auto = auto
-        self.mod = args.model
         self.env = env
     
     def _on_step(self) -> bool:
