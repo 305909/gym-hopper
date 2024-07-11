@@ -262,7 +262,6 @@ def arrange(args, stacks, train_env):
     if model == 'SAC':
         agent = MOD(policy, 
                     env = env, 
-                    seed = seed,
                     device = args.device, 
                     learning_rate = 7.5e-4,
                     batch_size = 256, 
@@ -271,7 +270,6 @@ def arrange(args, stacks, train_env):
     elif model == 'PPO':
         agent = MOD(policy, 
                     env = env, 
-                    seed = seed,
                     device = args.device, 
                     learning_rate = 2.5e-4,
                     batch_size = 128, 
