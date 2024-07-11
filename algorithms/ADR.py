@@ -25,6 +25,7 @@ from cycler import cycler
 from env.custom_hopper import *
 
 from stable_baselines3 import SAC
+from stable_baselines3 import PPO
 from collections import OrderedDict
 from utils import display, stack, track
 from stable_baselines3.common.callbacks import BaseCallback
@@ -47,13 +48,17 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--learning-rate', default = 3e-4, type = float, 
-                        help = 'learning rate')
-    parser.add_argument('--input-model', default = None, type = str, 
-                        help = 'pre-trained input model (in .mdl format)')
+    parser.add_argument('--model', default = 'SAC', type = str, choices = ['SAC', 'PPO'],
+                        help = 'reinforcement learning algorithm (SAC or PPO)')
     parser.add_argument('--directory', default = 'results', type = str, 
                         help = 'path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
+
+
+def get(model):
+    if model == 'SAC': return SAC
+    elif model == 'PPO': return PPO
+    else: raise ValueError(f"error model: {model}")
 
 
 class Callback(BaseCallback):
@@ -84,6 +89,7 @@ class Callback(BaseCallback):
         self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
 		       'foot': [(5.0893800988154645, 5.0893800988154645)], 
 		       'leg': [(2.7143360527015816, 2.7143360527015816)]}
+        self.model = args.model
         self.agent = agent
         self.flag = False
         self.auto = auto
@@ -101,13 +107,13 @@ class Callback(BaseCallback):
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
               
-                self.auto.update_phi(performance = er.mean())
+                self.auto.update_phi(self.model, performance = er.mean())
                 for key in self.original_masses.keys():
                     self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
                                              (1 + self.auto.phi) * self.original_masses[key]))
 
                 if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
-                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
+                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers[self.model]["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers[self.model]["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
                 self.flag = True  # mark evaluation as due
         if self.num_episodes % self.eval_frequency != 0:
             self.flag = False  # reset evaluation flag
@@ -127,10 +133,8 @@ def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
         test_env: testing environment
         seeds: fibonacci seeds
     """
-    model = None
-    if args.input_model is not None:
-        model = args.input_model
-
+    model = args.model
+	
     print(f'\nmodel to train: {model}\n')
 
     pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
@@ -157,19 +161,26 @@ def train(args, seed, train_env, test_env, model):
     torch.manual_seed(seed)
     
     policy = 'MlpPolicy'
-
-    if model is not None:
-        agent = SAC.load(model, 
-                         env = env, 
-                         seed = seed, 
-                         device = args.device)
-    else:
-        agent = SAC(policy, 
+    MOD = get(model)
+	
+    if model == 'SAC':
+        agent = MOD(policy, 
                     env = env, 
                     seed = seed,
                     device = args.device, 
-                    learning_rate = args.learning_rate,
+                    learning_rate = 7.5e-4,
                     batch_size = 256, 
+                    gamma = 0.99)
+	    
+    elif model == 'PPO':
+        agent = MOD(policy, 
+                    env = env, 
+                    seed = seed,
+                    device = args.device, 
+                    learning_rate = 2.5e-4,
+                    batch_size = 128, 
+		    ent_coef = 0.0,
+                    n_steps = 1024,
                     gamma = 0.99)
 
     test_env = gym.make(test_env)
@@ -189,19 +200,11 @@ def test(args, test_env):
     """ tests the agent in the testing environment """
     env = gym.make(test_env)
     policy = 'MlpPolicy'
-    model = None
+    model = args.model
+    MOD = get(model)
 
-    if args.train:
-        model = f'{args.directory}/SAC-ADR.mdl'
-        agent = SAC.load(model, 
-                         env = env, 
-                         device = args.device)
-    else:
-        if args.input_model is not None:
-            model = args.input_model
-            agent = SAC.load(model, 
-                             env = env, 
-                             device = args.device)
+    path = f'{args.directory}/{model}-ADR.mdl'
+    agent = MOD.load(path, env = env, device = args.device)
     
     print(f'\nmodel to test: {model}\n')
 
@@ -231,7 +234,7 @@ def test(args, test_env):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/SAC-ADR-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/{model}-ADR-test.gif', frames, fps = 30)
 
     env.close()
 
@@ -253,16 +256,32 @@ def arrange(args, stacks, train_env):
         weights[key] /= len(weights)
             
     policy = 'MlpPolicy'
-    agent = SAC(policy, 
-                env = env, 
-                device = args.device, 
-                learning_rate = args.learning_rate,
-                batch_size = 256, 
-                gamma = 0.99)
+    model = args.model
+    MOD = get(model)
+	
+    if model == 'SAC':
+        agent = MOD(policy, 
+                    env = env, 
+                    seed = seed,
+                    device = args.device, 
+                    learning_rate = 7.5e-4,
+                    batch_size = 256, 
+                    gamma = 0.99)
+	    
+    elif model == 'PPO':
+        agent = MOD(policy, 
+                    env = env, 
+                    seed = seed,
+                    device = args.device, 
+                    learning_rate = 2.5e-4,
+                    batch_size = 128, 
+		    ent_coef = 0.0,
+                    n_steps = 1024,
+                    gamma = 0.99)
         
     agent.policy.load_state_dict(weights)
-    agent.save(f'{args.directory}/SAC-ADR.mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/SAC-ADR.mdl\n')
+    agent.save(f'{args.directory}/{model}-ADR.mdl')
+    print(f'\nmodel checkpoint storage: {args.directory}/{model}-ADR.mdl\n')
 
 
 def plot(args, records):
@@ -304,7 +323,7 @@ def plot(args, records):
     plt.grid(True)
     plt.legend()
 	
-    plt.savefig(f'{args.directory}/SAC-ADR-masses.png', dpi = 300)
+    plt.savefig(f'{args.directory}/{args.model}-ADR-masses.png', dpi = 300)
     plt.close()
 
 
@@ -331,19 +350,15 @@ def main():
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {test_env} not found')
         
-    # validate model loading
-    if args.input_model is not None and not os.path.isfile(args.input_model):
-        raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
-        
     if args.train:
         pool = multiprocess(args, train_env, test_env, train)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward':
-                path = os.path.join(args.directory, f'SAC-ADR-rewards.npy')
+                path = os.path.join(args.directory, f'{args.model}-ADR-rewards.npy')
                 np.save(path, ys)
             track(metric, xs, ys, sigmas, args, 
-                  label = 'ADR', 
+                  label = '{args.model}-ADR', 
                   filename = f'SAC-ADR-{metric}')
             plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
