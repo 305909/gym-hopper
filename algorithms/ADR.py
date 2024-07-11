@@ -1,4 +1,4 @@
-""" SAC algorithm - ADR
+""" ADR algorithm
 Custom Hopper 
 MuJoCo environment
 """
@@ -58,7 +58,7 @@ def parse_args():
 def get(model):
     if model == 'SAC': return SAC
     elif model == 'PPO': return PPO
-    else: raise ValueError(f"error model: {model}")
+    else: raise ValueError(f"ERROR: model: {model} not found")
 
 
 class Callback(BaseCallback):
@@ -124,19 +124,22 @@ class Callback(BaseCallback):
         return True
 
 
-def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
+def multiprocess(args, train_env, test_env, train):
     """ processes multiple sequential training and testing sessions 
     with different seeds (to counteract variance)
 
     args:
         train_env: training environment
         test_env: testing environment
-        seeds: fibonacci seeds
+        train: training function
     """
     model = args.model
-	
-    print(f'\nmodel to train: {model}\n')
 
+    print(f'\nmodel to train: {model}\n')
+	
+    if model == 'SAC': seeds = [1, 2, 3]
+    elif model == 'PPO': seeds = [1, 1, 2, 3, 5]
+	    
     pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
     for iter, seed in enumerate(seeds):
         print(f'\ntraining session: {iter + 1}')
