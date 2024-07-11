@@ -47,7 +47,7 @@ def parse_args():
                         help = 'testing environment')
     parser.add_argument('--train-episodes', default = 1000, type = int, 
                         help = 'number of training episodes')
-    parser.add_argument('--test-episodes', default = 10, type = int, 
+    parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
