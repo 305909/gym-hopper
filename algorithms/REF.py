@@ -45,11 +45,11 @@ def parse_args():
                         help = 'training environment')
     parser.add_argument('--test-env', default = 'source', type = str, 
                         help = 'testing environment')
-    parser.add_argument('--train-episodes', default = 25000, type = int, 
+    parser.add_argument('--train-episodes', default = 10000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 250, type = int, 
+    parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--baseline', default = 'vanilla', type = str, 
                         choices = ['vanilla', 'constant', 'whitening'], 
@@ -210,7 +210,7 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
       
     if args.train:
-        pool = multiprocess(args, train_env, test_env, train)
+        pool = multiprocess(args, train_env, test_env, train, seeds = [1, 1, 2, 3, 5])
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward': 
