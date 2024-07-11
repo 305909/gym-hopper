@@ -110,10 +110,15 @@ def train(args, seed, train_env, test_env, model):
     return callback.episode_rewards, callback.episode_lengths, train_time, policy.state_dict()
         
 
-def test(args, test_env):
+def test(args, test_env, seed):
     """ tests the agent in the testing environment """
     env = gym.make(test_env)
-    policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
+    
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+	
+    policy = RFPolicy(env.observation_space.shape[-1], env.action_space.shape[-1], seed)
     model = None
 
     if args.train:
@@ -127,7 +132,8 @@ def test(args, test_env):
                                    strict = True)
     agent = RF(policy, 
                device = args.device, 
-               baseline = args.baseline)
+               baseline = args.baseline, 
+	       seed = seed)
 
     print(f'\nmodel to test: {model}\n')
 
@@ -225,7 +231,7 @@ def main():
         arrange(args, pool['weights'], train_env)
         
     if args.test:
-        test(args, test_env)
+        test(args, test_env, seed = 1)
 
 
 if __name__ == '__main__':
