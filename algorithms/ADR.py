@@ -89,10 +89,10 @@ class Callback(BaseCallback):
         self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
 		       'foot': [(5.0893800988154645, 5.0893800988154645)], 
 		       'leg': [(2.7143360527015816, 2.7143360527015816)]}
-        self.model = args.model
         self.agent = agent
         self.flag = False
         self.auto = auto
+        self.MOD = args.model
         self.env = env
     
     def _on_step(self) -> bool:
@@ -107,7 +107,7 @@ class Callback(BaseCallback):
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
               
-                self.auto.update_phi(model = self.model, performance = er.mean())
+                self.auto.update_phi(model = self.MOD, performance = er.mean())
                 for key in self.original_masses.keys():
                     self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
                                              (1 + self.auto.phi) * self.original_masses[key]))
