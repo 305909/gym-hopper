@@ -63,6 +63,7 @@ def multiprocess(args, train_env, test_env, train, seeds):
     args:
         train_env: training environment
         test_env: testing environment
+        train: training function
         seeds: fibonacci seeds
     """
     model = None
