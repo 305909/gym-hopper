@@ -356,8 +356,8 @@ def main():
                 path = os.path.join(args.directory, f'{args.model}-ADR-rewards.npy')
                 np.save(path, ys)
             track(metric, xs, ys, sigmas, args, 
-                  label = '{args.model}-ADR', 
-                  filename = f'SAC-ADR-{metric}')
+                  label = f'{args.model}-ADR', 
+                  filename = f'{args.model}-ADR-{metric}')
             plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
