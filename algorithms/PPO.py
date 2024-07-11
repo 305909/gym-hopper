@@ -51,7 +51,7 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 10, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--learning-rate', default = 3e-4, type = float, 
+    parser.add_argument('--learning-rate', default = 2.5e-4, type = float, 
                         help = 'learning rate')
     parser.add_argument('--input-model', default = None, type = str, 
                         help = 'pre-trained input model (in .mdl format)')
@@ -134,8 +134,9 @@ def train(args, seed, train_env, test_env, model):
                     seed = seed,
                     device = args.device, 
                     learning_rate = args.learning_rate,
-                    batch_size = 64, 
-                    n_steps = 2048,
+                    batch_size = 128, 
+		    ent_coef = 0.0,
+                    n_steps = 1024,
                     gamma = 0.99)
 
     test_env = gym.make(test_env)
@@ -223,8 +224,9 @@ def arrange(args, stacks, train_env):
                 env = env, 
                 device = args.device, 
                 learning_rate = args.learning_rate,
-                batch_size = 64, 
-                n_steps = 2048,
+                batch_size = 128, 
+		ent_coef = 0.0,
+                n_steps = 1024,
                 gamma = 0.99)
         
     agent.policy.load_state_dict(weights)
