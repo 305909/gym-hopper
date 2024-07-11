@@ -124,7 +124,7 @@ def test(args, test_env, seed):
     model = None
 
     if args.train:
-        model = f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/A2C-{args.batch_size}-({args.train_env} to {args.test_env}).mdl'
         policy.load_state_dict(torch.load(model), 
                                strict = True)
     else:
@@ -165,7 +165,7 @@ def test(args, test_env, seed):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/A2C-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/A2C-{args.batch_size}-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
 
     env.close()
 
@@ -188,8 +188,8 @@ def arrange(args, stacks, train_env):
     policy = A2CPolicy(env.observation_space.shape[-1], env.action_space.shape[-1])
     policy.load_state_dict(weights)
         
-    torch.save(policy.state_dict(), f'{args.directory}/A2C-({args.train_env} to {args.test_env}).mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/A2C-({args.train_env} to {args.test_env}).mdl\n')
+    torch.save(policy.state_dict(), f'{args.directory}/A2C-{args.batch_size}-({args.train_env} to {args.test_env}).mdl')
+    print(f'\nmodel checkpoint storage: {args.directory}/A2C-{args.batch_size}-({args.train_env} to {args.test_env}).mdl\n')
 
 
 def main():
@@ -225,11 +225,11 @@ def main():
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward':
-                path = os.path.join(args.directory, f'A2C-({args.train_env} to {args.test_env})-rewards.npy')
+                path = os.path.join(args.directory, f'A2C-{args.batch_size}-({args.train_env} to {args.test_env})-rewards.npy')
                 np.save(path, ys)
             track(metric, xs, ys, sigmas, args, 
 		  label = f'A2C-{args.batch_size}', 
-		  filename = f'A2C-({args.train_env} to {args.test_env})-{metric}')
+		  filename = f'A2C-{args.batch_size}-({args.train_env} to {args.test_env})-{metric}')
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
