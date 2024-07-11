@@ -219,7 +219,7 @@ def arrange(args, stacks, train_env):
 
         else:
             weights[key] = torch.mean(torch.stack([w[key] 
-                                                   for w in weights_list]), dim = 0)
+                                                   for w in stacks]), dim = 0)
     policy = 'MlpPolicy'
     agent = SAC(policy, 
                 env = env, 
