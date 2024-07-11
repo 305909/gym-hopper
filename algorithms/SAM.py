@@ -164,9 +164,10 @@ def test(args, test_env):
     else:
         if args.input_model is not None:
             model = args.input_model
-            agent = SAC.load(model, 
-                             env = env, 
-                             device = args.device)
+            agent = SAC(policy, 
+			env = env, 
+			device = args.device)
+            agent.policy.load_state_dict(model.policy.state_dict())
     
     print(f'\nmodel to test: {model}\n')
 
