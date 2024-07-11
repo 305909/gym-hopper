@@ -152,9 +152,14 @@ def train(args, seed, train_env, test_env, model):
     return callback.episode_rewards, callback.episode_lengths, train_time, agent.policy.state_dict()
 
 
-def test(args, test_env):
+def test(args, test_env, seed):
     """ tests the agent in the testing environment """
     env = gym.make(test_env)
+    
+    env.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    
     policy = 'MlpPolicy'
     model = None
 
@@ -280,7 +285,7 @@ def main():
         arrange(args, pool['weights'], train_env)
         
     if args.test:
-        test(args, test_env)
+        test(args, test_env, seed = 1)
 
 
 if __name__ == '__main__':
