@@ -163,7 +163,7 @@ def test(args, test_env):
                          device = args.device)
     else:
         if args.input_model is not None:
-            model = args.input_model
+            model = SAC.load(args.input_model, env = env, device = args.device)
             agent = SAC(policy, 
 			env = env, 
 			device = args.device)
