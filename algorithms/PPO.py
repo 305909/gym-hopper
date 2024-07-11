@@ -212,13 +212,15 @@ def arrange(args, stacks, train_env):
     env = gym.make(train_env)
     weights = OrderedDict()
     for key in stacks[0].keys():
-        weights[key] = torch.zeros_like(stacks[0][key])
-    for weight in stacks:
-        for key in weight.keys():
-            weights[key] += weight[key]    
-    for key in weights.keys():
-        weights[key] /= len(weights)
-            
+        if isinstance(stacks[0][key], OrderedDict):
+            subkeys = stacks[0][key].keys()
+            weights[key] = OrderedDict()
+            for subkey in subkeys:
+                weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
+                                                               for w in stacks]), dim = 0)
+        else:
+            weights[key] = torch.mean(torch.stack([w[key] 
+                                                   for w in stacks]), dim = 0)  
     policy = 'MlpPolicy'
     agent = PPO(policy, 
                 env = env, 
