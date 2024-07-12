@@ -45,7 +45,7 @@ class MujocoEnv(gym.Env):
         if randomize:  # UDR and ADR parameters
             self.upper_bound = 2.5
             self.delta = 0.05
-            self.phi = 0.25
+            self.phi = 0.0
             self.i = 0
             self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
                                          'H': self.load('SAC-uppers.npy')}, 
