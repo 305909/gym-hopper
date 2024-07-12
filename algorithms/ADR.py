@@ -124,7 +124,7 @@ class Callback(BaseCallback):
         return True
 
 
-def multiprocess(args, train_env, test_env, train):
+def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
     """ processes multiple sequential training and testing sessions 
     with different seeds (to counteract variance)
 
@@ -136,9 +136,6 @@ def multiprocess(args, train_env, test_env, train):
     model = args.model
 
     print(f'\nmodel to train: {model}\n')
-	
-    if model == 'SAC': seeds = [1, 2, 3]
-    elif model == 'PPO': seeds = [1, 2, 3]
 	    
     pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
     for iter, seed in enumerate(seeds):
