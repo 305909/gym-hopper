@@ -350,7 +350,11 @@ def main():
     try: env = gym.make(test_env)
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {test_env} not found')
-        
+	    
+    if args.model == 'PPO':
+        args.train_episodes = 10000
+        args.eval_frequency = 100
+	    
     if args.train:
         pool = multiprocess(args, train_env, test_env, train)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
