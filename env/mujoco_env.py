@@ -43,7 +43,7 @@ class MujocoEnv(gym.Env):
         self.randomize = randomize
         
         if randomize:  # UDR and ADR parameters
-            self.upper_bound = 2.0
+            self.upper_bound = 2.5
             self.delta = 0.05
             self.phi = 0.25
             self.i = 0
