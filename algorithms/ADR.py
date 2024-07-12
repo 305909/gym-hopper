@@ -42,13 +42,13 @@ def parse_args():
                         help = 'render the simulator')
     parser.add_argument('--device', default = 'cpu', type = str, 
                         help = 'network device [cpu, cuda]')
-    parser.add_argument('--train-episodes', default = 1000, type = int, 
+    parser.add_argument('--train-episodes', default = 10000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 10, type = int, 
+    parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--model', default = 'SAC', type = str, choices = ['SAC', 'PPO'],
+    parser.add_argument('--model', default = 'PPO', type = str, choices = ['SAC', 'PPO'],
                         help = 'reinforcement learning algorithm (SAC or PPO)')
     parser.add_argument('--directory', default = 'results', type = str, 
                         help = 'path to the output location for checkpoint storage (model and rendering)')
@@ -311,10 +311,16 @@ def plot(args, records):
         # plot lower values
         plt.plot(xs, lowers, alpha = 1, 
 		 label = f'{key}', color = colors[index % len(colors)])
-        
+
+	path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-lowers.npy')
+        np.save(path, lowers)
+	    
         # plot upper values
         plt.plot(xs, uppers, alpha = 1, 
 		 color = colors[index % len(colors)])
+	    
+	path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-uppers.npy')
+        np.save(path, uppers)
 
     plt.xlabel('episodes')
     plt.ylabel(f'mass (kg)')
@@ -348,9 +354,9 @@ def main():
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {test_env} not found')
 	    
-    if args.model == 'PPO':
-        args.train_episodes = 10000
-        args.eval_frequency = 100
+    if args.model == 'SAC':
+        args.train_episodes = 1000
+        args.eval_frequency = 10
 	    
     if args.train:
         pool = multiprocess(args, train_env, test_env, train)
