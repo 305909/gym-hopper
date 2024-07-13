@@ -93,12 +93,13 @@ class Callback(BaseCallback):
         self.m = 'PPO'
         
     def update_phi(self, buffers):
-        rate = sum(1 for buffer in buffers 
-                   if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i])
+        total = sum(1 for buffer in buffers 
+		    if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i])
+        rate = total / buffers.size
         if rate > self.cdr.alpha:
             # increase phi
             self.cdr.phi += rate * (1 + self.cdr.delta)
-        else:
+	else:
             # decrease phi
             self.cdr.phi -= rate * (1 + self.cdr.delta)
         self.cdr.i += 1
