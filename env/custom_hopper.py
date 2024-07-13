@@ -38,23 +38,6 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
                   for mass in self.original_masses[1:]]
         masses.insert(0, self.sim.model.body_mass[1])
         return masses
-
-    def update_phi(self, model, buffers):
-        rate = sum(1 for buffer in buffers if self.data_buffers[model]['L'][self.i] <= buffer <= self.data_buffers[model]['H'][self.i])
-        performance = buffers.mean()
-        if rate > self.alpha:
-            # increase phi
-            threshold = self.data_buffers[model]['L'][self.i]
-            gain = (performance - threshold) / 100
-            self.phi += self.delta * (1 + gain)
-        elif performance > self.data_buffers[model]['H'][self.i]:
-            # decrease phi
-            self.phi -= self.delta
-        elif performance < self.data_buffers[model]['L'][self.i]:
-            # maintain phi
-            pass
-        self.i += 1
-        self.phi = np.clip(self.phi, 0.0, self.upper_bound)
         
     def get_parameters(self):
         """ get mass value for each link """
