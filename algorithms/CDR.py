@@ -97,9 +97,10 @@ class Callback(BaseCallback):
                    if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i])
         if rate > self.cdr.alpha:
             # increase phi
-            self.cdr.phi += self.cdr.delta
+            self.cdr.phi += rate * (1 + self.cdr.delta)
         else:
-            pass
+            # decrease phi
+            self.cdr.phi -= rate * (1 + self.cdr.delta)
         self.cdr.i += 1
         self.cdr.phi = np.clip(self.cdr.phi, 0.0, self.cdr.upper_bound)
         
