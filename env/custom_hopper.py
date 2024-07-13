@@ -11,8 +11,8 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, phi = None):
-        MujocoEnv.__init__(self, 4, randomize, phi)
+    def __init__(self, domain = None, randomize = False, phi = None, dist = None, samp = False):
+        MujocoEnv.__init__(self, 4, randomize, phi, dist, samp)
         utils.EzPickle.__init__(self)
 
         # default link masses
@@ -25,6 +25,9 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         if domain == 'source':  # (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
 
+    def set_random_distribution(self, dist):
+        self.dist = dist
+        
     def set_random_parameters(self):
         """ set random masses """
         self.set_parameters(*self.sample_parameters(phi = self.phi))
@@ -32,11 +35,37 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
             self.print_parameters()
 
     def sample_parameters(self, phi):
-        """ sample masses according to a uniform domain distribution """
-        masses = [np.random.uniform((1 - phi) * mass, 
-                                    (1 + phi) * mass) 
-                  for mass in self.original_masses[1:]]
-        masses.insert(0, self.sim.model.body_mass[1])
+        """ sample masses 
+        according to a domain distribution """
+        
+        if self.dist == "uniform":
+            if not self.samp:
+                masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
+                          for mass in self.original_masses[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
+            else:
+                body = np.random.choice([0, 1, 2])
+                masses = list()
+                for i, mass in enumerate(self.original_masses[1:]):
+                    if i != body: masses.append(mass)
+                    else: masses.append(np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass))
+                masses = np.array(masses)
+                masses.insert(0, self.sim.model.body_mass[1])
+                
+        if self.dist == "normal":
+            if not self.samp:
+                masses = [np.random.normal(loc = mass, scale = phi) 
+                          for mass in self.original_masses[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
+            else:
+                body = np.random.choice([0, 1, 2])
+                masses = list()
+                for i, mass in enumerate(self.original_masses[1:]):
+                    if i != body: masses.append(mass)
+                    else: masses.append(np.random.normal(loc = mass, scale = phi))
+                masses = np.array(masses)
+                masses.insert(0, self.sim.model.body_mass[1])
+                
         return masses
         
     def get_parameters(self):
@@ -148,12 +177,12 @@ gym.envs.register(
     id = "CustomHopper-source-UDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "phi": 0.5}
+    kwargs = {"domain": "source", "randomize": True, "phi": 0.5, "dist": "uniform" "samp": False}
 )
 
 gym.envs.register(
-    id = "CustomHopper-source-ADR-v0",
+    id = "CustomHopper-source-CDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "phi": 0.0}
+    kwargs = {"domain": "source", "randomize": True, "phi": 0.0, "dist": "normal", "samp": True}
 )
