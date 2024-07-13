@@ -271,6 +271,8 @@ class Callback(BaseCallback):
             if self.bounds is not None:
                 self.adr.evaluate(infos['episode']['r'], bounds)
             params, self.bounds = self.adr.get_random_masses()
+            print(params, self.bounds)
+            print(self.auto..sim.model.body_mass[1:], self.auto..sim.model.body_mass[2:])
             self.auto.set_parameters(params)
             self.adr.print_distributions()
       
