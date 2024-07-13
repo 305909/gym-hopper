@@ -118,13 +118,13 @@ class Callback(BaseCallback):
                 self.update_phi(buffers = er)
                 for key in self.original_masses.keys():
                     if self.dist == 'normal':
-                        self.masses[key].append((self.original_masses[key] - 2.5 * self.auto.phi, self.original_masses[key] + 2.5 * self.auto.phi))
+                        self.masses[key].append((self.original_masses[key] - 2.5 * self.cdr.phi, self.original_masses[key] + 2.5 * self.cdr.phi))
                     if self.dist == 'uniform':
-                        self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
-                                                 (1 + self.auto.phi) * self.original_masses[key]))
+                        self.masses[key].append(((1 - self.cdr.phi) * self.original_masses[key], 
+                                                 (1 + self.cdr.phi) * self.original_masses[key]))
                         
                 if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
-                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers[self.mod]["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers[self.mod]["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
+                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.cdr.data_buffers[self.m]["L"][self.cdr.i - 1]:.2f}, {self.cdr.data_buffers[self.m]["H"][self.cdr.i - 1]:.2f}) | -> phi: {self.cdr.phi:.2f}')
                 self.flag = True  # mark evaluation as due
         if self.num_episodes % self.eval_frequency != 0:
             self.flag = False  # reset evaluation flag
