@@ -60,13 +60,13 @@ class Callback(BaseCallback):
     def __init__(self, agent, env, cdr, args, verbose = 1):
         super(Callback, self).__init__(verbose)
         """ initializes a callback object to access 
-        the internal state of the RL agent over training iterations
+        the internal state of the RL agent over training iterations.
 
         args:
-            agent: reinforcement learning agent
-            env: testing environment for performance evaluation
-            cdr: training environment with control domain randomization (CDR)
-            args: argument parser
+            agent: Reinforcement learning agent.
+            env: Testing environment for performance evaluation.
+            cdr: Training environment with control domain randomization (CDR).
+            args: Argument parser.
 
         evaluation metrics:
             episode rewards
@@ -80,12 +80,16 @@ class Callback(BaseCallback):
         self.num_episodes = 0
         self.dist = args.dist
         self.samp = args.samp
-        self.original_masses = {'thigh': 3.9269908169872427, 
-                                'foot': 5.0893800988154645,
-                                'leg': 2.7143360527015816}
-        self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
-                       'foot': [(5.0893800988154645, 5.0893800988154645)], 
-                       'leg': [(2.7143360527015816, 2.7143360527015816)]}
+        self.original_masses = {
+            'thigh': 3.9269908169872427, 
+            'foot': 5.0893800988154645,
+            'leg': 2.7143360527015816
+        }
+        self.masses = {
+            'thigh': [(3.9269908169872427, 3.9269908169872427)],  
+            'foot': [(5.0893800988154645, 5.0893800988154645)], 
+            'leg': [(2.7143360527015816, 2.7143360527015816)]
+        }
         self.agent = agent
         self.flag = False
         self.cdr = cdr
@@ -93,13 +97,15 @@ class Callback(BaseCallback):
         self.m = 'PPO'
         
     def update_phi(self, buffers):
-        total = sum(1 for buffer in buffers 
-		    if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i])
+        total = sum(
+            1 for buffer in buffers 
+            if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i]
+        )
         rate = total / buffers.size
         if rate > self.cdr.alpha:
             # increase phi
             self.cdr.phi += rate * (1 + self.cdr.delta)
-	else:
+        else:
             # decrease phi
             self.cdr.phi -= rate * (1 + self.cdr.delta)
         self.cdr.i += 1
@@ -120,7 +126,8 @@ class Callback(BaseCallback):
                 self.update_phi(buffers = er)
                 for key in self.original_masses.keys():
                     if self.dist == 'normal':
-                        self.masses[key].append((self.original_masses[key] - 2.5 * self.cdr.phi, self.original_masses[key] + 2.5 * self.cdr.phi))
+                        self.masses[key].append((self.original_masses[key] - 2.5 * self.cdr.phi, 
+						 self.original_masses[key] + 2.5 * self.cdr.phi))
                     if self.dist == 'uniform':
                         self.masses[key].append(((1 - self.cdr.phi) * self.original_masses[key], 
                                                  (1 + self.cdr.phi) * self.original_masses[key]))
