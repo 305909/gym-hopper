@@ -217,7 +217,7 @@ $$
 
 $$
 \phi^{k+1} = \begin{cases} 
-\phi^k - \delta & \text{if } r > \alpha \\
+\phi^k + \delta & \text{if } r > \alpha \\
 \phi^k & \text{otherwise}
 \end{cases}
 $$
@@ -234,12 +234,12 @@ $$
 
 #### How to run the code on Google Colab
 
-Train and test the SAC algorithm with ADR by running the following command:
+Train and test the SAC algorithm with CDR by running the following command:
 
 ```python
 # run SAC (Soft-Actor-Critic) algorithm
-!python /content/gym-hopper/algorithms/ADR.py --train \
+!python /content/gym-hopper/algorithms/CDR.py --train \
                                               --test
 ```
 
-The `ADR.py` code offers the chance to set several execution parameters as in the previous code for the `SAC` algorithm.
+The `CDR.py` code offers the chance to set several execution parameters as in the previous code for the `SAC` algorithm.
