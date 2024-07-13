@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 import stable_baselines3
 
 sys.path.append(
-	os.path.abspath(
-		os.path.join(os.path.dirname(__file__), '..')))
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..')))
 
 from PIL import Image
 from cycler import cycler
@@ -34,164 +34,167 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train', action = 'store_true', 
+    parser.add_argument('--train', action = 'store_true',
                         help = 'train the model')
-    parser.add_argument('--test', action = 'store_true', 
+    parser.add_argument('--test', action = 'store_true',
                         help = 'test the model')
-    parser.add_argument('--render', action = 'store_true', 
+    parser.add_argument('--render', action = 'store_true',
                         help = 'render the simulator')
-    parser.add_argument('--device', default = 'cpu', type = str, 
+    parser.add_argument('--device', default = 'cpu', type = str,
                         help = 'network device [cpu, cuda]')
-    parser.add_argument('--train-env', default = 'source', type = str, 
+    parser.add_argument('--train-env', default = 'source', type = str,
                         help = 'training environment')
-    parser.add_argument('--test-env', default = 'target', type = str, 
+    parser.add_argument('--test-env', default = 'target', type = str,
                         help = 'testing environment')
-    parser.add_argument('--train-episodes', default = 10000, type = int, 
-                        help = 'number of training episodes')
-    parser.add_argument('--test-episodes', default = 50, type = int, 
+    parser.add_argument('--train-episodes', default = 10000, type = int,
+                        help='number of training episodes')
+    parser.add_argument('--test-episodes', default = 50, type = int,
                         help = 'number of testing episodes')
-    parser.add_argument('--eval-frequency', default = 100, type = int, 
+    parser.add_argument('--eval-frequency', default = 100, type = int,
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--model', default = 'PPO', type = str, choices = ['SAC', 'PPO'],
                         help = 'reinforcement learning algorithm (SAC or PPO)')
-    parser.add_argument('--directory', default = 'results', type = str, 
+    parser.add_argument('--directory', default = 'results', type = str,
                         help = 'path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
 def get(model):
-    if model == 'SAC': return SAC
-    elif model == 'PPO': return PPO
-    else: raise ValueError(f"ERROR: model: {model} not found")
+    if model == 'SAC':
+        return SAC
+    elif model == 'PPO':
+        return PPO
+    else:
+        raise ValueError(f"ERROR: model: {model} not found")
 
 
 class ADR():
-	def __init__(self, params: dict, prob = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds: list = [250, 1750]) -> None:
-		self.step = getattr(self, '_' + step)
-		self.bounds = self._init_bounds()
-		self.thresholds = thresholds
-		self.params = params
-		self.delta = delta
-		self.prob = prob
-		self.m = m
-		self.thigh_mass = None
-		self.leg_mass = None
-		self.foot_mass = None
-		self.rewards = []
-		self.weights = []
-		self.current_weight = np.float64(1)
-		self.last_performances = []
-		self.last_increments = []
-		self.part = ['thigh', 'leg', 'foot']
-		self.databuffer = {"thigh_low": list(), 
-				   "thigh_high": list(), 
-				   "leg_low": list(), 
-				   "leg_high": list(), 
-				   "foot_low": list(), 
-				   "foot_high": list()}
-		self.keys = list(self.databuffer.keys())
-		self.bound = 0
+    def __init__(self, params: dict, prob = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds: list = [250, 1750]) -> None:
+        self.step = getattr(self, '_' + step)
+        self.bounds = self._init_bounds()
+        self.thresholds = thresholds
+        self.params = params
+        self.delta = delta
+        self.prob = prob
+        self.m = m
+        self.thigh_mass = None
+        self.leg_mass = None
+        self.foot_mass = None
+        self.rewards = []
+        self.weights = []
+        self.current_weight = np.float64(1)
+        self.last_performances = []
+        self.last_increments = []
+        self.part = ['thigh', 'leg', 'foot']
+        self.databuffer = {"thigh_low": list(),
+                           "thigh_high": list(),
+                           "leg_low": list(),
+                           "leg_high": list(),
+                           "foot_low": list(),
+                           "foot_high": list()}
+        self.keys = list(self.databuffer.keys())
+        self.bound = 0
 
-	def insert(self, part: str, reward: float) -> None:
-		if self.keys[self.bound] == part:
-			self.databuffer[part].append(reward)
+    def insert(self, part: str, reward: float) -> None:
+        if self.keys[self.bound] == part:
+            self.databuffer[part].append(reward)
 
-	# compute the mean performance and clear buffer
-	def evaluate_perfomance(self, part: str) -> float:
-		performance = np.mean(np.array(self.databuffer[part]))
-		self.databuffer[part].clear()
-		return performance
+    # compute the mean performance and clear buffer
+    def evaluate_performance(self, part: str) -> float:
+        performance = np.mean(np.array(self.databuffer[part]))
+        self.databuffer[part].clear()
+        return performance
 
-	# check size of the ADR and in case increase or decrease the bounds
-	def update(self, part: str):
-		if len(self.databuffer[part]) >= self.m:
-			# low or high
-			bp, extreme = tuple(body_part.split("_"))
-			performance = self.evaluate_perfomance(part)
-			self.last_performances.append((part, performance))
+    # check size of the ADR and in case increase or decrease the bounds
+    def update(self, part: str):
+        if len(self.databuffer[part]) >= self.m:
+            # low or high
+            _, extreme = tuple(part.split("_"))
+            performance = self.evaluate_performance(part)
+            self.last_performances.append((part, performance))
 
-			if performance >= self.thresholds[1]:
-				if extreme == "high":
-					self._increase_high_bounds(part, performance)
-				else:
-					self._decrease_low_bounds(part, performance)
-			if performance <= self.thresholds[0]:
-				if extreme == "high":
-					self._decrease_high_bounds(part, performance)
-				else:
-					self._increase_low_bounds(part, performance)
+            if performance >= self.thresholds[1]:
+                if extreme == "high":
+                    self._increase_high_bounds(part, performance)
+                else:
+                    self._decrease_low_bounds(part, performance)
+            if performance <= self.thresholds[0]:
+                if extreme == "high":
+                    self._decrease_high_bounds(part, performance)
+                else:
+                    self._increase_low_bounds(part, performance)
 
-	def get_random_masses(self):
-		# set three random masses
-		thigh_mass = np.random.uniform(
-			self.bounds["thigh_low"], self.bounds["thigh_high"])
-		leg_mass = np.random.uniform(
-			self.bounds["leg_low"], self.bounds["leg_high"])
-		foot_mass = np.random.uniform(
-			self.bounds["foot_low"], self.bounds["foot_high"])
+    def get_random_masses(self):
+        # set three random masses
+        thigh_mass = np.random.uniform(
+            self.bounds["thigh_low"], self.bounds["thigh_high"])
+        leg_mass = np.random.uniform(
+            self.bounds["leg_low"], self.bounds["leg_high"])
+        foot_mass = np.random.uniform(
+            self.bounds["foot_low"], self.bounds["foot_high"])
 
-		dict = {"thigh": thigh_mass, "leg": leg_mass, "foot": foot_mass}
+        dict = {"thigh": thigh_mass, "leg": leg_mass, "foot": foot_mass}
 
-		# probability to set masses to lower or upper bound
-		uniform = np.random.uniform(0, 1)
-		k = None
+        # probability to set masses to lower or upper bound
+        uniform = np.random.uniform(0, 1)
+        k = None
 
-		# set one random parameter to its lower or upper bound
-		if uniform < self.prob:
-			k = self._select_random_parameter()
-			part = k.split("_")[0]
-			d[part] = self.bounds[k]
-			
-		return list(dict.values()), k
+        # set one random parameter to its lower or upper bound
+        if uniform < self.prob:
+            k = self._select_random_parameter()
+            part = k.split("_")[0]
+            dict[part] = self.bounds[k]
 
-	def evaluate(self, reward, key) -> None:
-		self.insert(part = key, reward = reward)
-		self.update(part = key)
+        return list(dict.values()), k
 
-	def _constant(self, *args):
-		return self.delta
+    def evaluate(self, reward, key) -> None:
+        self.insert(part = key, reward = reward)
+        self.update(part = key)
 
-	def _increase_high_bounds(self, part: str, performance):
-		step = self.step(self.thresholds[1], performance)
-		self.bounds[part] = self.bounds[part] + step 
-		self.bound = (self.bound + 1) % len(self.keys)
+    def _constant(self, *args):
+        return self.delta
 
-	def _decrease_low_bounds(self, part: str, performance):
-		step = self.step(self.thresholds[1], performance)
-		self.bounds[part] = max(self.bounds[part] - step, 0)
-		self.bound = (self.bound + 1) % len(self.keys)
-	
-	def _decrease_high_bounds(self, part: str, performance):
-		body = part.split('_')[0]
-		if not np.isclose(self.params[body], self.bounds[part]):
-			self.bounds[part] = max(self.bounds[part] - self.delta, self.params[body])
-	
-	def _increase_low_bounds(self, part: str, performance):
-		body = part.split('_')[0]
-		if not np.isclose(self.init_params[body], self.bounds[part]):
-			self.bounds[body_part] = min(self.bounds[part] + self.delta, self.params[body])
+    def _increase_high_bounds(self, part: str, performance):
+        step = self.step(self.thresholds[1], performance)
+        self.bounds[part] = self.bounds[part] + step
+        self.bound = (self.bound + 1) % len(self.keys)
 
-	def _init_bounds(self):
-		try:
-			dict = {"thigh_low": self.params['thigh'],
-				"thigh_high": self.params['thigh'],
-				"leg_low": self.params['leg'],
-				"leg_high": self.params['leg'],
-				"foot_low": self.params['foot'],
-				"foot_high": self.params['foot']}
-		except:
-			print("bounds not initialized")
-		return dict
+    def _decrease_low_bounds(self, part: str, performance):
+        step = self.step(self.thresholds[1], performance)
+        self.bounds[part] = max(self.bounds[part] - step, 0)
+        self.bound = (self.bound + 1) % len(self.keys)
 
-	# extract random key
-	def _select_random_parameter(self) -> str:
-		rand = np.random.randint(2)
-		part = self.keys[self.current_bound ^ rand]
-		return part
-        
+    def _decrease_high_bounds(self, part: str, performance):
+        body = part.split('_')[0]
+        if not np.isclose(self.params[body], self.bounds[part]):
+            self.bounds[part] = max(self.bounds[part] - self.delta, self.params[body])
+
+    def _increase_low_bounds(self, part: str, performance):
+        body = part.split('_')[0]
+        if not np.isclose(self.init_params[body], self.bounds[part]):
+            self.bounds[part] = min(self.bounds[part] + self.delta, self.params[body])
+
+    def _init_bounds(self):
+        try:
+            dict = {"thigh_low": self.params['thigh'],
+                    "thigh_high": self.params['thigh'],
+                    "leg_low": self.params['leg'],
+                    "leg_high": self.params['leg'],
+                    "foot_low": self.params['foot'],
+                    "foot_high": self.params['foot']}
+        except:
+            print("bounds not initialized")
+        return dict
+
+    # extract random key
+    def _select_random_parameter(self) -> str:
+        rand = np.random.randint(2)
+        part = self.keys[self.bound ^ rand]
+        return part
+
 
 class Callback(BaseCallback):
-    def __init__(self, agent, env, auto, adr, args, verbose = 1):
+    def __init__(self, agent, env, auto, adr, args, verbose=1):
         super(Callback, self).__init__(verbose)
         """ initializes a callback object to access 
         the internal state of the RL agent over training iterations
@@ -226,11 +229,11 @@ class Callback(BaseCallback):
     def _on_step(self) -> bool:
         """ monitors performance """
         self.num_episodes += np.sum(self.locals['dones'])
-        if (self.locals['dones']):
+        if self.locals['dones']:
             if self.bounds is not None:
-		    for info in self.locals['infos']:
-			    if 'episode' in info:
-				    self.adr.evaluate(info['episode']['r'], self.bounds)
+                for info in self.locals['infos']:
+                    if 'episode' in info:
+                        self.adr.evaluate(info['episode']['r'], self.bounds)
             params, self.bounds = self.adr.get_random_masses()
             self.auto.sim.model.body_mass[2:] = np.array(params)
       
@@ -238,7 +241,7 @@ class Callback(BaseCallback):
             if not self.flag:
                 episode_rewards, episode_lengths = evaluate_policy(self.agent, 
                                                                    self.env, self.test_episodes, 
-                                                                   return_episode_rewards = True)
+                                                                   return_episode_rewards=True)
                 er, el = np.array(episode_rewards), np.array(episode_lengths)
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
