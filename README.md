@@ -170,40 +170,46 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
                                               --train-env 'source-UDR'
 ```
 
-## Automatic Domain Randomization
+## Control Domain Randomization
 
-Automatic Domain Randomization (ADR) automates the domain randomization process. ADR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the variation factor $\phi$ of the physical parameter distribution based on the agent's performance, thus facilitating optimal management of exploration and exploitation in different environmental contexts.
+Control Domain Randomization (CDR) controls the domain randomization process. CDR involves dynamically varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to enhance the adaptability of the agent across varying scenarios. The algorithm systematically adjusts the variation factor $\phi$ of the physical parameter distribution based on the agent's performance, thus facilitating optimal management of exploration and exploitation in different environmental contexts.
 
 ### Initialization and Domain Configuration
 
 Upon initialization, the ADR module initializes the following parameters:
 
-- $\mathit{\phi^m = 2.0} \rightarrow$ upper bound for the variation factor, defining the range of parameter adjustments;
+- $\mathit{\phi^m = 3.5} \rightarrow$ upper bound for the variation factor, defining the range of parameter adjustments;
 - $\mathit{\delta = 0.05} \rightarrow$ step size for updating the variation factor $\phi^k$ based on performance feedback;
-- $\mathit{\phi^0 = 0.1} \rightarrow$ initial variation factor applied to the physical parameters;
+- $\mathit{\phi^0 = 0.0} \rightarrow$ initial variation factor applied to the physical parameters;
+- $\mathit{\alpha} \rightarrow$ threshold rate to update physical parameters;
 - $\mathit{D^{L}, D^{H}} \rightarrow$ data buffers storing the lower and upper performance thresholds for parameter adjustment.
 
-Within the ADR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the thresholds coming from the performance metrics of two benchmark policies:
+Within the CDR framework, $\mathit{D^{L}}$ and $\mathit{D^{H}}$ represent the thresholds coming from the performance metrics of two benchmark policies:
 
 - simulation policy $\pi_{s}$: trained in the `source` environment (simulation) without domain randomization;
 - real-world policy $\pi_{r}$: trained in the `target` environment (real world).
 
 ### Domain Randomization
 
-For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the current variation factor $\phi^k$: 
+For each link $i$, the environment randomly samples the $i$-th link mass at the beginning of each episode according to the current variation factor $\phi^k$ and the probability distribution: 
 
 $$
 m_i \sim \mathbb{U_{\phi^k}}((1 - \phi^k) \cdot m_{i_0}, (1 + \phi^k) \cdot m_{i_0})
 $$
 
+$$
+m_i \sim \mathbb{N_{\phi^k}}(m_{i_0}, \phi^k)
+$$
+
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi^k} \rightarrow$ the current variation factor;
-- $\mathbb{U_{\phi^k}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^k$.
+- $\mathbb{U_{\phi^k}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^k$;
+- $\mathbb{N_{\phi^k}}(\mu, \gamma) \rightarrow$ continuous normal distribution with mean $\mathit{\mu}$ and standard deviation $\mathit{\sigma}$ with variation factor $\phi^k$.
 
 ### Performance Evaluation and $\phi$ Update:
 
-ADR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift to the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
+CDR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift to the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
 
 $$
 \mathbb{E}[G^\pi] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi}
