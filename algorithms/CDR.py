@@ -358,7 +358,7 @@ def train(args, seed, train_env, test_env, model):
     test_env.seed(seed)
 
     init_params = {"thigh": 3.92699082,  "leg": 2.71433605, "foot": 5.0893801}
-    ADR = (init_params, probability = 0.25, m = 10, step = 'constant', delta = 0.02, thresholds = [500, 1500])
+    ADR = (init_params)
   
     callback = Callback(agent, test_env, env, ADR, args)
 
