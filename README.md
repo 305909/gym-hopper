@@ -205,14 +205,14 @@ where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi^k} \rightarrow$ the current variation factor;
 - $\mathbb{U_{\phi^k}}(a, b) \rightarrow$ continuous uniform distribution between $\mathit{a}$ and $\mathit{b}$ with variation factor $\phi^k$;
-- $\mathbb{N_{\phi^k}}(\mu, \gamma) \rightarrow$ continuous normal distribution with mean $\mathit{\mu}$ and standard deviation $\mathit{\sigma}$ with variation factor $\phi^k$.
+- $\mathbb{N_{\phi^k}}(\mu, \sigma^2) \rightarrow$ continuous normal distribution with mean $\mathit{\mu}$ and standard deviation $\mathit{\sigma^2}$ with variation factor $\phi^k$.
 
 ### Performance Evaluation and $\phi$ Update:
 
-CDR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift to the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $\mathbb{E}[G^\pi]$, i.e. the expected cumulative reward over the $N$ testing episodes:
+CDR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift to the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $r$, i.e. the reward rate within the optimization interval:
 
 $$
-\mathbb{E}[G^\pi] = \frac{1}{N} \sum_{n=1}^{N} G_{n}^{\pi}
+r = \frac{1}{N} \sum_{n=1}^{N} \{ 1 | D_k^{L} < G_{n}^{\pi} < D_k^{H} \]
 $$
 
 $$
