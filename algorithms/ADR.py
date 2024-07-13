@@ -71,7 +71,12 @@ def get(model):
 class ADR():
     def __init__(self, params: dict, prob = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds: list = [250, 1750]) -> None:
         self.step = getattr(self, '_' + step)
-        self.bounds = self._init_bounds()
+        self.bounds = {"thigh_low": self.params['thigh'],
+		       "thigh_high": self.params['thigh'],
+		       "leg_low": self.params['leg'],
+		       "leg_high": self.params['leg'],
+		       "foot_low": self.params['foot'],
+		       "foot_high": self.params['foot']}
         self.thresholds = thresholds
         self.params = params
         self.delta = delta
@@ -173,18 +178,6 @@ class ADR():
         body = part.split('_')[0]
         if not np.isclose(self.init_params[body], self.bounds[part]):
             self.bounds[part] = min(self.bounds[part] + self.delta, self.params[body])
-
-    def _init_bounds(self):
-        try:
-            dict = {"thigh_low": self.params['thigh'],
-                    "thigh_high": self.params['thigh'],
-                    "leg_low": self.params['leg'],
-                    "leg_high": self.params['leg'],
-                    "foot_low": self.params['foot'],
-                    "foot_high": self.params['foot']}
-        except:
-            print("bounds not initialized")
-        return dict
 
     # extract random key
     def _select_random_parameter(self) -> str:
