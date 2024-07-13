@@ -94,14 +94,14 @@ class Callback(BaseCallback):
         
     def update_phi(self, buffers):
         rate = sum(1 for buffer in buffers 
-                   if self.auto.data_buffers[self.m]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[self.m]['H'][self.auto.i])
-        if rate > self.auto.alpha:
+                   if self.cdr.data_buffers[self.m]['L'][self.cdr.i] <= buffer <= self.cdr.data_buffers[self.m]['H'][self.cdr.i])
+        if rate > self.cdr.alpha:
             # increase phi
-            self.auto.phi += self.auto.delta
+            self.cdr.phi += self.cdr.delta
         else:
             pass
-        self.auto.i += 1
-        self.auto.phi = np.clip(self.auto.phi, 0.0, self.auto.upper_bound)
+        self.cdr.i += 1
+        self.cdr.phi = np.clip(self.cdr.phi, 0.0, self.cdr.upper_bound)
         
     def _on_step(self) -> bool:
         """ monitors performance """
