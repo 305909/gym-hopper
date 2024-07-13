@@ -104,7 +104,7 @@ class Callback(BaseCallback):
             # increase phi
             increment = gains['lower'] / (gains['upper'] + gains['lower'])
             self.auto.phi += self.auto.delta * (1 + increment)
-	else:
+        else:
             pass
         self.auto.i += 1
         self.auto.phi = np.clip(self.auto.phi, 0.0, self.auto.upper_bound)
