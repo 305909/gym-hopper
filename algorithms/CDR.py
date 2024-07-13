@@ -24,7 +24,6 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
-from stable_baselines3 import SAC
 from stable_baselines3 import PPO
 from collections import OrderedDict
 from utils import display, stack, track
@@ -48,20 +47,17 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--model', default = 'PPO', type = str, choices = ['SAC', 'PPO'],
-                        help = 'reinforcement learning algorithm (SAC or PPO)')
+    parser.add_argument('--dist', default = 'normal', type = str,
+                        help = 'distribution for control domain randomization')
+    parser.add_argument('--samp', action = 'store_true', 
+                        help = 'sample condition for control domain randomization')
     parser.add_argument('--directory', default = 'results', type = str, 
                         help = 'path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
 
 
-def get(model):
-    if model == 'SAC': return SAC
-    elif model == 'PPO': return PPO
-    else: raise ValueError(f"ERROR: model: {model} not found")
-
 class Callback(BaseCallback):
-    def __init__(self, agent, env, auto, args, verbose = 1):
+    def __init__(self, agent, env, cdr, args, verbose = 1):
         super(Callback, self).__init__(verbose)
         """ initializes a callback object to access 
         the internal state of the RL agent over training iterations
@@ -69,7 +65,7 @@ class Callback(BaseCallback):
         args:
             agent: reinforcement learning agent
             env: testing environment for performance evaluation
-            auto: training environment with automatic domain randomization (ADR)
+            cdr: training environment with control domain randomization (CDR)
             args: argument parser
 
         evaluation metrics:
@@ -82,36 +78,34 @@ class Callback(BaseCallback):
         self.episode_rewards = list()
         self.episode_lengths = list()
         self.num_episodes = 0
-        self.mod = args.model
+        self.dist = args.dist
+        self.samp = args.samp
         self.original_masses = {'thigh': 3.9269908169872427, 
-				'foot': 5.0893800988154645,
-				'leg': 2.7143360527015816}
+                                'foot': 5.0893800988154645,
+                                'leg': 2.7143360527015816}
         self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
-		       'foot': [(5.0893800988154645, 5.0893800988154645)], 
-		       'leg': [(2.7143360527015816, 2.7143360527015816)]}
+                       'foot': [(5.0893800988154645, 5.0893800988154645)], 
+                       'leg': [(2.7143360527015816, 2.7143360527015816)]}
         self.agent = agent
         self.flag = False
-        self.auto = auto
+        self.cdr = cdr
         self.env = env
-	    
-    def update_phi(self, model, buffers):
+        self.m = 'PPO'
+        
+    def update_phi(self, buffers):
         rate = sum(1 for buffer in buffers 
-		   if self.auto.data_buffers[model]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[model]['H'][self.auto.i])
-        performance = buffers.mean()
-        gains = {'upper': abs(self.auto.phi - self.auto.data_buffers[model]['H'][self.auto.i]), 
-		 'lower': abs(self.auto.phi - self.auto.data_buffers[model]['L'][self.auto.i])}
+                   if self.auto.data_buffers[self.m]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[self.m]['H'][self.auto.i])
         if rate > self.auto.alpha:
             # increase phi
-            increment = gains['lower'] / (gains['upper'] + gains['lower'])
-            self.auto.phi += self.auto.delta * (1 + increment)
+            self.auto.phi += self.auto.delta
         else:
             pass
         self.auto.i += 1
         self.auto.phi = np.clip(self.auto.phi, 0.0, self.auto.upper_bound)
-	    
+        
     def _on_step(self) -> bool:
         """ monitors performance """
-        self.num_episodes += np.sum(self.locals['dones'])
+        self.num_episodes += np.sum(self.locals['dones'])    
         if self.num_episodes % self.eval_frequency == 0: 
             if not self.flag:
                 episode_rewards, episode_lengths = evaluate_policy(self.agent, 
@@ -120,12 +114,15 @@ class Callback(BaseCallback):
                 er, el = np.array(episode_rewards), np.array(episode_lengths)
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
-              
-                self.update_phi(model = self.mod, buffers = er)
+                
+                self.update_phi(buffers = er)
                 for key in self.original_masses.keys():
-                    self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
-                                             (1 + self.auto.phi) * self.original_masses[key]))
-
+                    if self.dist == 'normal':
+                        self.masses[key].append((self.original_masses[key] - 2.5 * self.auto.phi, self.original_masses[key] + 2.5 * self.auto.phi))
+                    if self.dist == 'uniform':
+                        self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
+                                                 (1 + self.auto.phi) * self.original_masses[key]))
+                        
                 if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
                     print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers[self.mod]["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers[self.mod]["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
                 self.flag = True  # mark evaluation as due
@@ -147,21 +144,17 @@ def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
         test_env: testing environment
         train: training function
     """
-    model = args.model
-
-    print(f'\nmodel to train: {model}\n')
-	    
     pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
     for iter, seed in enumerate(seeds):
         print(f'\ntraining session: {iter + 1}')
         print("----------------")
-        for key, value in zip(pool.keys(), train(args, seed, train_env, test_env, model)):
+        for key, value in zip(pool.keys(), train(args, seed, train_env, test_env)):
             pool[key].append(value)
     
     return pool
 
 
-def train(args, seed, train_env, test_env, model):
+def train(args, seed, train_env, test_env):
     """ trains the agent in the training environment
 
     args:
@@ -169,33 +162,23 @@ def train(args, seed, train_env, test_env, model):
         model: model to train
     """
     env = gym.make(train_env)
+    env.set_randomness(args.dist, args.samp)
     
     env.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     
     policy = 'MlpPolicy'
-    MOD = get(model)
-	
-    if model == 'SAC':
-        agent = MOD(policy, 
-                    env = env, 
-                    seed = seed,
-                    device = args.device, 
-                    learning_rate = 7.5e-4,
-                    batch_size = 256, 
-                    gamma = 0.99)
-	    
-    elif model == 'PPO':
-        agent = MOD(policy, 
-                    env = env, 
-                    seed = seed,
-                    device = args.device, 
-                    learning_rate = 2.5e-4,
-                    batch_size = 128, 
-		    ent_coef = 0.0,
-                    n_steps = 1024,
-                    gamma = 0.99)
+    
+    agent = PPO(policy, 
+                env = env, 
+                seed = seed,
+                device = args.device, 
+                learning_rate = 2.5e-4,
+                batch_size = 128, 
+                ent_coef = 0.0,
+                n_steps = 1024,
+                gamma = 0.99)
 
     test_env = gym.make(test_env)
     test_env.seed(seed)
@@ -210,18 +193,15 @@ def train(args, seed, train_env, test_env, model):
     return callback.episode_rewards, callback.episode_lengths, callback.masses, train_time, agent.policy.state_dict()
 
 
+
 def test(args, test_env):
     """ tests the agent in the testing environment """
     env = gym.make(test_env)
     policy = 'MlpPolicy'
-    model = args.model
-    MOD = get(model)
 
-    path = f'{args.directory}/{model}-ADR.mdl'
-    agent = MOD.load(path, env = env, device = args.device)
+    path = f'{args.directory}/PPO-CDR.mdl'
+    agent = PPO.load(path, env = env, device = args.device)
     
-    print(f'\nmodel to test: {model}\n')
-
     frames = list()
     num_episodes = 0
     episode_rewards = []
@@ -248,52 +228,9 @@ def test(args, test_env):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/{model}-ADR-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/PPO-CDR-test.gif', frames, fps = 30)
 
     env.close()
-
-
-def arrange(args, stacks, train_env):
-    """ arranges policy network weights
-        
-    args:
-        stacks: stacks of network weights
-    """
-    env = gym.make(train_env)
-    weights = OrderedDict()
-    for key in stacks[0].keys():
-        weights[key] = torch.zeros_like(stacks[0][key])
-    for weight in stacks:
-        for key in weight.keys():
-            weights[key] += weight[key]    
-    for key in weights.keys():
-        weights[key] /= len(weights)
-            
-    policy = 'MlpPolicy'
-    model = args.model
-    MOD = get(model)
-	
-    if model == 'SAC':
-        agent = MOD(policy, 
-                    env = env, 
-                    device = args.device, 
-                    learning_rate = 7.5e-4,
-                    batch_size = 256, 
-                    gamma = 0.99)
-	    
-    elif model == 'PPO':
-        agent = MOD(policy, 
-                    env = env, 
-                    device = args.device, 
-                    learning_rate = 2.5e-4,
-                    batch_size = 128, 
-		    ent_coef = 0.0,
-                    n_steps = 1024,
-                    gamma = 0.99)
-        
-    agent.policy.load_state_dict(weights)
-    agent.save(f'{args.directory}/{model}-ADR.mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/{model}-ADR.mdl\n')
 
 
 def plot(args, records):
@@ -326,14 +263,14 @@ def plot(args, records):
         plt.plot(xs, lowers, alpha = 1, 
 		 label = f'{key}', color = colors[index % len(colors)])
 
-        path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-lowers.npy')
+        path = os.path.join(args.directory, f'PPO-CDR-masses-{key}-lowers.npy')
         np.save(path, lowers)
 	    
         # plot upper values
         plt.plot(xs, uppers, alpha = 1, 
 		 color = colors[index % len(colors)])
 
-        path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-uppers.npy')
+        path = os.path.join(args.directory, f'PPO-CDR-masses-{key}-uppers.npy')
         np.save(path, uppers)
 
     plt.xlabel('episodes')
@@ -341,7 +278,7 @@ def plot(args, records):
     plt.grid(True)
     plt.legend()
 	
-    plt.savefig(f'{args.directory}/{args.model}-ADR-masses.png', dpi = 300)
+    plt.savefig(f'{args.directory}/PPO-CDR-masses.png', dpi = 300)
     plt.close()
 
 
@@ -353,7 +290,7 @@ def main():
         os.mkdir(args.directory)
 
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
-                                for x in ['source-ADR', 'target'])
+                                for x in ['source-CDR', 'target'])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         print('\nWARNING: GPU not available, switch to CPU\n')
@@ -367,26 +304,27 @@ def main():
     try: env = gym.make(test_env)
     except gym.error.UnregisteredEnv: 
         raise ValueError(f'ERROR: environment {test_env} not found')
-	    
-    if args.model == 'SAC':
-        args.train_episodes = 1000
-        args.eval_frequency = 10
-	    
+    
     if args.train:
         pool = multiprocess(args, train_env, test_env, train)
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward':
-                path = os.path.join(args.directory, f'{args.model}-ADR-rewards.npy')
+                path = os.path.join(args.directory, f'PPO-CDR-rewards.npy')
                 np.save(path, ys)
             track(metric, xs, ys, sigmas, args, 
-                  label = f'{args.model}-ADR', 
-                  filename = f'{args.model}-ADR-{metric}')
+                  label = f'PPO-CDR', 
+                  filename = f'PPO-CDR-{metric}')
             plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
-
-        arrange(args, pool['weights'], train_env)
+        
+        policy = 'MlpPolicy'
+        agent = PPO(policy, env = env, device = args.device)
+        
+        agent.policy.load_state_dict(weights)
+        agent.save(f'{args.directory}/PPO-CDR.mdl')
+        print(f'\nmodel checkpoint storage: {args.directory}/PPO-CDR.mdl\n')
         
     if args.test:
         test(args, test_env)
