@@ -43,15 +43,16 @@ class MujocoEnv(gym.Env):
         self.randomize = randomize
         
         if randomize:  # UDR and ADR parameters
-            self.upper_bound = 3.5
-            self.delta = 0.05
-            self.alpha = 0.5
             self.phi = phi
-            self.i = 0
-            self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
-                                         'H': self.load('SAC-uppers.npy')}, 
-                                 'PPO': {'L': self.load('PPO-lowers.npy'), 
-                                         'H': self.load('PPO-uppers.npy')}}
+            
+        self.i = 0
+        self.alpha = 0.5
+        self.delta = 0.05
+        self.upper_bound = 3.5
+        self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
+                                     'H': self.load('SAC-uppers.npy')}, 
+                             'PPO': {'L': self.load('PPO-lowers.npy'), 
+                                     'H': self.load('PPO-uppers.npy')}}
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
             'video.frames_per_second': int(np.round(1.0 / self.dt))
