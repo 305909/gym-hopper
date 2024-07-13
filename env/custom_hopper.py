@@ -62,7 +62,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         return masses
 
     def set_parameters(self, *task):
-        self.sim.model.body_mass[2:] = task
+        self.sim.model.body_mass[2:] = np.array(task)
 
     def step(self, a):
         """ step the simulation to the next timestep
