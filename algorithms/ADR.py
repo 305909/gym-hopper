@@ -175,7 +175,7 @@ class ADR():
 
 
 class Callback(BaseCallback):
-    def __init__(self, agent, env, auto, adr, args, verbose = 1):
+    def __init__(self, agent, env, domain, adr, args, verbose = 1):
         super(Callback, self).__init__(verbose)
         """ initializes a callback object to access 
         the internal state of the RL agent over training iterations
@@ -183,7 +183,7 @@ class Callback(BaseCallback):
         args:
             agent: reinforcement learning agent
             env: testing environment for performance evaluation
-            auto: training environment with automatic domain randomization (ADR)
+            domain: training environment with automatic domain randomization (ADR)
             args: argument parser
 
         evaluation metrics:
@@ -199,10 +199,10 @@ class Callback(BaseCallback):
         self.masses = {'thigh': [3.9269908169872427],
                        'leg': [2.7143360527015816],
                        'foot': [5.0893800988154645]}
+        self.domain = domain
         self.agent = agent
         self.bounds = None
         self.flag = False
-        self.auto = auto
         self.adr = adr
         self.env = env
         self.m = 'PPO'
@@ -216,7 +216,7 @@ class Callback(BaseCallback):
                     if 'episode' in info:
                         self.adr.evaluate(info['episode']['r'], self.bounds)
             params, self.bounds = self.adr.get_random_masses()
-            self.auto.sim.model.body_mass[2:] = np.array(params)
+            self.domain.sim.model.body_mass[2:] = np.array(params)
       
         if self.num_episodes % self.eval_frequency == 0: 
             if not self.flag:
@@ -227,7 +227,7 @@ class Callback(BaseCallback):
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
 		    
-                masses = self.auto.get_parameters()[1:]
+                masses = self.domain.get_parameters()[1:]
                 for i, key in enumerate(self.masses.keys()):
                     self.masses[key].append(masses[i])
 			
