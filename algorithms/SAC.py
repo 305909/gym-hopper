@@ -206,37 +206,6 @@ def test(args, test_env, seed):
     env.close()
 
 
-def arrange(args, stacks, train_env):
-    """ arranges policy network weights
-        
-    args:
-        stacks: stacks of network weights
-    """
-    env = gym.make(train_env)
-    weights = OrderedDict()
-    for key in stacks[0].keys():
-        if isinstance(stacks[0][key], OrderedDict):
-            subkeys = stacks[0][key].keys()
-            weights[key] = OrderedDict()
-            for subkey in subkeys:
-                weights[key][subkey] = torch.mean(torch.stack([w[key][subkey] 
-                                                               for w in stacks]), dim = 0)
-        else:
-            weights[key] = torch.mean(torch.stack([w[key] 
-                                                   for w in stacks]), dim = 0)    
-    policy = 'MlpPolicy'
-    agent = SAC(policy, 
-                env = env, 
-                device = args.device, 
-                learning_rate = args.learning_rate,
-                batch_size = 256, 
-                gamma = 0.99)
-        
-    agent.policy.load_state_dict(weights)
-    agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
-    print(f'\nmodel checkpoint storage: {args.directory}/SAC-({args.train_env} to {args.test_env}).mdl\n')
-
-
 def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
@@ -278,7 +247,12 @@ def main():
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
-        arrange(args, pool['weights'], train_env)
+        policy = 'MlpPolicy'
+        agent = SAC(policy, env = env, device = args.device)
+        
+        agent.policy.load_state_dict(weights)
+        agent.save(f'{args.directory}/SAC-({args.train_env} to {args.test_env}).mdl')
+        print(f'\nmodel checkpoint storage: {args.directory}/SAC-({args.train_env} to {args.test_env}).mdl\n')
         
     if args.test:
         test(args, test_env, seed = 1)
