@@ -1,4 +1,4 @@
-""" ADR algorithm
+""" CDR algorithm
 Custom Hopper 
 MuJoCo environment
 """
@@ -95,20 +95,16 @@ class Callback(BaseCallback):
         self.env = env
 	    
     def update_phi(self, model, buffers):
-        rate = sum(1 for buffer in buffers if self.auto.data_buffers[model]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[model]['H'][self.auto.i])
+        rate = sum(1 for buffer in buffers 
+		   if self.auto.data_buffers[model]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[model]['H'][self.auto.i])
         performance = buffers.mean()
         gains = {'upper': abs(self.auto.phi - self.auto.data_buffers[model]['H'][self.auto.i]), 
 		 'lower': abs(self.auto.phi - self.auto.data_buffers[model]['L'][self.auto.i])}
         if rate > self.auto.alpha:
             # increase phi
             increment = gains['lower'] / (gains['upper'] + gains['lower'])
-            self.auto.phi += self.auto.delta * increment
-        elif performance > self.auto.data_buffers[model]['H'][self.auto.i]:
-            # decrease phi
-            increment = gains['upper'] / (gains['upper'] + gains['lower'])
-            self.auto.phi -= self.auto.delta * increment
-        elif performance < self.auto.data_buffers[model]['L'][self.auto.i]:
-            # maintain phi
+            self.auto.phi += self.auto.delta * (1 + increment)
+	else:
             pass
         self.auto.i += 1
         self.auto.phi = np.clip(self.auto.phi, 0.0, self.auto.upper_bound)
