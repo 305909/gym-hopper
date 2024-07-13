@@ -95,20 +95,20 @@ class Callback(BaseCallback):
         self.env = env
 	    
     def update_phi(self, model, buffers):
-        rate = sum(1 for buffer in buffers if self.auto.data_buffers[model]['L'][self.i] <= buffer <= self.auto.data_buffers[model]['H'][self.i])
+        rate = sum(1 for buffer in buffers if self.auto.data_buffers[model]['L'][self.auto.i] <= buffer <= self.auto.data_buffers[model]['H'][self.auto.i])
         performance = buffers.mean()
         if rate > self.auto.alpha:
             # increase phi
-            threshold = self.auto.data_buffers[model]['L'][self.i]
+            threshold = self.auto.data_buffers[model]['L'][self.auto.i]
             gain = (performance - threshold)
             order = math.floor(math.log10(abs(int(gain)))) + 1
             self.auto.phi += self.auto.delta * (1 + (gain / f'1e-{order}'))
-        elif performance > self.auto.data_buffers[model]['H'][self.i]:
-            threshold = self.auto.data_buffers[model]['H'][self.i]
+        elif performance > self.auto.data_buffers[model]['H'][self.auto.i]:
+            threshold = self.auto.data_buffers[model]['H'][self.auto.i]
             gain = (threshold - performance)
             order = math.floor(math.log10(abs(int(gain)))) + 1
             self.auto.phi -= self.auto.delta * (1 + (gain / f'1e-{order}'))
-        elif performance < self.auto.data_buffers[model]['L'][self.i]:
+        elif performance < self.auto.data_buffers[model]['L'][self.auto.i]:
             # maintain phi
             pass
         self.auto.i += 1
