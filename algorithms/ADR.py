@@ -42,6 +42,10 @@ def parse_args():
                         help = 'render the simulator')
     parser.add_argument('--device', default = 'cpu', type = str, 
                         help = 'network device [cpu, cuda]')
+    parser.add_argument('--train-env', default = 'source', type = str, 
+                        help = 'training environment')
+    parser.add_argument('--test-env', default = 'target', type = str, 
+                        help = 'testing environment')
     parser.add_argument('--train-episodes', default = 10000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
@@ -62,14 +66,14 @@ def get(model):
 
 
 class ADR():
-	def __init__(self, init_params: dict, p_b = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds:list = [1500, 1700]) -> None:
-		self.init_params = init_params # dict of the form {'torso': val, 'leg': val, 'foot': val}
-		self.thresholds = thresholds
-		self.delta = delta
-		self.m = m  # data buffer size 
-		self.bounds = self._init_bounds() # bounds: dict {'torso_low': val, 'torso_high': val, ...}
-		self.p_b = p_b
+	def __init__(self, params: dict, prob = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds: list = [250, 1750]) -> None:
 		self.step = getattr(self, '_' + step)
+		self.bounds = self._init_bounds()
+		self.thresholds = thresholds
+		self.params = params
+		self.delta = delta
+		self.prob = prob
+		self.m = m
 		self.thigh_mass = None
 		self.leg_mass = None
 		self.foot_mass = None
@@ -79,50 +83,46 @@ class ADR():
 		self.last_performances = []
 		self.last_increments = []
 		self.part = ['thigh', 'leg', 'foot']
-		self.databuffer = {"thigh_low": [], 
-                       "thigh_high": [],
-                       "leg_low": [], 
-                       "leg_high": [],
-                       "foot_low": [],
-                       "foot_high": []
-                      }
+		self.databuffer = {"thigh_low": list(), 
+				   "thigh_high": list(), 
+				   "leg_low": list(), 
+				   "leg_high": list(), 
+				   "foot_low": list(), 
+				   "foot_high": list()}
 		self.keys = list(self.databuffer.keys())
-		self.current_bound = 0
-    
-	def insert(self, body_part: str, reward: float) -> None:
-		if self.keys[self.current_bound] == body_part:
-			self.databuffer[body_part].append(reward)
+		self.bound = 0
+
+	def insert(self, part: str, reward: float) -> None:
+		if self.keys[self.bound] == part:
+			self.databuffer[part].append(reward)
 
 	# compute the mean performance and clear buffer
-	def _evaluate_perfomance(self, body_part: str) -> float:
-		performance = np.mean(np.array(self.databuffer[body_part]))
-		self.databuffer[body_part].clear()
+	def evaluate_perfomance(self, part: str) -> float:
+		performance = np.mean(np.array(self.databuffer[part]))
+		self.databuffer[part].clear()
 		return performance
 
-	# Check size of the ADR and in case increase or decrease the bounds
-	def updateADR(self, body_part: str):
-		if len(self.databuffer[body_part]) >= self.m:
+	# check size of the ADR and in case increase or decrease the bounds
+	def update(self, part: str):
+		if len(self.databuffer[part]) >= self.m:
 			# low or high
-			bp, extract_extreme = tuple(body_part.split("_"))
-			performance = self._evaluate_perfomance(body_part)
-			
-			self.last_performances.append((body_part, performance))
+			bp, extreme = tuple(body_part.split("_"))
+			performance = self.evaluate_perfomance(part)
+			self.last_performances.append((part, performance))
 
-			# if performance >= self._th('high'):
 			if performance >= self.thresholds[1]:
-				if extract_extreme == "high":
-					self._increase_high_bounds(body_part, performance)
+				if extreme == "high":
+					self._increase_high_bounds(part, performance)
 				else:
-					self._decrease_low_bounds(body_part, performance)
-			# elif performance <= self._th('low'):
+					self._decrease_low_bounds(part, performance)
 			if performance <= self.thresholds[0]:
-				if extract_extreme == "high":
-					self._decrease_high_bounds(body_part, performance)
+				if extreme == "high":
+					self._decrease_high_bounds(part, performance)
 				else:
-					self._increase_low_bounds(body_part, performance)
+					self._increase_low_bounds(part, performance)
 
 	def get_random_masses(self):
-		# Set three random masses
+		# set three random masses
 		thigh_mass = np.random.uniform(
 			self.bounds["thigh_low"], self.bounds["thigh_high"])
 		leg_mass = np.random.uniform(
@@ -130,106 +130,68 @@ class ADR():
 		foot_mass = np.random.uniform(
 			self.bounds["foot_low"], self.bounds["foot_high"])
 
-		d = {"thigh": thigh_mass, "leg": leg_mass, "foot": foot_mass}
+		dict = {"thigh": thigh_mass, "leg": leg_mass, "foot": foot_mass}
 
-		# prob of set masses to lower or upper bound
-		u = np.random.uniform(0, 1)
-		k_bounds = None
+		# probability to set masses to lower or upper bound
+		uniform = np.random.uniform(0, 1)
+		k = None
 
-		# Set one random parameter to its lower or upper bound
-		if u < self.p_b:
-			k_bounds = self._select_random_parameter()
-			body_part = k_bounds.split("_")[0]
+		# set one random parameter to its lower or upper bound
+		if uniform < self.prob:
+			k = self._select_random_parameter()
+			part = k.split("_")[0]
+			d[part] = self.bounds[k]
+			
+		return list(dict.values()), k
 
-			d[body_part] = self.bounds[k_bounds]
-
-		return list(d.values()), k_bounds
-
-	def evaluate(self, episode_return, key_bounds) -> None:
-		self.insert_ep_return(body_part=key_bounds, ep_return=episode_return)
-		self.updateADR(body_part=key_bounds)
+	def evaluate(self, reward, key) -> None:
+		self.insert(part = key, reward = reward)
+		self.update(part = key)
 
 	def _constant(self, *args):
 		return self.delta
 
-	def _increase_high_bounds(self, body_part: str, performance):
+	def _increase_high_bounds(self, part: str, performance):
 		step = self.step(self.thresholds[1], performance)
-		self.bounds[body_part] = self.bounds[body_part] + step 
-		self.last_increments.append((body_part, 'high+', step))
-		self.current_bound = (self.current_bound+1) % len(self.keys)
-		# if self.update_counter == 0:
-		# 	self.current_bound = (self.current_bound+1) % len(self.keys)
-		# else:
-		# 	self.update_counter += 1
+		self.bounds[part] = self.bounds[part] + step 
+		self.bound = (self.bound + 1) % len(self.keys)
 
-	def _decrease_low_bounds(self, body_part: str, performance):
+	def _decrease_low_bounds(self, part: str, performance):
 		step = self.step(self.thresholds[1], performance)
-		new_low_bounds = self.bounds[body_part] - step
-		self.bounds[body_part] = max(new_low_bounds, 0)
-		self.last_increments.append((body_part, 'low+', step))
-		self.current_bound = (self.current_bound+1) % len(self.keys)
-		# if self.update_counter == 0:
-		# 	self.current_bound = (self.current_bound+1) % len(self.keys)
-		# else:
-		# 	self.update_counter += 1
+		self.bounds[part] = max(self.bounds[part] - step, 0)
+		self.bound = (self.bound + 1) % len(self.keys)
 	
-	def _decrease_high_bounds(self, body_part: str, performance):
-		body = body_part.split('_')[0]
-		if not np.isclose(self.init_params[body], self.bounds[body_part]):
-			# self.update_counter -= 1
-			self.bounds[body_part] = max(self.bounds[body_part] - self.delta, self.init_params[body])
-		self.last_increments.append((body_part, 'high-', self.delta))
+	def _decrease_high_bounds(self, part: str, performance):
+		body = part.split('_')[0]
+		if not np.isclose(self.params[body], self.bounds[part]):
+			self.bounds[part] = max(self.bounds[part] - self.delta, self.params[body])
 	
-	def _increase_low_bounds(self, body_part: str, performance):
-		body = body_part.split('_')[0]
-		if not np.isclose(self.init_params[body], self.bounds[body_part]):
-			# self.update_counter -= 1
-			self.bounds[body_part] = min(self.bounds[body_part] + self.delta, self.init_params[body])
-		self.last_increments.append((body_part, 'low-', self.delta))
+	def _increase_low_bounds(self, part: str, performance):
+		body = part.split('_')[0]
+		if not np.isclose(self.init_params[body], self.bounds[part]):
+			self.bounds[body_part] = min(self.bounds[part] + self.delta, self.params[body])
 
 	def _init_bounds(self):
 		try:
-			dict = {"thigh_low": self.init_params['thigh'],
-					"thigh_high": self.init_params['thigh'],
-					"leg_low": self.init_params['leg'],
-					"leg_high": self.init_params['leg'],
-					"foot_low": self.init_params['foot'],
-					"foot_high": self.init_params['foot']
-					}
+			dict = {"thigh_low": self.params['thigh'],
+				"thigh_high": self.params['thigh'],
+				"leg_low": self.params['leg'],
+				"leg_high": self.params['leg'],
+				"foot_low": self.params['foot'],
+				"foot_high": self.params['foot']}
 		except:
-			print("Bounds not initialized")
+			print("bounds not initialized")
 		return dict
 
-	# Extract random key
+	# extract random key
 	def _select_random_parameter(self) -> str:
-		# keys = list(self.bounds.keys())
-		# rand = np.random.choice(len(keys))
-		rand = np.random.randint(2) # random 0 or 1, if 1 changes the bound of the parameter that we are testing
-		part = self.keys[self.current_bound^rand]
-		# print('selected bound:', part) # TODO: remove this print
+		rand = np.random.randint(2)
+		part = self.keys[self.current_bound ^ rand]
 		return part
-		# return keys[rand]
-  
-	def print_distributions(self):
-		for p in self.part:
-			high = self.bounds[p+'_high']
-			low = self.bounds[p+'_low']
-			center = self.init_params[p]
-			left = round((center - low) // self.delta)
-			right = round((high - center) // self.delta)
-			if low != center:
-				print(f'\t[{round(low, 2)}]«{"-"*left}', end='')
-			else:
-				print('\t', end='')
-			print(f'[{round(center, 2)}]', end='')
-			if high != center:
-				print(f'{"-"*right}»[{round(high, 2)}]')
-			else:
-				print()
         
 
 class Callback(BaseCallback):
-    def __init__(self, agent, env, auto, ADR, args, verbose = 1):
+    def __init__(self, agent, env, auto, adr, args, verbose = 1):
         super(Callback, self).__init__(verbose)
         """ initializes a callback object to access 
         the internal state of the RL agent over training iterations
@@ -251,17 +213,14 @@ class Callback(BaseCallback):
         self.episode_lengths = list()
         self.num_episodes = 0
         self.mod = args.model
-        self.original_masses = {'thigh': 3.9269908169872427, 
-                                'foot': 5.0893800988154645,
-                                'leg': 2.7143360527015816}
-        self.masses = {'thigh': [(3.9269908169872427, 3.9269908169872427)],  
-                       'foot': [(5.0893800988154645, 5.0893800988154645)], 
-                       'leg': [(2.7143360527015816, 2.7143360527015816)]}
+        self.masses = {'thigh': [3.9269908169872427],
+                       'leg': [2.7143360527015816],
+                       'foot': [5.0893800988154645]}
         self.agent = agent
         self.bounds = None
         self.flag = False
         self.auto = auto
-        self.adr = ADR
+        self.adr = adr
         self.env = env
     
     def _on_step(self) -> bool:
@@ -269,12 +228,11 @@ class Callback(BaseCallback):
         self.num_episodes += np.sum(self.locals['dones'])
         if (self.locals['dones']):
             if self.bounds is not None:
-                self.adr.evaluate(infos['episode']['r'], bounds)
+		    for info in self.locals['infos']:
+			    if 'episode' in info:
+				    self.adr.evaluate(info['episode']['r'], self.bounds)
             params, self.bounds = self.adr.get_random_masses()
-            print(params, self.bounds)
-            print(self.auto.sim.model.body_mass[1:], self.auto.sim.model.body_mass[2:])
-            self.auto.set_parameters(params)
-            self.adr.print_distributions()
+            self.auto.sim.model.body_mass[2:] = np.array(params)
       
         if self.num_episodes % self.eval_frequency == 0: 
             if not self.flag:
@@ -284,7 +242,11 @@ class Callback(BaseCallback):
                 er, el = np.array(episode_rewards), np.array(episode_lengths)
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
-              
+		    
+                masses = self.auto.get_parameters()[1:]
+                for i, key in enumerate(self.masses.keys()):
+                    self.masses[key].append(masses[i])
+			
                 if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
                     print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers[self.mod]["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers[self.mod]["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
                 self.flag = True  # mark evaluation as due
@@ -310,7 +272,7 @@ def multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3]):
 
     print(f'\nmodel to train: {model}\n')
 	    
-    pool = {'rewards': list(), 'lengths': list(), 'times': list(), 'weights': list()}
+    pool = {'rewards': list(), 'lengths': list(), 'masses': list(), 'times': list(), 'weights': list()}
     for iter, seed in enumerate(seeds):
         print(f'\ntraining session: {iter + 1}')
         print("----------------")
@@ -359,10 +321,10 @@ def train(args, seed, train_env, test_env, model):
     test_env = gym.make(test_env)
     test_env.seed(seed)
 
-    init_params = {"thigh": 3.92699082,  "leg": 2.71433605, "foot": 5.0893801}
-    ADRCallback = ADR(init_params)
+    params = {"thigh": 3.92699082,  "leg": 2.71433605, "foot": 5.0893801}
+    adr = ADR(params)
   
-    callback = Callback(agent, test_env, env, ADRCallback, args)
+    callback = Callback(agent, test_env, env, adr, args)
 
     total_timesteps = args.train_episodes * 500
     start_time = time.time()
@@ -465,10 +427,8 @@ def plot(args, records):
     # calculate averages for each key across each record
     for key in records[0]:
         for i in range(len(records[0][key])):
-            # calculate average of the first and second elements separately
-            lower = np.mean([record[key][i][0] for record in records])
-            upper = np.mean([record[key][i][1] for record in records])
-            stacks[key].append((lower, upper))
+            value = np.mean([record[key][i] for record in records])
+            stacks[key].append(value)
     
     # stack averages into xs and ys arrays
     xs = np.array([(index + 1) * args.eval_frequency for index in range(len(stacks[key]))])
@@ -481,22 +441,13 @@ def plot(args, records):
 	
     # iterate over each key and plot lower and upper values separately
     for index, (key, values) in enumerate(ys.items()):
-        lowers = [y[0] for y in values]
-        uppers = [y[1] for y in values]
+        masses = [y for y in values]
         
-        # plot lower values
-        plt.plot(xs, lowers, alpha = 1, 
+        plt.plot(xs, masses, alpha = 1,
 		 label = f'{key}', color = colors[index % len(colors)])
 
         path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-lowers.npy')
-        np.save(path, lowers)
-	    
-        # plot upper values
-        plt.plot(xs, uppers, alpha = 1, 
-		 color = colors[index % len(colors)])
-
-        path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-uppers.npy')
-        np.save(path, uppers)
+        np.save(path, masses)
 
     plt.xlabel('episodes')
     plt.ylabel(f'mass (kg)')
@@ -515,7 +466,8 @@ def main():
         os.mkdir(args.directory)
 
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
-                                for x in ['source-ADR', 'target'])
+                                for x in [args.train_env, 
+                                          args.test_env])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         print('\nWARNING: GPU not available, switch to CPU\n')
@@ -544,7 +496,7 @@ def main():
             track(metric, xs, ys, sigmas, args, 
                   label = f'{args.model}-ADR', 
                   filename = f'{args.model}-ADR-{metric}')
-            plot(args, records = pool['masses'])
+        plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
