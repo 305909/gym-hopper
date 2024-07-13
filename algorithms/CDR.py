@@ -268,7 +268,7 @@ class Callback(BaseCallback):
         """ monitors performance """
         self.num_episodes += np.sum(self.locals['dones'])
         if (self.locals['dones']):
-            if bounds is not None:
+            if self.bounds is not None:
                 self.adr.evaluate(infos['episode']['r'], bounds)
             params, self.bounds = self.adr.get_random_masses()
             self.auto.set_parameters(params)
