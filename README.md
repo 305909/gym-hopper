@@ -212,17 +212,12 @@ where:
 CDR pauses the training process every $K$ number of episodes and iterates over $N$ testing episodes to evaluate the agent's performance (shift to the `target` environment). The algorithm then updates the current variation factor $\phi^k$ based on agent's performance $r$, i.e. the reward rate within the optimization interval:
 
 $$
-r = \frac{1}{N} \sum_{n=1}^{N} [ 1 | if D_k^{L} < G_{n}^{\pi} < D_k^{H} ]
-$$
-
-$$
 r =  \frac{1}{N} \sum_{n=1}^{N} 1 \text{ if } D_k^{L} \leq G_{n}^{\pi} \leq D_k^{H}
 $$
 
 $$
 \phi^{k+1} = \begin{cases} 
-\phi^k - \delta & \text{if } \mathbb{E}[G^\pi] > D_k^{H} \\
-\phi^k + \delta & \text{if } D_k^{L} \leq \mathbb{E}[G^\pi] \leq D_k^{H} \\
+\phi^k - \delta & \text{if } r > \alpha \\
 \phi^k & \text{otherwise}
 \end{cases}
 $$
