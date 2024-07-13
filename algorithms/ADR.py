@@ -421,7 +421,7 @@ def main():
         policy = 'MlpPolicy'
         agent = PPO(policy, env = env, device = args.device)
         
-        agent.policy.load_state_dict(weights)
+        agent.policy.load_state_dict(pool['weights'][0])
         agent.save(f'{args.directory}/PPO-ADR.mdl')
         print(f'\nmodel checkpoint storage: {args.directory}/PPO-ADR.mdl\n')
         
