@@ -244,7 +244,7 @@ class Callback(BaseCallback):
                     self.masses[key].append(masses[i])
 			
                 if self.verbose > 0 and self.num_episodes % int(self.train_episodes * 0.25) == 0:
-                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f} | bounds: ({self.auto.data_buffers[self.mod]["L"][self.auto.i - 1]:.2f}, {self.auto.data_buffers[self.mod]["H"][self.auto.i - 1]:.2f}) | -> phi: {self.auto.phi:.2f}')
+                    print(f'training episode: {self.num_episodes} | test episodes: {self.test_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}')
                 self.flag = True  # mark evaluation as due
         if self.num_episodes % self.eval_frequency != 0:
             self.flag = False  # reset evaluation flag
