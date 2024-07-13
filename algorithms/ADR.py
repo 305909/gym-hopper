@@ -71,12 +71,12 @@ def get(model):
 class ADR():
     def __init__(self, params: dict, prob = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds: list = [250, 1750]) -> None:
         self.step = getattr(self, '_' + step)
-        self.bounds = {"thigh_low": self.params['thigh'],
-		       "thigh_high": self.params['thigh'],
-		       "leg_low": self.params['leg'],
-		       "leg_high": self.params['leg'],
-		       "foot_low": self.params['foot'],
-		       "foot_high": self.params['foot']}
+        self.bounds = {"thigh_low": params['thigh'],
+		       "thigh_high": params['thigh'],
+		       "leg_low": params['leg'],
+		       "leg_high": params['leg'],
+		       "foot_low": params['foot'],
+		       "foot_high": params['foot']}
         self.thresholds = thresholds
         self.params = params
         self.delta = delta
