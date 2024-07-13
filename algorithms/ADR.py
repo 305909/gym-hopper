@@ -60,7 +60,6 @@ def get(model):
     elif model == 'PPO': return PPO
     else: raise ValueError(f"ERROR: model: {model} not found")
 
-
 class Callback(BaseCallback):
     def __init__(self, agent, env, auto, args, verbose = 1):
         super(Callback, self).__init__(verbose)
@@ -94,7 +93,27 @@ class Callback(BaseCallback):
         self.flag = False
         self.auto = auto
         self.env = env
-    
+	    
+    def update_phi(self, model, buffers):
+        rate = sum(1 for buffer in buffers if self.auto.data_buffers[model]['L'][self.i] <= buffer <= self.auto.data_buffers[model]['H'][self.i])
+        performance = buffers.mean()
+        if rate > self.auto.alpha:
+            # increase phi
+            threshold = self.auto.data_buffers[model]['L'][self.i]
+            gain = (performance - threshold)
+            order = math.floor(math.log10(abs(int(gain)))) + 1
+            self.auto.phi += self.auto.delta * (1 + (gain / f'1e-{order}'))
+        elif performance > self.auto.data_buffers[model]['H'][self.i]:
+            threshold = self.auto.data_buffers[model]['H'][self.i]
+            gain = (threshold - performance)
+            order = math.floor(math.log10(abs(int(gain)))) + 1
+            self.auto.phi -= self.auto.delta * (1 + (gain / f'1e-{order}'))
+        elif performance < self.auto.data_buffers[model]['L'][self.i]:
+            # maintain phi
+            pass
+        self.auto.i += 1
+        self.auto.phi = np.clip(self.auto.phi, 0.0, self.auto.upper_bound)
+	    
     def _on_step(self) -> bool:
         """ monitors performance """
         self.num_episodes += np.sum(self.locals['dones'])
@@ -107,7 +126,7 @@ class Callback(BaseCallback):
                 self.episode_rewards.append(er.mean())
                 self.episode_lengths.append(el.mean())
               
-                self.auto.update_phi(model = self.mod, buffers = er)
+                self.update_phi(model = self.mod, buffers = er)
                 for key in self.original_masses.keys():
                     self.masses[key].append(((1 - self.auto.phi) * self.original_masses[key], 
                                              (1 + self.auto.phi) * self.original_masses[key]))
