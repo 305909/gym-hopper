@@ -216,6 +216,10 @@ r = \frac{1}{N} \sum_{n=1}^{N} [ 1 | if D_k^{L} < G_{n}^{\pi} < D_k^{H} ]
 $$
 
 $$
+r = \sum_{G_{n=1}^{\pi} \in G_{N}} 1 \text{ if } D_k^{L} \leq Gt \leq D_k^{H}
+$$
+
+$$
 \phi^{k+1} = \begin{cases} 
 \phi^k - \delta & \text{if } \mathbb{E}[G^\pi] > D_k^{H} \\
 \phi^k + \delta & \text{if } D_k^{L} \leq \mathbb{E}[G^\pi] \leq D_k^{H} \\
