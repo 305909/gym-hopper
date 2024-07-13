@@ -358,9 +358,9 @@ def train(args, seed, train_env, test_env, model):
     test_env.seed(seed)
 
     init_params = {"thigh": 3.92699082,  "leg": 2.71433605, "foot": 5.0893801}
-    ADR = ADR(init_params)
+    ADRCallback = ADR(init_params)
   
-    callback = Callback(agent, test_env, env, ADR, args)
+    callback = Callback(agent, test_env, env, ADRCallback, args)
 
     total_timesteps = args.train_episodes * 500
     start_time = time.time()
