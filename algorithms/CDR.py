@@ -62,13 +62,13 @@ def get(model):
 
 
 class ADR():
-	def __init__(self, init_params: dict, probability = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds:list = [1500, 1700]) -> None:
+	def __init__(self, init_params: dict, p_b = 0.5, m = 50, delta = 0.2, step = 'constant', thresholds:list = [1500, 1700]) -> None:
 		self.init_params = init_params # dict of the form {'torso': val, 'leg': val, 'foot': val}
 		self.thresholds = thresholds
 		self.delta = delta
 		self.m = m  # data buffer size 
 		self.bounds = self._init_bounds() # bounds: dict {'torso_low': val, 'torso_high': val, ...}
-		self.probability = probability
+		self.p_b = p_b
 		self.step = getattr(self, '_' + step)
 		self.thigh_mass = None
 		self.leg_mass = None
@@ -358,7 +358,7 @@ def train(args, seed, train_env, test_env, model):
     test_env.seed(seed)
 
     init_params = {"thigh": 3.92699082,  "leg": 2.71433605, "foot": 5.0893801}
-    ADR = (init_params)
+    ADR = ADR(init_params)
   
     callback = Callback(agent, test_env, env, ADR, args)
 
