@@ -39,13 +39,17 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         masses.insert(0, self.sim.model.body_mass[1])
         return masses
 
-    def update_phi(self, model, performance):
-        if performance > self.data_buffers[model]['H'][self.i]:
+    def update_phi(self, model, buffers):
+        rate = sum(1 for buffer in buffers if self.data_buffers[model]['L'][self.i] <= buffer <= self.data_buffers[model]['H'][self.i])
+        performance = buffers.mean()
+        if rate > self.alpha:
+            # increase phi
+            threshold = self.data_buffers[model]['L'][self.i]
+            gain = (performance - threshold) / 100
+            self.phi += self.delta * (1 + gain)
+        elif performance > self.data_buffers[model]['H'][self.i]:
             # decrease phi
             self.phi -= self.delta
-        elif self.data_buffers[model]['L'][self.i] <= performance <= self.data_buffers[model]['H'][self.i]:
-            # increase phi
-            self.phi += self.delta
         elif performance < self.data_buffers[model]['L'][self.i]:
             # maintain phi
             pass
