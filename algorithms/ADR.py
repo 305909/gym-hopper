@@ -312,14 +312,14 @@ def plot(args, records):
         plt.plot(xs, lowers, alpha = 1, 
 		 label = f'{key}', color = colors[index % len(colors)])
 
-	path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-lowers.npy')
+        path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-lowers.npy')
         np.save(path, lowers)
 	    
         # plot upper values
         plt.plot(xs, uppers, alpha = 1, 
 		 color = colors[index % len(colors)])
-	    
-	path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-uppers.npy')
+
+        path = os.path.join(args.directory, f'{args.model}-ADR-masses-{key}-uppers.npy')
         np.save(path, uppers)
 
     plt.xlabel('episodes')
