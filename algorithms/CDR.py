@@ -290,7 +290,8 @@ def main():
         os.mkdir(args.directory)
 
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
-                                for x in ['source-CDR', 'target'])
+                                for x in ['source-CDR', 
+					  'target'])
 
     if args.device == 'cuda' and not torch.cuda.is_available():
         print('\nWARNING: GPU not available, switch to CPU\n')
@@ -315,7 +316,7 @@ def main():
             track(metric, xs, ys, sigmas, args, 
                   label = f'PPO-CDR', 
                   filename = f'PPO-CDR-{metric}')
-            plot(args, records = pool['masses'])
+        plot(args, records = pool['masses'])
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
         
