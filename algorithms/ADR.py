@@ -176,7 +176,7 @@ class ADR():
 
     def _increase_low_bounds(self, part: str, performance):
         body = part.split('_')[0]
-        if not np.isclose(self.init_params[body], self.bounds[part]):
+        if not np.isclose(self.params[body], self.bounds[part]):
             self.bounds[part] = min(self.bounds[part] + self.delta, self.params[body])
 
     # extract random key
