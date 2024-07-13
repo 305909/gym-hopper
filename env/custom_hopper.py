@@ -25,8 +25,9 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         if domain == 'source':  # (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
 
-    def set_random_distribution(self, dist):
+    def set_randomness(self, dist, samp):
         self.dist = dist
+        self.samp = samp
         
     def set_random_parameters(self):
         """ set random masses """
