@@ -150,7 +150,7 @@ def main():
     warnings.filterwarnings("ignore")
     params = {
         'learning_rate': [1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4]
-        }
+    }
     
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
                                 for x in [args.train_env, 
