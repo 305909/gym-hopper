@@ -134,9 +134,13 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
+        'gamma': [0.97, 0.99],
+        'hidden': [64, 128, 256],
         'batch_size': [8, 16, 32, 64],
+        'critic_coef': [0.25, 0.5, 0.75],
+        'entropy_coef': [0.0, 0.25, 0.5, 0.75],
         'learning_rate': [1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4]
-        }
+    }
 	
     if args.device == 'cuda' and not torch.cuda.is_available():
         print('\nWARNING: GPU not available, switch to CPU\n')
