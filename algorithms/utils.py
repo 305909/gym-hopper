@@ -175,7 +175,7 @@ def compute_wasserstein_distance(real_data, sim_data):
     return distance
 	
 
-def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: float = 1e-4):
+def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: float = 1e-3):
     parts = ['torso', 'thigh', 'leg', 'foot']
     masses = np.array([2.53429174, 3.92699082, 2.71433605, 5.0893801])  # initial guess for link masses
     print(f'initial physical parameters:')
