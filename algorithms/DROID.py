@@ -26,9 +26,9 @@ from env.custom_hopper import *
 
 from stable_baselines3 import PPO
 from collections import OrderedDict
-from utils import display, multiprocess, stack, track
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.evaluation import evaluate_policy
+from utils import display, multiprocess, stack, track, collect, optimize_params
 
 
 def parse_args():
@@ -115,7 +115,14 @@ def train(args, seed, train_env, test_env, model):
         seed: seed of the training session
         model: model to train
     """
-    env = gym.make(train_env)
+    # collect data from real word and simulation
+    real_data = collect(gym.make('CustomHopper-target-v0'), seed)
+    sim_data = collect(gym.make('CustomHopper-source-v0'), seed)
+	
+    # optimize the masses
+    masses = optimize_params(real_data, sim_data, seed, maxit = 100, learning_rate = 0.001)
+	
+    env = gym.make(train_env, params = masses)
     
     env.seed(seed)
     np.random.seed(seed)
@@ -164,7 +171,7 @@ def test(args, test_env, seed):
     model = None
 
     if args.train:
-        model = f'{args.directory}/PPO-({args.train_env} to {args.test_env}).mdl'
+        model = f'{args.directory}/DROID-({args.train_env} to {args.test_env}).mdl'
         agent = PPO.load(model, 
                          env = env, 
                          device = args.device)
@@ -203,7 +210,7 @@ def test(args, test_env, seed):
     print(f'\ntest episodes: {num_episodes} | reward: {er.mean():.2f} +/- {er.std():.2f}\n')
 
     if args.render:
-        imageio.mimwrite(f'{args.directory}/PPO-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
+        imageio.mimwrite(f'{args.directory}/DROID-({args.train_env} to {args.test_env})-test.gif', frames, fps = 30)
 
     env.close()
 
@@ -241,11 +248,11 @@ def main():
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward':
-                path = os.path.join(args.directory, f'PPO-({args.train_env} to {args.test_env})-rewards.npy')
+                path = os.path.join(args.directory, f'DROID-({args.train_env} to {args.test_env})-rewards.npy')
                 np.save(path, ys)
             track(metric, xs, ys, sigmas, args, 
-		  label = 'PPO', 
-		  filename = f'PPO-({args.train_env} to {args.test_env})-{metric}')
+		  label = 'DROID', 
+		  filename = f'DROID-({args.train_env} to {args.test_env})-{metric}')
         print(f'\ntraining time: {np.mean(pool["times"]):.2f} +/- {np.std(pool["times"]):.2f}')
         print("-------------")
 
@@ -253,8 +260,8 @@ def main():
         agent = PPO(policy, env = env, device = args.device)
         
         agent.policy.load_state_dict(pool['weights'][0])
-        agent.save(f'{args.directory}/PPO-({args.train_env} to {args.test_env}).mdl')
-        print(f'\nmodel checkpoint storage: {args.directory}/PPO-({args.train_env} to {args.test_env}).mdl\n')
+        agent.save(f'{args.directory}/DROID-({args.train_env} to {args.test_env}).mdl')
+        print(f'\nmodel checkpoint storage: {args.directory}/DROID-({args.train_env} to {args.test_env}).mdl\n')
         
     if args.test:
         test(args, test_env, seed = 1)
