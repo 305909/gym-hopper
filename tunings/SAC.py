@@ -71,7 +71,7 @@ def train(seed: int,
 
 
 def test(seed: int, agent: SAC, 
-         test_episodes: int = 100, 
+	 test_episodes: int = 100, 
 	 test_env: str = 'CustomHopper-source-v0') -> float:
     """ tests the agent in the testing environment """ 
     env = gym.make(test_env)
@@ -105,8 +105,8 @@ def pooling(kwargs: dict, seed, device, train_episodes, test_episodes,
     
     agent = train(seed = seed, 
 		  device = device, 
-                  train_episodes = train_episodes, 
-                  train_env = train_env, **kwargs)
+		  train_episodes = train_episodes, 
+		  train_env = train_env, **kwargs)
     
     return test(seed, agent,
                 test_episodes = test_episodes, 
@@ -149,7 +149,7 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
-        'learning_rate': [1e-3, 7.5e-4, 5e-3, 2.5e-4, 1e-4]
+        'learning_rate': [1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4]
         }
     
     train_env, test_env = tuple(f'CustomHopper-{x}-v0' 
