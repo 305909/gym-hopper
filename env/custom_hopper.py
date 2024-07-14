@@ -20,6 +20,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         self.phi = phi
         self.done = False
         self.debug = False
+        self.params = params
         self.domain = domain
         self.randomize = randomize
 
@@ -45,14 +46,23 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
     def sample_parameters(self, phi):
         """ sample masses according to a domain distribution """
         if self.dist == "uniform":
-            masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
-                      for mass in self.original_masses[1:]]
-            masses.insert(0, self.sim.model.body_mass[1])
-                
+            if self.params is not None:
+                masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
+                          for mass in self.params[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
+            else:
+                masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
+                          for mass in self.original_masses[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
         if self.dist == "normal":
-            masses = [np.random.normal(loc = mass, scale = phi) 
-                      for mass in self.original_masses[1:]]
-            masses.insert(0, self.sim.model.body_mass[1])
+            if self.params is not None:
+                masses = [np.random.normal(loc = mass, scale = phi) 
+                          for mass in self.params[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
+            else:
+                masses = [np.random.normal(loc = mass, scale = phi) 
+                          for mass in self.original_masses[1:]]
+                masses.insert(0, self.sim.model.body_mass[1])
                 
         return masses
         
