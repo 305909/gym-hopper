@@ -245,10 +245,6 @@ $$
 $$
 
 $$
-r =  \frac{1}{N} \sum_{n=1}^{N} 1 \text{ if } D_k^{L} \leq G_{n}^{\pi} \leq D_k^{H}
-$$
-
-$$
 \phi^{k+1} = \begin{cases} 
 \phi^k + \delta & \text{if } r > \alpha \\
 \phi^k - \delta & \text{otherwise}
