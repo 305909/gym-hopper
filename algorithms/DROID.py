@@ -41,10 +41,6 @@ def parse_args():
                         help = 'render the simulator')
     parser.add_argument('--device', default = 'cpu', type = str, 
                         help = 'network device [cpu, cuda]')
-    parser.add_argument('--train-env', default = 'source', type = str, 
-                        help = 'training environment')
-    parser.add_argument('--test-env', default = 'target', type = str, 
-                        help = 'testing environment')
     parser.add_argument('--train-episodes', default = 10000, type = int, 
                         help = 'number of training episodes')
     parser.add_argument('--test-episodes', default = 50, type = int, 
