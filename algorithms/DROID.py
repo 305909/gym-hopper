@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--learning-rate', default = 2.5e-4, type = float, 
-                        help = 'learning rate')
+                        help = 'learning rate for domain randomization')
     parser.add_argument('--dist', default = 'uniform', type = str,
                         help = 'distribution for domain randomization')
     parser.add_argument('--input-model', default = None, type = str, 
@@ -118,7 +118,8 @@ def train(args, seed, train_env, test_env, model):
     sim_data = collect(gym.make('CustomHopper-source-UDR-v0'), seed)
     
     # optimize the masses
-    masses = optimize_params(real_data, sim_data, seed, maxit = 100, learning_rate = 1e-3)
+    masses = optimize_params(real_data, sim_data, seed, 
+			     maxit = 100, learning_rate = args.learning_rate, verbose = True)
     
     env = gym.make(train_env, params = masses)
     env.set_randomness(args.dist)
@@ -139,7 +140,7 @@ def train(args, seed, train_env, test_env, model):
                     env = env, 
                     seed = seed,
                     device = args.device, 
-                    learning_rate = args.learning_rate,
+                    learning_rate = 2.5e-4,
                     batch_size = 128, 
 		    ent_coef = 0.0,
                     n_steps = 1024,
