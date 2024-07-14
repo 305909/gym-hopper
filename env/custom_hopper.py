@@ -30,6 +30,9 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         if params is not None:
             self.set_parameters(params)
 
+    def set_debug(self, bool):
+        self.debug = bool
+        
     def set_randomness(self, dist):
         self.dist = dist
         
