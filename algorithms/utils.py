@@ -1,11 +1,17 @@
 import gym
+import sys
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 import PIL.ImageDraw as ImageDraw
 
+sys.path.append(
+	os.path.abspath(
+		os.path.join(os.path.dirname(__file__), '..')))
+
 from PIL import Image
 from cycler import cycler
+from env.custom_hopper import *
 from stable_baselines3.common.evaluation import evaluate_policy
 
 
@@ -125,8 +131,9 @@ def track(metric, xs, ys, sigmas, args, label, filename):
     plt.close()
 
 
-def collect(env, maxit = 10):
+def collect(env, seed, maxit = 10):
     data = list()
+    env.seed(seed)
     num_episodes = 0
     while num_episodes < maxit:
         done = False
@@ -141,7 +148,7 @@ def collect(env, maxit = 10):
     return data
 
 
-def optimize_params(real_data, sim_data, maxit = 100, learning_rate = 0.001):
+def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: int = 0.001):
     masses = np.array([2.53429174 ,3.92699082 ,2.71433605, 5.0893801 ])  # initial guess for link masses
 
     def compute_loss(real_data, sim_data, masses):
@@ -154,10 +161,14 @@ def optimize_params(real_data, sim_data, maxit = 100, learning_rate = 0.001):
         for m in range(len(masses)):
             per_masses = masses.copy()
             per_masses[m] += learning_rate
+            
             sim_env = gym.make('CustomHopper-source-v0')
-            sim_env.unwrapped.set_masses(per_masses)
-            per_sim_data = collect_data(sim_env)
-            loss = compute_loss(real_data, per_sim_data, per_masses)
+            env.seed(seed)
+            
+            sim_env.unwrapped.set_parameters(per_masses)
+            sim_data = collect(sim_env, seed)
+            
+            loss = compute_loss(real_data, sim_data, per_masses)
             losses.append(loss)
         
         gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
