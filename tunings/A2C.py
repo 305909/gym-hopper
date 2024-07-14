@@ -134,8 +134,8 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
-        'batch_size': [16, 32],
-        'learning_rate': [7e-4, 3e-4]
+        'batch_size': [8, 16, 32, 64],
+        'learning_rate': [1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4]
         }
 	
     if args.device == 'cuda' and not torch.cuda.is_available():
