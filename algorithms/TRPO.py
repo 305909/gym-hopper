@@ -24,7 +24,7 @@ from PIL import Image
 from cycler import cycler
 from env.custom_hopper import *
 
-from stable_baselines3 import TRPO
+from sb3_contrib import TRPO
 from collections import OrderedDict
 from utils import display, multiprocess, stack, track
 from stable_baselines3.common.callbacks import BaseCallback
