@@ -35,23 +35,22 @@ def convert_observation_to_space(observation):
 class MujocoEnv(gym.Env):
     """ interface for MuJoCo environments """
 
-    def __init__(self, frame_skip, randomize: bool = False, phi: float = None, dist: str = None, samp: bool = False):
+    def __init__(self, frame_skip, randomize: bool = False, phi: float = None, dist: str = None):
 
         self.frame_skip = frame_skip
         self.build_model()
         self.data = self.sim.data
         self.randomize = randomize
         
-        if randomize:  # UDR and CDR parameters
+        if self.randomize:  # randomization parameters
             self.phi = phi
             self.dist = dist
         
         self.i = 0
         self.dist = dist
-        self.samp = samp
         self.alpha = 0.5
         self.delta = 0.25
-        self.upper_bound = 1.25
+        self.upper_bound = 10.0
         self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
                                      'H': self.load('SAC-uppers.npy')}, 
                              'PPO': {'L': self.load('PPO-lowers.npy'), 
