@@ -182,7 +182,7 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         # Debugging prints
         print(f'iteration {iter + 1}/{maxit}')
         print(f'current masses: {masses}')
-        print(f'current loss: {current_loss}')
+        print(f'current loss: {loss}')
         print(f'gradients: {gradients}')
         print('-' * 30)
 
