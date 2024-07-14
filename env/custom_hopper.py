@@ -45,7 +45,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
                           for mass in self.original_masses[1:]]
                 masses.insert(0, self.sim.model.body_mass[1])
             else:
-                body = np.random.choice([0, 1, 2], p = [0.6, 0.2, 0.2])
+                body = np.random.choice([0, 1, 2], p = [0.7, 0.2, 0.1])
                 masses = list()
                 for i, mass in enumerate(self.original_masses[1:]):
                     if i != body: masses.append(mass)
@@ -58,7 +58,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
                           for mass in self.original_masses[1:]]
                 masses.insert(0, self.sim.model.body_mass[1])
             else:
-                body = np.random.choice([0, 1, 2], p = [0.6, 0.2, 0.2])
+                body = np.random.choice([0, 1, 2], p = [0.7, 0.2, 0.1])
                 masses = list()
                 for i, mass in enumerate(self.original_masses[1:]):
                     if i != body: masses.append(mass)
