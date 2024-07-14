@@ -238,7 +238,7 @@ r =  \frac{1}{N} \sum_{n=1}^{N} [c(n)]
 $$
 
 $$
-[c(i)] = \begin{cases} 
+[c(n)] = \begin{cases} 
 1 & \text{if } D_k^{L} \leq G_{n}^{\pi} \leq D_k^{H} \\
 0 & \text{otherwise}
 \end{cases}
