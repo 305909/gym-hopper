@@ -122,3 +122,110 @@ def track(metric, xs, ys, sigmas, args, label, filename):
   
     plt.savefig(f'{args.directory}/{filename}.png', dpi = 300)
     plt.close()
+
+
+def init_data(agent, source_env, target_env, masses, num_init = 5, num_roll = 5):
+    """ initializes a dataset in which each row: data[row, :-1], data[row, -1] = target, parameters
+    
+    args: 
+        num_init: number of initialization steps
+        num_roll: number of rollout to obtain an estimate of the actual value of the unknown objective function
+        
+    returns: 
+        data: dataset of parameters and objective function values
+    """
+
+    low = 0.25
+    high = 10
+    cols = 6
+
+    distribution = Uniform(low = torch.tensor([low], dtype = float), 
+                           high = torch.tensor([high], dtype = float))
+
+    data = torch.zeros(num_init, cols + 1)
+    
+    for i in range(num_init): 
+        phi = torch.tensor([distribution.sample() for col in range(cols)], dtype = float)
+        data[i, :-1] = phi
+        data[i, -1] = J(agent = agent, source_env = source_env, target_env = target_env, 
+                        bounds = phi, masses = masses, num_roll = num_roll)
+    return data
+
+
+def J(agent, source_env, target_env, bounds, masses, num_roll):
+    source_env.set_parametrization(bounds)
+    source_env.set_random_parameters(masses = masses, type = "uniform")
+
+    # learning with respect to random environment
+    agent.learn(total_timesteps = int(1e5))
+
+    roll = 0
+    roll_rewards = []
+    # testing the policy in the target environment for num_roll times
+    while roll < num_roll:
+        done = False
+        obs = env.reset()
+        rewards, steps = (0, 0)
+        while not done: 
+            action, _ = agent.predict(obs)
+            next_state, reward, done, _ = env.step(action)
+            rewards += reward
+            obs = next_state
+            # collecting the reward
+            test_rewards.append(rewards)
+        roll += 1   
+        roll_rewards.append(rewards)
+        
+    rr = np.array(roll_rewards)
+    return rr.mean()
+
+
+def get_candidate(X, Y): 
+    gp = SingleTaskGP(X, Y)
+    mll = ExactMarginalLogLikelihood(gp.likelihood, gp)
+    fit_gpytorch_model(mll)
+    UCB = UpperConfidenceBound(gp, beta = 0.1, maximize = True)
+    bounds = torch.stack([args.min * torch.ones(X.shape[1]), args.max * torch.ones(X.shape[1])])
+    candidate, _ = optimize_acqf(UCB, bounds = bounds, q = 1, num_restarts = 5, raw_samples = 20)
+    candidate = candidate.reshape(-1,)
+    return candidate
+
+
+def BRN(masses = ["thigh", "leg", "foot"], num_init = 5, num_roll = 5, maxit = 15, verbose = 1): 
+    """ exploits bayesian optimization to choose the optimal parametrization from a specific set of parameters
+    for what concerns their influence on a some blackbox function
+    
+    args: 
+        num_init: number of initializations iterations to run in order to collect some initial evidence
+        num_roll: number of rollout iterations to use so to estimate the actual outcome of some specific set of parameters
+        maxit: maximal number of iterations of the overall Bayesian Optimization process.
+    """
+
+    # creating source and target environments
+    source_env = gym.make("CustomHopper-source-v0")
+    target_env = gym.make("CustomHopper-target-v0") 
+
+    # istantiating an agent
+    agent = TRPO('MlpPolicy', env = source_env, verbose = verbose)
+
+    data = init_data(agent, source_env, target_env, masses, num_init = num_init, num_roll = num_roll)
+    
+    for it in tqdm(range(maxit)):  
+        X, Y = data[:, :-1], data[:, -1].reshape(-1,1)
+        # obtaining best candidate with Bayesian Optimization
+        candidate = get_candidate(X, Y)
+        # evaluating the candidate solution with source training - rollout evaluation
+        phi = J(agent, source_env, target_env, candidate, masses)
+        phi = torch.tensor(phi).reshape(-1)
+
+        candidate = torch.hstack([candidate, phi])
+        data = torch.vstack((data, candidate))
+    
+    optimal = D[torch.argmax(data[:, -1]), :-1]
+    return data, optimal
+
+
+def BayRN(masses = ["thigh", "leg", "foot"], verbose = 0):
+    data, bc = BRN(masses = masses, verbose = verbose)
+    np.savetxt("BayRN_data.txt", D)
+    return bc
