@@ -11,23 +11,32 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, phi = None, dist = None, samp = False):
-        MujocoEnv.__init__(self, 4, randomize, phi, dist, samp)
+    def __init__(self, domain = None, randomize = False, phi = None, dist = None, optim = None):
+        MujocoEnv.__init__(self, 4, randomize, phi, dist)
         utils.EzPickle.__init__(self)
 
         # default link masses
         self.original_masses = np.copy(self.sim.model.body_mass[1:])
-
-        self.domain = domain
+        self.phi = phi
+        self.done = False
         self.debug = False
+        self.domain = domain
+        self.randomize = randomize
 
         # torso mass shift from source to target environment
         if domain == 'source':  # (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
+            
+        if optim is not None:
+            self.set_masses(optim)
 
-    def set_randomness(self, dist, samp):
+    def set_randomness(self, dist):
         self.dist = dist
-        self.samp = samp
+
+    def set_masses(self, masses):
+        # ensure that the masses reside within valid limits
+        masses = np.clip(masses, 0.01, self.upper_bound)
+        self.sim.model.body_mass[1:] = masses
         
     def set_random_parameters(self):
         """ set random masses """
@@ -36,34 +45,16 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
             self.print_parameters()
 
     def sample_parameters(self, phi):
-        """ sample masses 
-        according to a domain distribution """
-        
+        """ sample masses according to a domain distribution """
         if self.dist == "uniform":
-            if not self.samp:
-                masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
-                          for mass in self.original_masses[1:]]
-                masses.insert(0, self.sim.model.body_mass[1])
-            else:
-                body = np.random.choice([0, 1, 2], p = [0.7, 0.2, 0.1])
-                masses = list()
-                for i, mass in enumerate(self.original_masses[1:]):
-                    if i != body: masses.append(mass)
-                    else: masses.append(np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass))
-                masses.insert(0, self.sim.model.body_mass[1])
+            masses = [np.random.uniform(high = (1 - phi) * mass, low = (1 + phi) * mass) 
+                      for mass in self.original_masses[1:]]
+            masses.insert(0, self.sim.model.body_mass[1])
                 
         if self.dist == "normal":
-            if not self.samp:
-                masses = [np.random.normal(loc = mass, scale = phi) 
-                          for mass in self.original_masses[1:]]
-                masses.insert(0, self.sim.model.body_mass[1])
-            else:
-                body = np.random.choice([0, 1, 2], p = [0.7, 0.2, 0.1])
-                masses = list()
-                for i, mass in enumerate(self.original_masses[1:]):
-                    if i != body: masses.append(mass)
-                    else: masses.append(np.random.normal(loc = mass, scale = phi))
-                masses.insert(0, self.sim.model.body_mass[1])
+            masses = [np.random.normal(loc = mass, scale = phi) 
+                      for mass in self.original_masses[1:]]
+            masses.insert(0, self.sim.model.body_mass[1])
                 
         return masses
         
@@ -176,12 +167,12 @@ gym.envs.register(
     id = "CustomHopper-source-UDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "phi": 0.25, "dist": "uniform", "samp": False}
+    kwargs = {"domain": "source", "randomize": True, "phi": 0.25, "dist": "uniform"}
 )
 
 gym.envs.register(
     id = "CustomHopper-source-CDR-v0",
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "phi": 0.0, "dist": "normal", "samp": False}
+    kwargs = {"domain": "source", "randomize": True, "phi": 0.0, "dist": "normal"}
 )
