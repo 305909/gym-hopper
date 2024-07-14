@@ -10,6 +10,7 @@
 - [Algorithms](#algorithms)
   - [REINFORCE](#reinforce)
   - [A2C](#a2c)
+  - [PPO](#ppo)
   - [SAC](#sac)
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
@@ -269,8 +270,4 @@ The `CDR.py` code offers the chance to set several execution parameters as in th
 
 Extract of monitoring during training for performance comparison of different algorithms.
 
-![Local Image](images/REF-A2C-10.000-5.png)
-
-![Local Image](images/PPO-10.000-3 (UDR).png)
-
-![Local Image](images/SAC-1.000-3.png)
+<img src = "images/REF-A2C-10.000-5.png" alt = "Alt text" width = "200"/>
