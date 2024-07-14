@@ -118,7 +118,7 @@ def train(args, seed, train_env, test_env, model):
     sim_data = collect(gym.make('CustomHopper-source-v0'), seed)
     
     # optimize the masses
-    masses = optimize_params(real_data, sim_data, seed, maxit = 100, learning_rate = 0.001)
+    masses = optimize_params(real_data, sim_data, seed, maxit = 10, learning_rate = 0.001)
     
     env = gym.make(train_env, params = masses)
     env.set_randomness(args.dist)
