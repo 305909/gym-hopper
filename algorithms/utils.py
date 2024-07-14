@@ -5,6 +5,7 @@ import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 import PIL.ImageDraw as ImageDraw
+from scipy.stats import wasserstein_distance
 
 sys.path.append(
 	os.path.abspath(
@@ -150,6 +151,30 @@ def collect(env, seed, maxit = 10):
     return data
 
 
+def compute_wasserstein_distance(real_data, sim_data):
+    real_state_actions = []
+    sim_state_actions = []
+
+    for episode in real_data:
+        for step in episode:
+            obs, action, _, _, _ = step
+            real_state_actions.append(np.hstack((obs, action)))
+
+    for episode in sim_data:
+        for step in episode:
+            obs, action, _, _, _ = step
+            sim_state_actions.append(np.hstack((obs, action)))
+
+    real_state_actions = np.array(real_state_actions)
+    sim_state_actions = np.array(sim_state_actions)
+    
+    distance = 0
+    for i in range(real_state_actions.shape[1]):
+        distance += wasserstein_distance(real_state_actions[:, i], sim_state_actions[:, i])
+
+    return distance
+	
+
 def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: float = 1e-4):
     parts = ['torso', 'thigh', 'leg', 'foot']
     masses = np.array([2.53429174, 3.92699082, 2.71433605, 5.0893801])  # initial guess for link masses
@@ -158,14 +183,14 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
     for part, mass in zip(parts, masses):
         print(f'{part}: {mass}')
 
-    def compute_loss(real_data, sim_data, masses):
+    def compute_loss(real_data, sim_data):
         real_rewards = np.array([np.sum([step[2] for step in episode]) for episode in real_data])
         sim_rewards = np.array([np.sum([step[2] for step in episode]) for episode in sim_data])
         return np.mean((real_rewards - sim_rewards) ** 2)
 
     for iter in range(maxit):
-        base = compute_loss(real_data, sim_data, masses)
-        losses = list()
+        base = compute_wasserstein_distance(real_data, sim_data)
+        losses = np.zeros(len(masses))
         for m in range(len(masses)):
             per_masses = masses.copy()
             per_masses[m] += learning_rate
@@ -173,15 +198,23 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
             sim_env = gym.make('CustomHopper-source-UDR-v0', params = per_masses)
             per_sim_data = collect(sim_env, seed)
             
-            loss = compute_loss(real_data, per_sim_data, per_masses)
-            losses.append(loss)
+            loss = compute_wasserstein_distance(real_data, per_sim_data)
+            losses[m] = loss
+		
         # compute gradient by finite difference approximation
-        gradients = (np.array(losses) - base) / learning_rate
+        gradients = (losses - base) / learning_rate
         # normalize the gradients
         norm = np.linalg.norm(gradients)
         if norm != 0:
             gradients /= norm
         masses -= learning_rate * gradients
+
+        # ensure masses within valid bounds
+        masses = np.clip(masses, 0.01, 10.0)
+	    
+        # update sim_data for the next iteration
+        sim_env = gym.make('CustomHopper-source-UDR-v0', params = masses)
+        sim_data = collect(sim_env, seed)
 	    
         # debugging prints
         print(f'iteration {iter + 1}/{maxit}')
@@ -190,8 +223,6 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         print(f'gradients: {gradients}')
         print('-' * 30)
 
-        # ensure masses within valid bounds
-        masses = np.clip(masses, 0.01, 10.0)
     print(f'optimal physical parameters:')
     print(f'---------------------------')
     for part, mass in zip(parts, masses):
