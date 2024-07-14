@@ -119,10 +119,10 @@ def train(args, seed, train_env, test_env, model):
     
     # optimize the masses
     masses = optimize_params(real_data, sim_data, seed, maxit = 10, learning_rate = 0.001)
-    print(f'optimal physical parameters: {masses}')
     
     env = gym.make(train_env, params = masses)
     env.set_randomness(args.dist)
+    print(f'original masses: {env.original_masses}')
 	
     env.seed(seed)
     np.random.seed(seed)
