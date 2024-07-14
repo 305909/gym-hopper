@@ -49,6 +49,8 @@ def parse_args():
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--learning-rate', default = 2.5e-4, type = float, 
                         help = 'learning rate')
+    parser.add_argument('--dist', default = 'uniform', type = str,
+                        help = 'distribution for domain randomization')
     parser.add_argument('--input-model', default = None, type = str, 
                         help = 'pre-trained input model (in .mdl format)')
     parser.add_argument('--directory', default = 'results', type = str, 
@@ -119,7 +121,8 @@ def train(args, seed, train_env, test_env, model):
     masses = optimize_params(real_data, sim_data, seed, maxit = 100, learning_rate = 0.001)
     
     env = gym.make(train_env, params = masses)
-    
+    env.set_randomness(args.dist)
+	
     env.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
