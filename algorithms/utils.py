@@ -163,8 +163,6 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
             per_masses[m] += learning_rate
             
             sim_env = gym.make('CustomHopper-source-v0')
-            env.seed(seed)
-            
             sim_env.unwrapped.set_parameters(per_masses)
             sim_data = collect(sim_env, seed)
             
