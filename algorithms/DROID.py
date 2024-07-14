@@ -115,7 +115,7 @@ def train(args, seed, train_env, test_env, model):
     """
     # collect data from real world and simulation
     real_data = collect(gym.make('CustomHopper-target-v0'), seed)
-    sim_data = collect(gym.make('CustomHopper-source-v0'), seed)
+    sim_data = collect(gym.make('CustomHopper-source-UDR-v0'), seed)
     
     # optimize the masses
     masses = optimize_params(real_data, sim_data, seed, maxit = 100, learning_rate = 1e-3)
