@@ -11,7 +11,7 @@ from .mujoco_env import MujocoEnv
 
 class CustomHopper(MujocoEnv, utils.EzPickle):
 
-    def __init__(self, domain = None, randomize = False, phi = None, dist = None, optim = None):
+    def __init__(self, domain = None, randomize = False, phi = None, dist = None, params = None):
         MujocoEnv.__init__(self, 4, randomize, phi, dist)
         utils.EzPickle.__init__(self)
 
@@ -27,16 +27,11 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         if domain == 'source':  # (1kg shift)
             self.sim.model.body_mass[1] -= 1.0
             
-        if optim is not None:
-            self.set_masses(optim)
+        if params is not None:
+            self.set_parameters(params)
 
     def set_randomness(self, dist):
         self.dist = dist
-
-    def set_masses(self, masses):
-        # ensure that the masses reside within valid limits
-        masses = np.clip(masses, 0.01, self.upper_bound)
-        self.sim.model.body_mass[1:] = masses
         
     def set_random_parameters(self):
         """ set random masses """
@@ -64,7 +59,8 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         return masses
 
     def set_parameters(self, *task):
-        self.sim.model.body_mass[1:] = task
+        params = np.clip(task, 0.01, self.upper_bound)
+        self.sim.model.body_mass[1:] = params
 
     def step(self, a):
         """ step the simulation to the next timestep
