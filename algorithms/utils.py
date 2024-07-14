@@ -145,6 +145,7 @@ def collect(env, seed, maxit = 10):
             next_state, reward, done, _ = env.step(action)
             episode.append((obs, action, reward, next_state, done))
             obs = next_state
+        num_episodes += 1   
         data.append(episode)
     return data
 
