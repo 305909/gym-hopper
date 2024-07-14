@@ -1,3 +1,4 @@
+import gym
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
@@ -122,3 +123,46 @@ def track(metric, xs, ys, sigmas, args, label, filename):
   
     plt.savefig(f'{args.directory}/{filename}.png', dpi = 300)
     plt.close()
+
+
+def collect(env, maxit = 10):
+    data = list()
+    num_episodes = 0
+    while num_episodes < maxit:
+        done = False
+        obs = env.reset
+        episode = list()
+        while not done:
+            action = env.action_space.sample()
+            next_state, reward, done, _ = env.step(action)
+            episode.append((obs, action, reward, next_state, done))
+            obs = next_state
+        data.append(episode)
+    return data
+
+
+def optimize_params(real_data, sim_data, maxit = 100, learning_rate = 0.001):
+    masses = np.array([2.53429174 ,3.92699082 ,2.71433605, 5.0893801 ])  # initial guess for link masses
+
+    def compute_loss(real_data, sim_data, masses):
+        real_rewards = np.array([np.sum([step[2] for step in episode]) for episode in real_data])
+        sim_rewards = np.array([np.sum([step[2] for step in episode]) for episode in sim_data])
+        return np.mean((real_rewards - sim_rewards) ** 2)
+
+    for iter in range(maxit):
+        losses = list()
+        for i in range(len(masses)):
+            per_masses = masses.copy()
+            per_masses[i] += learning_rate
+            sim_env = gym.make('CustomHopper-source-v0')
+            sim_env.unwrapped.set_parameters(np.clip(per_masses, 0.01, 10.0))
+            per_sim_data = collect_data(sim_env)
+            loss = compute_loss(real_data, per_sim_data, per_masses)
+            losses.append(loss)
+        
+        gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
+        masses -= learning_rate * gradients
+
+        # ensure masses within valid bounds
+        masses = np.clip(masses, 0.01, 10.0)
+    return masses
