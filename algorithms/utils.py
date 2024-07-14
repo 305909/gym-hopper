@@ -138,8 +138,8 @@ def collect(env, seed, maxit = 10):
     num_episodes = 0
     while num_episodes < maxit:
         done = False
-        obs = env.reset
         episode = list()
+        obs = env.reset()
         while not done:
             action = env.action_space.sample()
             next_state, reward, done, _ = env.step(action)
