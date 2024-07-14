@@ -122,8 +122,7 @@ def train(args, seed, train_env, test_env, model):
     
     env = gym.make(train_env, params = masses)
     env.set_randomness(args.dist)
-    for i in range(env.body_parts):
-        print(f'{env.body_names[i]}, {env.body_mass[i]}')
+    env.debug = True
 	
     env.seed(seed)
     np.random.seed(seed)
