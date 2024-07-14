@@ -151,11 +151,11 @@ def optimize_params(real_data, sim_data, maxit = 100, learning_rate = 0.001):
 
     for iter in range(maxit):
         losses = list()
-        for i in range(len(masses)):
+        for m in range(len(masses)):
             per_masses = masses.copy()
-            per_masses[i] += learning_rate
+            per_masses[m] += learning_rate
             sim_env = gym.make('CustomHopper-source-v0')
-            sim_env.unwrapped.set_parameters(np.clip(per_masses, 0.01, 10.0))
+            sim_env.unwrapped.set_masses(per_masses)
             per_sim_data = collect_data(sim_env)
             loss = compute_loss(real_data, per_sim_data, per_masses)
             losses.append(loss)
