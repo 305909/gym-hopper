@@ -26,7 +26,7 @@ from env.custom_hopper import *
 
 from utils import Callback
 from collections import OrderedDict
-from agents.reinforce import RF, RFPolicy
+from agents.mc import RF, RFPolicy
 from utils import display, multiprocess, stack, track
 from stable_baselines3.common.evaluation import evaluate_policy
 
