@@ -122,7 +122,6 @@ def train(args, seed, train_env, test_env, model):
     
     env = gym.make(train_env, params = masses)
     env.set_randomness(args.dist)
-    env.set_debug(True)
 	
     env.seed(seed)
     np.random.seed(seed)
