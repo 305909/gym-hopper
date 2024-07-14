@@ -175,8 +175,10 @@ def wasserstein_distance(real_data, sim_data):
     return distance
 	
 
-def optimize_params(real_data, sim_data, seed, maxit: int = 100, 
+def optimize_params(real_data, sim_data, seed, 
+		    maxit: int = 100, dist: str = 'uniform', 
 		    learning_rate: float = 1e-4, verbose: bool = False):
+			    
     parts = ['torso', 'thigh', 'leg', 'foot']
     masses = np.array([2.53429174, 3.92699082, 2.71433605, 5.0893801])  # initial guess for link masses
     print(f'initial physical parameters:')
@@ -192,8 +194,9 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100,
             per_masses[m] += learning_rate
             
             sim_env = gym.make('CustomHopper-source-UDR-v0', params = per_masses)
+            sim_env.set_randomness(dist)
+		
             per_sim_data = collect(sim_env, seed)
-            
             loss = wasserstein_distance(real_data, per_sim_data)
             losses[m] = loss
 		
@@ -206,6 +209,8 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100,
 	    
         # update sim_data for the next iteration
         sim_env = gym.make('CustomHopper-source-UDR-v0', params = masses)
+        sim_env.set_randomness(dist)
+	    
         sim_data = collect(sim_env, seed)
 	    
         # debugging prints
