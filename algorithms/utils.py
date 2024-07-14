@@ -159,9 +159,9 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         print(f'{part}: {mass}')
 
     def compute_loss(real_data, sim_data, masses):
-        real_rewards = np.array([np.sum([step[2] for step in episode]) for episode in real_data])
-        sim_rewards = np.array([np.sum([step[2] for step in episode]) for episode in sim_data])
-        return np.mean((real_rewards - sim_rewards) ** 2)
+        real_obs = np.array([np.sum([step[0] for step in episode]) for episode in real_data])
+        sim_obs = np.array([np.sum([step[0] for step in episode]) for episode in sim_data])
+        return np.mean((real_obs - sim_obs) ** 2)
 
     for iter in range(maxit):
         losses = list()
