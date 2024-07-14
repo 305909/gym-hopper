@@ -26,7 +26,7 @@ from env.custom_hopper import *
 
 from utils import Callback
 from collections import OrderedDict
-from agents.aac import A2C, A2CPolicy
+from agents.ac import A2C, A2CPolicy
 from utils import display, multiprocess, stack, track
 from stable_baselines3.common.evaluation import evaluate_policy
 
