@@ -171,7 +171,10 @@ def train(args, seed, train_env, test_env):
         model: model to train
     """
     env = gym.make(train_env)
-    env.set_randomness(args.dist, args.samp)
+    if args.samp:
+        env.set_randomness(args.dist, True)
+    else:
+        env.set_randomness(args.dist, False)
     
     env.seed(seed)
     np.random.seed(seed)
