@@ -49,8 +49,6 @@ def parse_args():
                         help = 'evaluation frequency over training iterations')
     parser.add_argument('--dist', default = 'normal', type = str,
                         help = 'distribution for control domain randomization')
-    parser.add_argument('--samp', action = 'store_true', 
-                        help = 'sample condition for control domain randomization')
     parser.add_argument('--directory', default = 'results', type = str, 
                         help = 'path to the output location for checkpoint storage (model and rendering)')
     return parser.parse_args()
@@ -79,7 +77,6 @@ class Callback(BaseCallback):
         self.episode_lengths = list()
         self.num_episodes = 0
         self.dist = args.dist
-        self.samp = args.samp
         self.original_masses = {
             'thigh': 3.9269908169872427, 
             'foot': 5.0893800988154645,
@@ -106,8 +103,7 @@ class Callback(BaseCallback):
             # increase phi
             self.cdr.phi += self.cdr.delta
         else:
-            # decrease phi
-            self.cdr.phi -= self.cdr.delta
+            pass
         self.cdr.i += 1
         self.cdr.phi = np.clip(self.cdr.phi, 0.0, self.cdr.upper_bound)
         
@@ -171,10 +167,7 @@ def train(args, seed, train_env, test_env):
         model: model to train
     """
     env = gym.make(train_env)
-    if args.samp:
-        env.set_randomness(args.dist, True)
-    else:
-        env.set_randomness(args.dist, False)
+    env.set_randomness(args.dist)
     
     env.seed(seed)
     np.random.seed(seed)
