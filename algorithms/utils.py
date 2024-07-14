@@ -177,6 +177,10 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
             losses.append(loss)
         
         gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
+        # normalize the gradients
+        norm = np.linalg.norm(gradients)
+        if norm != 0:
+            gradients /= norm
         masses -= learning_rate * gradients
 	    
         # Debugging prints
