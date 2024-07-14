@@ -204,9 +204,9 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         # compute gradient by finite difference approximation
         gradients = (losses - base) / learning_rate
         # normalize the gradients
-        norm = np.linalg.norm(gradients)
-        if norm != 0:
-            gradients /= norm
+        # norm = np.linalg.norm(gradients)
+        # if norm != 0:
+            # gradients /= norm
         masses -= learning_rate * gradients
 
         # ensure masses within valid bounds
