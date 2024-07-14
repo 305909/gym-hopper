@@ -178,6 +178,13 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         
         gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
         masses -= learning_rate * gradients
+	    
+        # Debugging prints
+        print(f'iteration {iter + 1}/{maxit}')
+        print(f'current masses: {masses}')
+        print(f'current loss: {current_loss}')
+        print(f'gradients: {gradients}')
+        print('-' * 30)
 
         # ensure masses within valid bounds
         masses = np.clip(masses, 0.01, 10.0)
