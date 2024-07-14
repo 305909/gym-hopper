@@ -51,7 +51,7 @@ class MujocoEnv(gym.Env):
         self.samp = samp
         self.alpha = 0.5
         self.delta = 0.25
-        self.upper_bound = 3.5
+        self.upper_bound = 1.25
         self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
                                      'H': self.load('SAC-uppers.npy')}, 
                              'PPO': {'L': self.load('PPO-lowers.npy'), 
