@@ -164,6 +164,7 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         return np.mean((real_rewards - sim_rewards) ** 2)
 
     for iter in range(maxit):
+        base = compute_loss(real_data, sim_data, masses)
         losses = list()
         for m in range(len(masses)):
             per_masses = masses.copy()
@@ -175,8 +176,8 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
             
             loss = compute_loss(real_data, per_sim_data, per_masses)
             losses.append(loss)
-        
-        gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
+        # compute gradient by finite difference approximation
+        gradients = (np.array(losses) - base) / learning_rate
         # normalize the gradients
         norm = np.linalg.norm(gradients)
         if norm != 0:
