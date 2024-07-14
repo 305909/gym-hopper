@@ -171,9 +171,9 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
             
             sim_env = gym.make('CustomHopper-source-v0')
             sim_env.unwrapped.set_parameters(per_masses)
-            sim_data = collect(sim_env, seed)
+            per_sim_data = collect(sim_env, seed)
             
-            loss = compute_loss(real_data, sim_data, per_masses)
+            loss = compute_loss(real_data, per_sim_data, per_masses)
             losses.append(loss)
         
         gradients = (np.array(losses) - compute_loss(real_data, sim_data, masses)) / learning_rate
