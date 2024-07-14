@@ -13,7 +13,7 @@
   - [SAC](#sac)
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
-- [Automatic Domain Randomization](#automatic-domain-randomization)
+- [Control Domain Randomization](#control-domain-randomization)
 - [Example of Training](#example-of-monitoring-during-training)
 - [About](#about)
 - [License](#license)
@@ -103,6 +103,22 @@ Train and test the A2C algorithm by running the following command:
 
 The `A2C.py` code offers the chance to set several execution parameters as in the previous code for the `REINFORCE` algorithm.
 
+### PPO
+
+This project implements the Proximal-Policy-Optimization algorithm using the open-source reinforcement learning library [stable-baselines3](https://github.com/DLR-RM/stable-baselines3).
+
+#### How to run the code on Google Colab
+
+Train and test the PPO algorithm by running the following command:
+
+```python
+# run PPO (Proximal-Policy-Optimization) algorithm
+!python /content/gym-hopper/algorithms/PPO.py --train \
+                                              --test
+```
+
+The `PPO.py` code offers the chance to set several execution parameters as in the previous codes for the `REINFORCE` and `A2C` algorithms.
+
 ### SAC
 
 This project implements the Soft-Actor-Critic algorithm using the open-source reinforcement learning library [stable-baselines3](https://github.com/DLR-RM/stable-baselines3).
@@ -125,6 +141,7 @@ This project also implements parameter tuning for the algorithms under investiga
 
 - `REF.py`: code to tune the `REINFORCE` parameters;
 - `A2C.py`: code to tune the `A2C` parameters;
+- `PPO.py`: code to tune the `A2C` parameters;
 - `SAC.py`: code to tune the `SAC` parameters;
 
 #### How to run the code on Google Colab
@@ -138,6 +155,10 @@ Search for the optimal parameter configuration for each algorithm by running the
 ```python
 # run gridsearch algorithm for the A2C model
 !python /content/gym-hopper/tunings/A2C.py`
+```
+```python
+# run gridsearch algorithm for the PPO model
+!python /content/gym-hopper/tunings/PPO.py
 ```
 ```python
 # run gridsearch algorithm for the SAC model
@@ -161,11 +182,11 @@ For more details, check out our custom implementation of the `CustomHopper-sourc
 
 #### How to run the code on Google Colab
 
-To enable Uniform Domain Randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. the execution parameter `test_env` to `'source-UDR'`. Train and test the SAC algorithm with UDR by running the following command:
+To enable Uniform Domain Randomization, set the custom environment `CustomHopper-source-UDR-v0` as testing environment, i.e. the execution parameter `test_env` to `'source-UDR'`. Train and test the PPO algorithm with UDR by running the following command:
 
 ```python
-# run SAC (Soft-Actor-Critic) algorithm with UDR
-!python /content/gym-hopper/algorithms/SAC.py --train \
+# run PPO (Proximal-Policy-Optimization) algorithm with UDR
+!python /content/gym-hopper/algorithms/PPO.py --train \
                                               --test \
                                               --train-env 'source-UDR'
 ```
@@ -218,7 +239,7 @@ $$
 $$
 \phi^{k+1} = \begin{cases} 
 \phi^k + \delta & \text{if } r > \alpha \\
-\phi^k & \text{otherwise}
+\phi^k - \delta & \text{otherwise}
 \end{cases}
 $$
 
@@ -234,12 +255,22 @@ $$
 
 #### How to run the code on Google Colab
 
-Train and test the SAC algorithm with CDR by running the following command:
+Train and test the PPO algorithm with CDR by running the following command:
 
 ```python
-# run SAC (Soft-Actor-Critic) algorithm
+# run PPO (Proximal-Policy-Optimization) algorithm
 !python /content/gym-hopper/algorithms/CDR.py --train \
                                               --test
 ```
 
-The `CDR.py` code offers the chance to set several execution parameters as in the previous code for the `SAC` algorithm.
+The `CDR.py` code offers the chance to set several execution parameters as in the previous code for the `PPO` algorithm.
+
+## Example of Training
+
+Extract of monitoring during training for performance comparison of different algorithms.
+
+![Local Image](images/REF-A2C-10.000-5.png)
+
+![Local Image](images/PPO-10.000-3 (UDR).png)
+
+![Local Image](images/SAC-1.000-3.png)
