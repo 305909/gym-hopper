@@ -1,11 +1,11 @@
 import os
 import gym
 import sys
+import scipy.stats
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
 import PIL.ImageDraw as ImageDraw
-from scipy.stats import wasserstein_distance
 
 sys.path.append(
 	os.path.abspath(
@@ -151,7 +151,7 @@ def collect(env, seed, maxit = 10):
     return data
 
 
-def compute_wasserstein_distance(real_data, sim_data):
+def wasserstein_distance(real_data, sim_data):
     real_state_actions = []
     sim_state_actions = []
 
@@ -170,7 +170,7 @@ def compute_wasserstein_distance(real_data, sim_data):
     
     distance = 0
     for i in range(real_state_actions.shape[1]):
-        distance += wasserstein_distance(real_state_actions[:, i], sim_state_actions[:, i])
+        distance += scipy.stats.wasserstein_distance(real_state_actions[:, i], sim_state_actions[:, i])
 
     return distance
 	
@@ -184,13 +184,8 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100,
     for part, mass in zip(parts, masses):
         print(f'{part}: {mass}')
 
-    def compute_loss(real_data, sim_data):
-        real_rewards = np.array([np.sum([step[2] for step in episode]) for episode in real_data])
-        sim_rewards = np.array([np.sum([step[2] for step in episode]) for episode in sim_data])
-        return np.mean((real_rewards - sim_rewards) ** 2)
-
     for iter in range(maxit):
-        base = compute_wasserstein_distance(real_data, sim_data)
+        base = wasserstein_distance(real_data, sim_data)
         losses = np.zeros(len(masses))
         for m in range(len(masses)):
             per_masses = masses.copy()
@@ -199,7 +194,7 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100,
             sim_env = gym.make('CustomHopper-source-UDR-v0', params = per_masses)
             per_sim_data = collect(sim_env, seed)
             
-            loss = compute_wasserstein_distance(real_data, per_sim_data)
+            loss = wasserstein_distance(real_data, per_sim_data)
             losses[m] = loss
 		
         # compute gradient by finite difference approximation
