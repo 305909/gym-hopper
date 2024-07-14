@@ -183,6 +183,6 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         masses = np.clip(masses, 0.01, 10.0)
     print(f'optimal physical parameters:')
     print(f'---------------------------')
-    for part, mass in zip(['torso', 'thigh', 'leg', 'foot ']):
+    for part, mass in zip(parts, masses):
         print(f'{part}: {mass}')
     return masses
