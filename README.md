@@ -15,7 +15,7 @@
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
 - [Control Domain Randomization](#control-domain-randomization)
-- [Example of Training](#example-of-monitoring-during-training)
+- [Example of Training](#example-of-training)
 - [About](#about)
 - [License](#license)
 - [Contributors](#contributors)
