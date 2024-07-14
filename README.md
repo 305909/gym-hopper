@@ -270,8 +270,12 @@ The `CDR.py` code offers the chance to set several execution parameters as in th
 
 Extract of monitoring during training for performance comparison of different algorithms.
 
-<img src = "images/REF-A2C-10.000-5.png" alt = "Alt text" width = "250"/>
+<div style="display: flex; justify-content: space-between;">
+    <img src="images/REF-A2C-10.000-5.png" alt="Alt text" width="300"/>
+    <img src="images/REF-A2C-25.000-3.png" alt="Alt text" width="300"/>
+</div>
 
-<img src = "images/PPO-10.000-3 (UDR).png" alt = "Alt text" width = "250"/>
-
-<img src = "images/SAC-1.000-3.png" alt = "Alt text" width = "250"/>
+<div style="display: flex; justify-content: space-between;">
+    <img src="images/PPO-10.000-3 (UDR).png" alt="Alt text" width="300"/>
+    <img src="images/PPO-10.000-3 scatter (UDR).png" alt="Alt text" width="300"/>
+</div>
