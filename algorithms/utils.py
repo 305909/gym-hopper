@@ -132,7 +132,7 @@ def track(metric, xs, ys, sigmas, args, label, filename):
     plt.close()
 
 
-def collect(env, seed, maxit = 10):
+def collect(env, seed, maxit = 25):
     data = list()
     env.seed(seed)
     num_episodes = 0
