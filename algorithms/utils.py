@@ -175,7 +175,8 @@ def compute_wasserstein_distance(real_data, sim_data):
     return distance
 	
 
-def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: float = 1e-3):
+def optimize_params(real_data, sim_data, seed, maxit: int = 100, 
+		    learning_rate: float = 1e-4, verbose: bool = False):
     parts = ['torso', 'thigh', 'leg', 'foot']
     masses = np.array([2.53429174, 3.92699082, 2.71433605, 5.0893801])  # initial guess for link masses
     print(f'initial physical parameters:')
@@ -203,10 +204,6 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
 		
         # compute gradient by finite difference approximation
         gradients = (losses - base) / learning_rate
-        # normalize the gradients
-        # norm = np.linalg.norm(gradients)
-        # if norm != 0:
-            # gradients /= norm
         masses -= learning_rate * gradients
 
         # ensure masses within valid bounds
@@ -217,11 +214,12 @@ def optimize_params(real_data, sim_data, seed, maxit: int = 100, learning_rate: 
         sim_data = collect(sim_env, seed)
 	    
         # debugging prints
-        print(f'iteration {iter + 1}/{maxit}')
-        print(f'masses: {masses}')
-        print(f'loss: {loss}')
-        print(f'gradients: {gradients}')
-        print('-' * 30)
+        if verbose:
+            print(f'iteration: {iter + 1}/{maxit}')
+            print(f'masses: {masses}')
+            print(f'loss: {loss}')
+            print(f'gradients: {gradients}')
+            print('-' * 30)
 
     print(f'optimal physical parameters:')
     print(f'---------------------------')
