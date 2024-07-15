@@ -27,9 +27,7 @@ Preliminary results indicate that combining domain randomization techniques with
 
 ## Environment
 
-<div style="display: flex; justify-content: space-between;">
-    <img src="hopper.png" alt="Alt text" width="250"/>
-</div>
+<img src="images/hopper.png" alt="Alt text" width="250"/>
 
 The [Hopper](https://www.gymlibrary.ml/environments/mujoco/hopper/) of MuJoCo, a two-dimensional figure with one leg, comprises four primary body parts: a top `torso`, a middle `thigh`, a bottom `leg`, and a single `foot` supporting the entire body. The objective involves generating forward (rightward) movement through torque application at the three hinges connecting these body segments.
 In this study, we implemented two customized versions of the Gym Hopper environment: `CustomHopper-source-v0` and `CustomHopper-target-v0`. The main distinction between these environments concerns the mass of the Hopper's `torso`. Specifically, `CustomHopper-source-v0` sets the `torso` mass at `2.53429174` kg, while `CustomHopper-target-v0` raises it to `3.53429174` kg. 
