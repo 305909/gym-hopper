@@ -1,4 +1,4 @@
-""" A2C algorithm
+""" A2C (Advantage Actor-Critic)algorithm
 Custom Hopper 
 MuJoCo environment
 """
@@ -61,7 +61,7 @@ def parse_args():
 
 
 def train(args, seed, train_env, test_env, model):
-    """ trains the agent in the training environment
+    """ trains the agent in the source environment
 
     args:
         seed: seed of the training session
@@ -113,7 +113,7 @@ def train(args, seed, train_env, test_env, model):
 
 
 def test(args, test_env, seed):
-    """ tests the agent in the testing environment """
+    """ tests the agent in the target environment """
     env = gym.make(test_env)
     
     env.seed(seed)
