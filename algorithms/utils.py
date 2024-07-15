@@ -87,6 +87,9 @@ def multiprocess(args, train_env, test_env, train, seeds):
         print("----------------")
         for key, value in zip(pool.keys(), train(args, seed, train_env, test_env, model)):
             pool[key].append(value)
+            if key == 'rewards':
+                path = os.path.join(args.directory, f'iter-{iter}-rewards.npy')
+                np.save(path, value)
     
     return pool
 
