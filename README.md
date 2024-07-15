@@ -218,15 +218,15 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
      - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the initial Wasserstein distance
      - for each $\theta_i$:
        - $\theta_{i^+} = \theta_i + \eta \rightarrow$ perturb the parameter
-       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_j', a_j')\\}_{j=1, \theta_i^+}^{N} \rightarrow$ update simulation environment
-       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}^{+}}) \rightarrow$ compute loss via Wasserstein distance
+       - \mathcal{D_{\text{sim}}}(\theta_{i^+}) = \\{(s_j', a_j')\\}_{j=1, \theta_i^+}^{N} \rightarrow$ update simulation environment
+       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_{i^+})) \rightarrow$ compute loss via Wasserstein distance
        - $g_i = \frac{∇_{\theta_i}\mathcal{L_i}}{\eta} \rightarrow$ compute gradient by finite difference approximation
-       - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0) \rightarrow$ clip parameters to range within valid bounds
-   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
+       - $\theta_i \leftarrow clip(\theta_{i^+}, 0.01, 10.0) \rightarrow$ clip parameters to range within valid bounds
+   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow \\{(s_j', a_j')\\}_{j=1, \theta}^{N}$
 
 
 with:
-- $W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) = \inf_{\gamma \in \Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
+- $W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) = inf_{\gamma \in \Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
 
 where:
 - $\Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathcal{D_{\text{real}}}$ and $\mathcal{D_{\text{sim}}}(\theta)$;
