@@ -13,7 +13,7 @@
   - [PPO](#ppo)
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
-- [DROID](#droid)
+- [Domain Randomization Optimization IDentification](#domain-randomization-optimization-identification)
 - [Example of Training](#example-of-training)
 - [About](#about)
 - [License](#license)
@@ -151,11 +151,11 @@ Search for the optimal parameter configuration for each algorithm by running the
 This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each link $i$, the environment instantiates the boundaries of the physical parameter distribution ($\mathcal{U_\phi}$) and randomly samples the $i$-th link mass at the beginning of each episode:
 
 $$
-\theta_i \sim \mathcal{U_\phi}((1 - \phi) \cdot \theta_{i^(0)}, (1 + \phi) \cdot \theta_{i^(0)})
+\theta_i \sim \mathcal{U_\phi}((1 - \phi) \cdot \theta_{i}^{(0)}, (1 + \phi) \cdot \theta_{i}^{(0)})
 $$
 
 where:
-- $\mathit{\theta_{i^(0)}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
+- $\mathit{\theta_{i}^{(0)}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi = 0.5} \rightarrow$ the variation factor;
 - $\mathcal{U_\phi} \rightarrow$ continuous uniform distribution with variation factor $\phi$.
   
@@ -172,13 +172,13 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
                                               --train-env 'source-UDR'
 ```
 
-## DROID
+## Domain Randomization Optimization IDentification
 
 This project explores Domain Randomization Optimization IDentification (DROID), an advanced approach in reinforcement learning aimed at refining simulation environments to enhance the robustness and transferability of learned policies. In contrast to traditional uniform domain randomization (UDR), which introduces broad stochastic variations to simulation parameters uniformly, DROID focuses on iteratively adjusting these parameters to closely approximate real-world dynamics.
 
 ### Problem Formulation
 
-Initially, DROID initializes $\theta$ to an initial set of physical parameters $\theta = \\{\theta_\text{torso}, \theta_\text{thigh}, \theta_\text{leg}, \theta_\text{foot}\\}$ that govern the simulation dynamics. This setup establishes an initial simulation data distribution $\mathcal{D}_{\text{sim}}(\theta^{(0)})$ from which iterative improvements begin. The algorithm proceeds through $M$ iterations, refining $\theta$ to progressively minimize the discrepancy.
+Initially, DROID sets $\theta$ to an initial set of physical parameters $\theta = \\{\theta_\text{torso}, \theta_\text{thigh}, \theta_\text{leg}, \theta_\text{foot}\\}$ that govern the simulation dynamics. This setup establishes an initial simulation data distribution $\mathcal{D}_{\text{sim}}(\theta^{(0)})$ from which iterative improvements begin. The algorithm proceeds through $M$ iterations, refining $\theta$ to progressively minimize the discrepancy.
 
 - $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta$;
@@ -210,6 +210,18 @@ where:
 - $c(s,a) \rightarrow$ the cost function
 
 The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
+
+#### How to run the code on Google Colab
+
+Train and test the DROID algorithm by running the following command:
+
+```python
+# run DROID (Domain Randomization Optimization IDentification) algorithm
+!python /content/gym-hopper/algorithms/DROID.py --train \
+                                                --test
+```
+
+The `DROID.py` code offers the chance to set several execution parameters as in the previous codes. For more details, check out the available execution parameters by passing the `--help` argument.
 
 ## Example of Training
 
