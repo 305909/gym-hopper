@@ -189,16 +189,18 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 
 ### Algorithm Steps
 
-   - $\theta = \theta^{(0)}$ (initialize parameters)
+   - $\theta = \theta^{(0)}$ initialize parameters
+   - $\mathcal{D}_{\text{real}}$ collect real trajectories
+   - $\mathcal{D}_{\text{sim}}(\theta)$ collect simulation trajectories
    - for $m = 1:M$ do:
-     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the initial Wasserstein distance
+     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the base distance
      - for each $\theta_i \in \theta$:
        - $\theta_i \leftarrow \theta_i + \eta \rightarrow$ perturb the parameter
        - $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N} \rightarrow$ update simulation environment
        - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_i)) \rightarrow$ compute loss via Wasserstein distance
-       - $\nabla_i = \frac{\nabla_{\theta_i}\mathcal{L_i}}{\eta} \rightarrow$ compute gradient by finite difference approximation
+       - $\nabla = \nabla_{\theta_i}\mathcal{L}_i \rightarrow$ compute gradient by finite difference approximation
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0) \rightarrow$ clip parameters to range within valid bounds
-   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow \\{(s_j', a_j')\\}_{j=1, \theta}^{N}$
+   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ update simulation data
 
 
 with:
