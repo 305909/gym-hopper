@@ -23,8 +23,8 @@ class Callback():
         the internal state of the RL agent over training iterations
         
         args:
-            agent: reinforcement learning agent
-            env: testing environment
+            agent: RL agent
+            env: target environment
             args: argument parser
 
         evaluation metrics:
@@ -53,7 +53,7 @@ class Callback():
 
 
 def display(frame, step, episode, reward):
-    """ renders the (state -> action) RL agent step in the testing environment 
+    """ renders the (state -> action) step in the target environment
     as a graphics interchange format frame
     """
     image = Image.fromarray(frame)
@@ -70,8 +70,8 @@ def multiprocess(args, train_env, test_env, train, seeds):
     with different seeds (to counteract variance)
 
     args:
-        train_env: training environment
-        test_env: testing environment
+        train_env: source environment
+        test_env: target environment
         train: training function
         seeds: fibonacci seeds
     """
@@ -111,7 +111,7 @@ def stack(args, metric, records):
 
 
 def track(metric, xs, ys, sigmas, args, label, filename):
-    """ plots the RL agent's performance in the testing environment 
+    """ plots the RL agent's performance in the target environment 
     (according to the evaluation metric) over training episodes
     
     args:
@@ -137,6 +137,7 @@ def track(metric, xs, ys, sigmas, args, label, filename):
 
 
 def collect(env, seed, maxit = 10):
+    """ collects trajectories in the environment """
     data = list()
     env.seed(seed)
     num_episodes = 0
@@ -155,6 +156,9 @@ def collect(env, seed, maxit = 10):
 
 
 def wasserstein_distance(real_data, sim_data):
+    """ computes the Wasserstein distance (Earth Mover's Distance) 
+    between the state-action pairs from real-world data and simulation data 
+    """
     real_state_actions = []
     sim_state_actions = []
 
@@ -181,7 +185,9 @@ def wasserstein_distance(real_data, sim_data):
 def optimize_params(real_data, sim_data, seed, 
 		    maxit: int = 100, dist: str = 'uniform', 
 		    learning_rate: float = 1e-4, verbose: bool = False):
-			    
+    """ optimizes the physical parameters (masses) of a simulation environment 
+    to minimize the Wasserstein distance between the real and simulation trajectory distributions
+    """
     parts = ['torso', 'thigh', 'leg', 'foot']
     masses = np.array([2.53429174, 3.92699082, 2.71433605, 5.0893801])  # initial guess for link masses
     print(f'initial physical parameters:')
