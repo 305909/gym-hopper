@@ -48,10 +48,7 @@ class MujocoEnv(gym.Env):
         
         self.lower_bound = 0.01
         self.upper_bound = 10.0
-        self.data_buffers = {'SAC': {'L': self.load('SAC-lowers.npy'), 
-                                     'H': self.load('SAC-uppers.npy')}, 
-                             'PPO': {'L': self.load('PPO-lowers.npy'), 
-                                     'H': self.load('PPO-uppers.npy')}}
+
         self.metadata = {
             'render.modes': ['human', 'rgb_array', 'depth_array'],
             'video.frames_per_second': int(np.round(1.0 / self.dt))
@@ -69,16 +66,6 @@ class MujocoEnv(gym.Env):
         self._set_observation_space(observation)
 
         self.seed()
-
-    def load(self, filename):
-        file = os.path.join(os.path.dirname(__file__), "assets", filename)
-        if path.exists(file):
-            try:
-                data_buffers = np.load(file, allow_pickle = True)
-                return data_buffers
-            except Exception as e:
-                print(f"ERROR: file {file} not found")
-        return [0]
         
     def build_model(self):
         self.model = mujoco_py.load_model_from_path(os.path.join(os.path.dirname(__file__), 
