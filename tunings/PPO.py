@@ -48,7 +48,7 @@ def train(seed: int,
           device: str = 'cpu', 
           train_episodes: int = 1000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> PPO:
-    """ trains the agent in the training environment """ 
+    """ trains the agent in the source environment """ 
     env = gym.make(train_env)
 		  
     env.seed(seed)
@@ -72,8 +72,8 @@ def train(seed: int,
 
 def test(seed: int, agent: PPO, 
          test_episodes: int = 100, 
-         test_env: str = 'CustomHopper-source-v0') -> float:
-    """ tests the agent in the testing environment """ 
+         test_env: str = 'CustomHopper-target-v0') -> float:
+    """ tests the agent in the target environment """ 
     env = gym.make(test_env)
 		  
     env.seed(seed)
