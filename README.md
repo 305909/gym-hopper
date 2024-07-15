@@ -201,11 +201,11 @@ This section presents the mathematical description of DROID. DROID involves coll
 
 ### Problem Formulation
 
-This algorithm iteratively adjusts the phisical parameter $\theta == \\{\theta_1, \theta_2, \theta_3, \theta_4\\}$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
+This algorithm iteratively adjusts the phisical parameter $\theta = \\{\theta_torso, \theta_thigh, \theta_leg, \theta_foot\\}$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
 - $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
-- $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta = \\{\theta_1, \theta_2, \theta_3, \theta_4\\}$;
-- $\theta^{(0)} \rightarrow$ initial guess for parameters;
+- $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta$;
+- $\theta^{(0)} = \\{2.53429174, 3.92699082, 2.71433605, 5.0893801\\} \rightarrow$ initial parameters;
 - $\mathcal{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
 
@@ -216,7 +216,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
    - $\theta = \theta^{(0)}$ (initialize parameters)
    - for $m = 1:M$ do:
      - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the initial Wasserstein distance
-     - for each $\theta_i \in \\{\theta_1, \theta_2, \theta_3, \theta_4\\}$:
+     - for each $\theta_i \in \theta$:
        - $\theta_i \leftarrow \theta_i + \eta \rightarrow$ perturb the parameter
        - $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N} \rightarrow$ update simulation environment
        - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_i)) \rightarrow$ compute loss via Wasserstein distance
