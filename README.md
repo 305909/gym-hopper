@@ -221,7 +221,57 @@ The `DROID.py` code offers the chance to set several execution parameters as in 
 
 Extract of monitoring during training for performance comparison of different algorithms.
 
+training session: 1
+----------------
+training episode: 0 | test episodes: 50 | reward: 11.81 +/- 0.16
+training episode: 2500 | test episodes: 50 | reward: 227.17 +/- 10.00
+training episode: 5000 | test episodes: 50 | reward: 443.84 +/- 19.18
+training episode: 7500 | test episodes: 50 | reward: 249.48 +/- 21.08
+training episode: 10000 | test episodes: 50 | reward: 217.75 +/- 8.75
+
+training session: 2
+----------------
+training episode: 0 | test episodes: 50 | reward: 11.81 +/- 0.16
+training episode: 2500 | test episodes: 50 | reward: 227.17 +/- 10.00
+training episode: 5000 | test episodes: 50 | reward: 443.84 +/- 19.18
+training episode: 7500 | test episodes: 50 | reward: 249.48 +/- 21.08
+training episode: 10000 | test episodes: 50 | reward: 217.75 +/- 8.75
+
+training session: 3
+----------------
+training episode: 0 | test episodes: 50 | reward: 192.37 +/- 13.36
+training episode: 2500 | test episodes: 50 | reward: 315.41 +/- 68.72
+training episode: 5000 | test episodes: 50 | reward: 217.54 +/- 61.24
+training episode: 7500 | test episodes: 50 | reward: 217.44 +/- 78.07
+training episode: 10000 | test episodes: 50 | reward: 319.25 +/- 36.13
+
+training session: 4
+----------------
+training episode: 0 | test episodes: 50 | reward: -1.17 +/- 1.34
+training episode: 2500 | test episodes: 50 | reward: 133.46 +/- 10.17
+training episode: 5000 | test episodes: 50 | reward: 497.08 +/- 1.49
+training episode: 7500 | test episodes: 50 | reward: 155.25 +/- 3.58
+training episode: 10000 | test episodes: 50 | reward: 155.22 +/- 3.74
+
+training session: 5
+----------------
+training episode: 0 | test episodes: 50 | reward: 3.66 +/- 0.13
+training episode: 2500 | test episodes: 50 | reward: 118.12 +/- 3.53
+training episode: 5000 | test episodes: 50 | reward: 38.44 +/- 12.71
+training episode: 7500 | test episodes: 50 | reward: 187.17 +/- 25.02
+training episode: 10000 | test episodes: 50 | reward: 99.31 +/- 38.34
+
+training time: 2321.80 +/- 550.21
+-------------
+
+model checkpoint storage: /content/drive/MyDrive/REINFORCE-whitening/RF-whitening-(source to source).mdl
+
+
+model to test: /content/drive/MyDrive/REINFORCE-whitening/RF-whitening-(source to source).mdl
+
+
+test episodes: 50 | reward: 210.62 +/- 1.22
+
 <div style="display: flex; justify-content: space-between;">
-    <img src="images/MCP-10.000-5.png" alt="Alt text" width="350"/>
-    <img src="images/PPO-25.000-3.png" alt="Alt text" width="365"/>
+    <img src="images/MCP-10.000-5.png" alt="Alt text" width="550"/>
 </div>
