@@ -213,8 +213,8 @@ This section presents a mathematical description of the DROID algorithm to optim
    - Initialize parameters: $\theta = \theta^{(0)}$
 
 2. **Iterative Optimization:**
-   - for $m = 1:M$ do:
-   - - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
+   - \textbf{for} $m = 1:M$ \textbf{do}:
+   - - compute the initial Wasserstein distance: $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
 
 3. **Base Wasserstein Distance Calculation**
    - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
