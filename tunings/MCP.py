@@ -60,7 +60,7 @@ def train(seed: int,
 
 def test(seed: int, agent: RF, 
          test_episodes: int = 100, 
-         test_env: str = 'CustomHopper-source-v0') -> float:
+         test_env: str = 'CustomHopper-target-v0') -> float:
     """ tests the agent in the target environment """     
     env = gym.make(test_env)
 		  
