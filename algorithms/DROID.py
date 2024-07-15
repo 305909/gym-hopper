@@ -1,4 +1,5 @@
-""" DROID algorithm
+""" PPO (Proximal Policy Optimization) algorithm
+DROID - optimization of domain randomization parameters
 Custom Hopper 
 MuJoCo environment
 """
@@ -65,8 +66,8 @@ class Callback(BaseCallback):
         the internal state of the RL agent over training iterations
 
         args:
-            agent: reinforcement learning agent
-            env: testing environment
+            agent: PPO agent
+            env: target environment
             args: argument parser
 
         evaluation metrics:
@@ -107,7 +108,7 @@ class Callback(BaseCallback):
 
 
 def train(args, seed, train_env, test_env, model):
-    """ trains the agent in the training environment
+    """ trains the agent in the source environment
 
     args:
         seed: seed of the training session
@@ -161,7 +162,7 @@ def train(args, seed, train_env, test_env, model):
 
 
 def test(args, test_env, seed):
-    """ tests the agent in the testing environment """
+    """ tests the agent in the target environment """
     env = gym.make(test_env)
     
     env.seed(seed)
