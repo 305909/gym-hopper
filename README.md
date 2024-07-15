@@ -211,13 +211,12 @@ This section presents a mathematical description of the DROID algorithm to optim
 
 #### Step 1: Initialization
 
-Initialize parameters and print initial values:
-- \( \boldsymbol{\theta} = \boldsymbol{\theta}^{(0)} \)
-- Print initial physical parameters \( \boldsymbol{\theta} \).
+Initialize parameters:
+- $\theta = \theta}^{(0)}
 
 #### Step 2: Iterative Optimization Loop
 
-For \( t = 1 \) to \( \maxit \):
+For $t = 1$ to $maxit$:
 
 ##### Step 2.1: Base Wasserstein Distance Calculation
 
