@@ -18,7 +18,7 @@
 
 ## Report Abstract
 
-This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Actor-Critic (A2C), and Proximal Policy Optimization (PPO). Currently, applying Reinforcement Learning effectively to robotics poses a significant challenge, mainly due to the complexities of learning in real-world environments and accurately simulating physics. This project explores various algorithms and delves into Domain Randomization Optimization IDentification, an advanced technique for Domain Randomization.
+This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Advantage-Actor-Critic (A2C), and Proximal Policy Optimization (PPO). Currently, applying Reinforcement Learning effectively to robotics poses a significant challenge, mainly due to the complexities of learning in real-world environments and accurately simulating physics. This project explores various algorithms and delves into Domain Randomization Optimization IDentification, an advanced technique for Domain Randomization.
 
 Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios. This study demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings hold the potential to inform future research and applications in robotic control and autonomous systems. 
 
@@ -86,18 +86,18 @@ For more details, check out the available execution parameters by passing the `-
 
 ### A2C
 
-This project implements the A2C (Actor-Critic Policy) algorithm with two variations that differ for the update method of the policy network:
+This project implements the A2C (Advantage-Actor-Critic) algorithm with two variations that differ for the update method of the policy network:
 1. `stepwise` fashion
 2. `batch` fashion
 
-For more details, check out our custom implementation of the Actor-Critic Policy algorithm in the `ac.py` file inside the `agents` folder.
+For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm in the `ac.py` file inside the `agents` folder.
 
 #### How to run the code on Google Colab
 
 Train and test the A2C algorithm by running the following command:
 
 ```python
-# run A2C (Actor-Critic Policy) algorithm
+# run A2C (Advantage-Actor-Critic) algorithm
 !python /content/gym-hopper/algorithms/A2C.py --train \
                                               --test
 ```
