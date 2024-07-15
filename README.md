@@ -222,6 +222,6 @@ The `DROID.py` code offers the chance to set several execution parameters as in 
 Extract of monitoring during training for performance comparison of different algorithms.
 
 <div style="display: flex; justify-content: space-between;">
-    <img src="images/MCP-10.000-5.png" alt="Alt text" width="405"/>
-    <img src="images/PPO-25.000-3.png" alt="Alt text" width="400"/>
+    <img src="images/MCP-10.000-5.png" alt="Alt text" width="450"/>
+    <img src="images/PPO-25.000-3.png" alt="Alt text" width="450"/>
 </div>
