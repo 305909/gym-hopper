@@ -203,7 +203,7 @@ This section presents a mathematical description of the DROID algorithm to optim
 
 This algorithm iteratively adjusts the physical parameters $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
-- $\mathit{D_{\text{real}}} = \{(s_i, a_i)\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
+- $\mathit{D_{\text{real}}} = {(s_i, a_i)}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathit{D_{\text{sim}}}(\theta) \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
 - $\mathit{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
