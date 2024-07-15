@@ -196,7 +196,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
      - compute base loss $b = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$
      - for each $\theta_i \in \theta$:
        - perturb the parameter $\theta_i \leftarrow \theta_i + \eta$
-       - update simulation environment $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N}$ 
+       - collect simulation trajectories $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N}$ 
        - compute loss via Wasserstein distance $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_i))$ 
        - compute gradient by finite difference approximation $\nabla = \nabla_{\theta_i}\mathcal{L}_i$ 
        - clip parameters to range within valid bounds $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$
