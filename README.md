@@ -174,11 +174,11 @@ Search for the optimal parameter configuration for each algorithm by running the
 This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each link $i$, the environment instantiates the boundaries of the physical parameter distribution ($\mathcal{U_\phi}$) and randomly samples the $i$-th link mass at the beginning of each episode:
 
 $$
-m_i \sim \mathcal{U_\phi}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
+\theta_i \sim \mathcal{U_\phi}((1 - \phi) \cdot \theta_{i_0}, (1 + \phi) \cdot \theta_{i_0})
 $$
 
 where:
-- $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
+- $\mathit{\theta_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi = 0.5} \rightarrow$ the variation factor;
 - $\mathcal{U_\phi} \rightarrow$ continuous uniform distribution with variation factor $\phi$.
   
@@ -205,7 +205,7 @@ This algorithm iteratively adjusts the phisical parameter $\theta = \\{\theta_\t
 
 - $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta$;
-- $\theta^{(0)} = \\{2.53429174, 3.92699082, 2.71433605, 5.0893801\\} \rightarrow$ initial parameters;
+- $\theta^{(0)} = \\{\textit{2.53}, \textit{3.93}, \textit{2.71}, \textit{5.09}\\} \rightarrow$ initial parameters;
 - $\mathcal{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
 
