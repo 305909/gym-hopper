@@ -220,7 +220,7 @@ The `DROID.py` code offers the chance to set several execution parameters as in 
 ## Example of Training
 
 Extract of monitoring during training for performance comparison of different algorithms.
-
+```python
 training session: 1
 ----------------
 training episode: 0 | test episodes: 50 | reward: 11.81 +/- 0.16
@@ -271,6 +271,7 @@ model to test: /content/drive/MyDrive/REINFORCE-whitening/RF-whitening-(source t
 
 
 test episodes: 50 | reward: 210.62 +/- 1.22
+```
 
 <div style="display: flex; justify-content: space-between;">
     <img src="images/MCP-10.000-5.png" alt="Alt text" width="550"/>
