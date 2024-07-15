@@ -72,7 +72,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         return masses
 
     def set_parameters(self, *task):
-        params = np.clip(task, 0.01, self.upper_bound)
+        params = np.clip(task, self.lower_bound, self.upper_bound)
         self.sim.model.body_mass[1:] = params
 
     def step(self, a):
@@ -177,11 +177,4 @@ gym.envs.register(
     entry_point = "%s:CustomHopper" % __name__,
     max_episode_steps = 500,
     kwargs = {"domain": "source", "randomize": True, "phi": 0.5, "dist": "uniform"}
-)
-
-gym.envs.register(
-    id = "CustomHopper-source-CDR-v0",
-    entry_point = "%s:CustomHopper" % __name__,
-    max_episode_steps = 500,
-    kwargs = {"domain": "source", "randomize": True, "phi": 0.0, "dist": "normal"}
 )
