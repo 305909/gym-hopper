@@ -197,11 +197,11 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## DROID
 
-This section presents a mathematical description of the DROID algorithm to optimize physical parameters (masses) of a simulation environment using the Wasserstein distance metric between real-world and simulation data distributions.
+This section presents a mathematical description of the DROID algorithm to optimize physical parameters (masses) of the simulation environment using the Wasserstein distance metric between real-world and simulation data distributions.
 
 ### Problem Formulation
 
-Given:
+- $\mathit{D_{\text{real}} \rightarrow$ real-world trajectory distribution;
 - \( \mathcal{D}_{\text{real}} \): Real-world trajectory distribution.
 - \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}) \): Simulation trajectory distribution parameterized by physical parameters \( \boldsymbol{\theta} = [\theta_1, \theta_2, \ldots, \theta_n] \).
 - \( \boldsymbol{\theta}^{(0)} \): Initial guess for parameters.
