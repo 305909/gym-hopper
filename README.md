@@ -217,8 +217,5 @@ Extract of monitoring during training for performance comparison of different al
 
 <div style="display: flex; justify-content: space-between;">
     <img src="images/MCP-A2C-25.000-3.png" alt="Alt text" width="300"/>
-</div>
-
-<div style="display: flex; justify-content: space-between;">
     <img src="images/PPO-25.000-3.png" alt="Alt text" width="300"/>
 </div>
