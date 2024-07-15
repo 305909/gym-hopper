@@ -86,18 +86,18 @@ For more details, check out the available execution parameters by passing the `-
 
 ### A2C
 
-This project implements the A2C (Advantage-Actor-Critic) algorithm with two variations that differ for the update method of the policy network:
+This project implements the A2C (Actor-Critic Policy) algorithm with two variations that differ for the update method of the policy network:
 1. `stepwise` fashion
 2. `batch` fashion
 
-For more details, check out our custom implementation of the Advantage-Actor-Critic algorithm in the `ac.py` file inside the `agents` folder.
+For more details, check out our custom implementation of the Actor-Critic Policy algorithm in the `ac.py` file inside the `agents` folder.
 
 #### How to run the code on Google Colab
 
 Train and test the A2C algorithm by running the following command:
 
 ```python
-# run A2C (Advantage-Actor-Critic) algorithm
+# run A2C (Actor-Critic Policy) algorithm
 !python /content/gym-hopper/algorithms/A2C.py --train \
                                               --test
 ```
