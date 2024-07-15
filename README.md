@@ -190,25 +190,18 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 ### Algorithm Steps
 
    - initialize parameters $\theta = \theta^{(0)}$
-   - $\mathcal{D}_{\text{real}}$ collect real trajectories
-   - $\mathcal{D}_{\text{sim}}(\theta)$ collect simulation trajectories
+   - collect real trajectories $\mathcal{D}_{\text{real}}$
+   - collect simulation trajectories $\mathcal{D}_{\text{sim}}(\theta)$
    - for $m = 1:M$ do:
      - compute the base distance $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$
      - for each $\theta_i \in \theta$:
-       - $\theta_i \leftarrow \theta_i + \eta \rightarrow$ perturb the parameter
-       - $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N} \rightarrow$ update simulation environment
-       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_i)) \rightarrow$ compute loss via Wasserstein distance
-       - $\nabla = \nabla_{\theta_i}\mathcal{L}_i \rightarrow$ compute gradient by finite difference approximation
-       - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0) \rightarrow$ clip parameters to range within valid bounds
-   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ update simulation data
+       - perturb the parameter $\theta_i \leftarrow \theta_i + \eta$
+       - update simulation environment $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N}$ 
+       - compute loss via Wasserstein distance $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta_i))$ 
+       - compute gradient by finite difference approximation $\nabla = \nabla_{\theta_i}\mathcal{L}_i$ 
+       - clip parameters to range within valid bounds $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$
+   - update simulation data $\mathcal{D_{\text{sim}}}(\theta) \leftarrow \\{(s_j', a_j')\\}_{j=1, \theta}^{N}$
 
-
-with:
-- $W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) = inf_{\gamma \in \Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
-
-where:
-- $\Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathcal{D_{\text{real}}}$ and $\mathcal{D_{\text{sim}}}(\theta)$
-- $c(s,a) \rightarrow$ the cost function
 
 The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
 
