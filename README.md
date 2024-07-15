@@ -209,10 +209,12 @@ This section presents a mathematical description of the DROID algorithm to optim
 
 ### Algorithm Steps
 
-#### Step 1: Initialization
+1. **Initialization:**
+   - Initialize parameters: \(\theta = \theta}^{(0)}\)
 
-Initialize parameters:
-- $\theta = \theta}^{(0)}
+2. **Iterative Optimization:**
+   ```markdown
+   For \( t = 1 \) to \( \maxit \):
 
 #### Step 2: Iterative Optimization Loop
 
