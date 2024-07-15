@@ -205,7 +205,7 @@ This algorithm iteratively adjusts the phisical parameter $\theta = \\{\theta_\t
 
 - $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta$;
-- $\theta^{(0)} = \\{\texttt{2.53}, \texttt{3.93}, \texttt{2.71}, \texttt{5.09}\\} \rightarrow$ initial parameters;
+- $\theta^{(0)} = \\{2.53, 3.93, 2.71, 5.09\\} \rightarrow$ initial parameters;
 - $\mathcal{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
 
