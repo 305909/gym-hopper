@@ -203,7 +203,7 @@ This section presents the mathematical description of DROID. DROID involves coll
 
 This algorithm iteratively adjusts the phisical parameter $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
-- $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N}$ \rightarrow$ real-world trajectory distribution;
+- $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta \in \\{\theta_1, \theta_2, \ldots, \theta_n\\}$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
 - $\mathcal{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
@@ -215,13 +215,13 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 
    - $\theta = \theta^{(0)}$ (initialize parameters)
    - for $m = 1:M$ do:
-     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$ \rightarrow$ compute the initial Wasserstein distance
+     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the initial Wasserstein distance
      - for each $\theta_i$:
-       - $\theta_{i^+} = \theta_i + \eta$ \rightarrow$ perturb the parameter
-       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_j', a_j')\\}_{j=1, \theta_i^+}^{N}$ \rightarrow$ update simulation environment
-       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
-       - $g_i = \frac{∇_{\theta_i}\mathcal{L_i}}{\eta}$ (compute gradient by finite difference approximation)
-       - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
+       - $\theta_{i^+} = \theta_i + \eta \rightarrow$ perturb the parameter
+       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_j', a_j')\\}_{j=1, \theta_i^+}^{N} \rightarrow$ update simulation environment
+       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}^{+}}) \rightarrow$ compute loss via Wasserstein distance
+       - $g_i = \frac{∇_{\theta_i}\mathcal{L_i}}{\eta} \rightarrow$ compute gradient by finite difference approximation
+       - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0) \rightarrow$ clip parameters to range within valid bounds
    - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
 
 
