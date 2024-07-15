@@ -193,7 +193,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
    - collect real trajectories $\mathcal{D}_{\text{real}}$
    - collect simulation trajectories $\mathcal{D}_{\text{sim}}(\theta)$
    - for $m = 1:M$ do:
-     - compute the base loss $b = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$
+     - compute base loss $b = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$
      - for each $\theta_i \in \theta$:
        - perturb the parameter $\theta_i \leftarrow \theta_i + \eta$
        - update simulation environment $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N}$ 
