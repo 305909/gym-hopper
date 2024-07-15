@@ -203,8 +203,7 @@ This section presents a mathematical description of the DROID algorithm to optim
 
 - $\mathit{D_{\text{real}}} \rightarrow$ real-world trajectory distribution;
 - $\mathit{D_{\text{sim}}}(\theta) \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
-- \( \mathcal{D}_{\text{real}} \): Real-world trajectory distribution.
-- \( \mathcal{D}_{\text{sim}}(\theta): Simulation trajectory distribution parameterized by physical parameters \( \boldsymbol{\theta} = [\theta_1, \theta_2, \ldots, \theta_n] \).
+- $\theta^0 \rightarrow$ initial guess for parameters;
 - \( \boldsymbol{\theta}^{(0)} \): Initial guess for parameters.
 - \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{(0)}) \): Initial simulation data distribution.
 - \( \text{seed} \): Seed for reproducibility.
