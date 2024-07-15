@@ -11,7 +11,6 @@
   - [REINFORCE](#reinforce)
   - [A2C](#a2c)
   - [PPO](#ppo)
-  - [SAC](#sac)
   - [Hyperparameters Tuning](#hyperparameters-tuning)
 - [Uniform Domain Randomization](#uniform-domain-randomization)
 - [DROID](#droid)
@@ -30,6 +29,7 @@ Preliminary results indicate that combining domain randomization techniques with
 
 The [Hopper](https://www.gymlibrary.ml/environments/mujoco/hopper/) of MuJoCo, a two-dimensional figure with one leg, comprises four primary body parts: a top `torso`, a middle `thigh`, a bottom `leg`, and a single `foot` supporting the entire body. The objective involves generating forward (rightward) movement through torque application at the three hinges connecting these body segments.
 In this study, we implemented two customized versions of the Gym Hopper environment: `CustomHopper-source-v0` and `CustomHopper-target-v0`. The main distinction between these environments concerns the mass of the Hopper's `torso`. Specifically, `CustomHopper-source-v0` sets the `torso` mass at `2.53429174` kg, while `CustomHopper-target-v0` raises it to `3.53429174` kg. 
+
 The transition from the source to the target environment embodies the essence of sim-to-real transferability. This project aims to create algorithms capable of learning within simulation environments (`source`) and successfully applying acquired knowledge in real-world situations (`target`).
 
 ## Requirements
