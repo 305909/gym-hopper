@@ -171,16 +171,16 @@ Search for the optimal parameter configuration for each algorithm by running the
 
 ## Uniform Domain Randomization
 
-This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each link $i$, the environment instantiates the boundaries of the physical parameter distribution ($\mathbb{U_\phi}$) and randomly samples the $i$-th link mass at the beginning of each episode:
+This project implements a `CustomHopper-source-UDR-v0` custom environment to introduce Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, while maintaining the torso mass constant, to expose the agent to a range of dynamic conditions. For each link $i$, the environment instantiates the boundaries of the physical parameter distribution ($\mathcal{U_\phi}$) and randomly samples the $i$-th link mass at the beginning of each episode:
 
 $$
-m_i \sim \mathbb{U_\phi}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
+m_i \sim \mathcal{U_\phi}((1 - \phi) \cdot m_{i_0}, (1 + \phi) \cdot m_{i_0})
 $$
 
 where:
 - $\mathit{m_{i_0}} \rightarrow$ the original mass of the $i$-th link of the Hopper robot;
 - $\mathit{\phi = 0.5} \rightarrow$ the variation factor;
-- $\mathbb{U_\phi} \rightarrow$ continuous uniform distribution with variation factor $\phi$.
+- $\mathcal{U_\phi} \rightarrow$ continuous uniform distribution with variation factor $\phi$.
   
 For more details, check out our custom implementation of the `CustomHopper-source-UDR-v0` environment in the `custom_hopper.py` file inside the `env` folder.
 
@@ -203,10 +203,10 @@ This section presents the mathematical description of DROID. DROID involves coll
 
 This algorithm iteratively adjusts the phisical parameter $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
-- $\mathit{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
-- $\mathit{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta \in \\{\theta_1, \theta_2, \ldots, \theta_n\\}$;
+- $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
+- $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta \in \\{\theta_1, \theta_2, \ldots, \theta_n\\}$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
-- $\mathit{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
+- $\mathcal{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
 
 Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the respective distributions.
@@ -215,21 +215,21 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 
    - $\theta = \theta^{(0)}$ (initialize parameters)
    - for $m = 1:M$ do:
-     - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$ (compute the initial Wasserstein distance)
-     - for each $\theta_i$: (gradient calculation and parameter update)
-       - $\theta_{i^{+}} = \theta_i + \eta$ (perturb the parameter slightly)
-       - $\mathit{D_{\text{sim}}^{+}} = simulate(\theta_{i^{+}})$ (update simulation environment)
-       - $\mathcal{L_i} = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
-       - $g_i = \frac{∇_{\theta_i}\mathit{L_i}}{\eta}$ (compute gradient by finite difference approximation)
+     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$ \rightarrow compute the initial Wasserstein distance
+     - for each $\theta_i$:
+       - $\theta_{i^{+}} = \theta_i + \eta$ \rightarrow perturb the parameter
+       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_i^{\theta_{i^{+}}, a_i^{\theta_{i^{+}})\\}_{i=1}^{N}$  \rightarrow update simulation environment
+       - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
+       - $g_i = \frac{∇_{\theta_i}\mathcal{L_i}}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
-   - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
+   - $\mathcal{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
 
 
 with:
-- $W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta)) = \inf_{\gamma \in \Gamma(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
+- $W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) = \inf_{\gamma \in \Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
 
 where:
-- $\Gamma(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathit{D_{\text{real}}}$ and $\mathit{D_{\text{sim}}}(\theta)$;
+- $\Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathcal{D_{\text{real}}}$ and $\mathcal{D_{\text{sim}}}(\theta)$;
 - $c(s,a) \rightarrow$ the cost function
 
 The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
