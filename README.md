@@ -213,8 +213,14 @@ This section presents a mathematical description of the DROID algorithm to optim
    - Initialize parameters: $\theta = \theta^{(0)}$
 
 2. **Iterative Optimization:**
-   - \textbf{for} $m = 1:M$ \textbf{do}:
-   - - compute the initial Wasserstein distance: $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
+   - for $m = 1:M$ do:
+     - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$ (compute the initial Wasserstein distance)
+     - for each $\theta_i$: (gradient calculation and parameter update)
+       - $theta_i^{+} = \theta_i + \eta$ (perturb the parameter slightly)
+       - $\mathit{D_{\text{sim}}^{+}} = simulate(\theta}^{+})$ (update simulation environment)
+       - $loss_i = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
+       - $g_i = \frac{loss_i - base}{\eta}$ (compute gradient by finite difference approximation)
+       - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
 
 3. **Base Wasserstein Distance Calculation**
    - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
