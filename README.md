@@ -195,6 +195,78 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
                                               --train-env 'source-UDR'
 ```
 
+## DROID
+
+This section presents a mathematical description of the DROID algorithm to optimize physical parameters (masses) of a simulation environment using the Wasserstein distance metric between real-world and simulation data distributions.
+
+### Problem Formulation
+
+Given:
+- \( \mathcal{D}_{\text{real}} \): Real-world trajectory distribution.
+- \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}) \): Simulation trajectory distribution parameterized by physical parameters \( \boldsymbol{\theta} = [\theta_1, \theta_2, \ldots, \theta_n] \).
+- \( \boldsymbol{\theta}^{(0)} \): Initial guess for parameters.
+- \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{(0)}) \): Initial simulation data distribution.
+- \( \text{seed} \): Seed for reproducibility.
+- \( \maxit \): Maximum number of iterations.
+- \( \text{dist} \): Type of randomness distribution parameter.
+- \( \eta \): Learning rate for parameter updates.
+- \( \text{verbose} \): Flag for verbose output.
+
+### Algorithm Steps
+
+#### Step 1: Initialization
+
+Initialize parameters and print initial values:
+- \( \boldsymbol{\theta} = \boldsymbol{\theta}^{(0)} \)
+- Print initial physical parameters \( \boldsymbol{\theta} \).
+
+#### Step 2: Iterative Optimization Loop
+
+For \( t = 1 \) to \( \maxit \):
+
+##### Step 2.1: Base Wasserstein Distance Calculation
+
+Compute the initial Wasserstein distance:
+\[ \text{base} = W(\mathcal{D}_{\text{real}}, \mathcal{D}_{\text{sim}}(\boldsymbol{\theta})) \]
+
+##### Step 2.2: Gradient Calculation and Parameter Update
+
+For each parameter \( \theta_i \):
+
+- Perturb the parameter slightly: \( \theta_i^{+} = \theta_i + \eta \)
+- Update simulation environment: \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{+}) \)
+- Collect data from updated simulation: \( \mathcal{D}_{\text{sim}}^{+} = \text{collect}(\mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{+})) \)
+- Compute Wasserstein distance: \( \text{loss}_i = W(\mathcal{D}_{\text{real}}, \mathcal{D}_{\text{sim}}^{+}) \)
+
+Approximate gradient:
+\[ g_i = \frac{\text{loss}_i - \text{base}}{\eta} \]
+
+Update parameters:
+\[ \theta_i \leftarrow \theta_i - \eta \cdot g_i \]
+
+Ensure parameters stay within valid bounds:
+\[ \theta_i \leftarrow \text{clip}(\theta_i, 0.01, 10.0) \]
+
+##### Step 2.3: Update Simulation Data
+
+Update simulation data with new parameters:
+\[ \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}) \leftarrow \text{collect}(\mathcal{D}_{\text{sim}}(\boldsymbol{\theta})) \]
+
+##### Step 2.4: Verbose Printing (Optional)
+
+If \( \text{verbose} = \text{True} \):
+- Print iteration details: \( t \), \( \boldsymbol{\theta} \), \( \text{loss}_i \), \( g_i \).
+
+#### Step 3: Output Results
+
+Print optimal physical parameters after optimization:
+- Print final values of \( \boldsymbol{\theta} \).
+
+### Conclusion
+
+This algorithm iteratively adjusts the physical parameters \( \boldsymbol{\theta} \) of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulated trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the fidelity and accuracy of the simulation model.
+
+
 ## Example of Training
 
 Extract of monitoring during training for performance comparison of different algorithms.
