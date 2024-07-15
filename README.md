@@ -24,7 +24,7 @@
 
 This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Advantage-Actor-Critic (A2C), and Proximal Policy Optimization (PPO). To improve the agent’s performance and robustness, we introduced Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. This method encourages the agent to generalize its policy across different environments, enhancing adaptability and performance.
 
-Additionally, we implemented a novel domain randomization approach called DROID. DROID involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters used in domain randomization. By searching for the optimal domain parameters, DROID effectively reduces the sim-to-real transfer gap, enhancing the agent's ability to perform reliably in real-world conditions.
+Additionally, we implemented a novel domain randomization approach called DROID. DROID involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization. By searching for the optimal domain parameters, DROID effectively reduces the sim-to-real transfer gap, enhancing the agent's ability to perform reliably in real-world conditions.
 
 Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios. This work demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings hold the potential to inform future research and applications in robotic control and autonomous systems.
 
@@ -197,14 +197,14 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## DROID
 
-This section presents a mathematical description of the DROID algorithm to optimize physical parameters (masses) of the simulation environment using the Wasserstein distance metric between real-world and simulation data distributions.
+This section presents the mathematical description of DROID. DROID involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization.
 
 ### Problem Formulation
 
-This algorithm iteratively adjusts the physical parameters $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
+This algorithm iteratively adjusts the phisical parameter $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
 - $\mathit{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
-- $\mathit{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1}^{N} \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
+- $\mathit{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta \in \\{\theta_1, \theta_2, \ldots, \theta_n\\}$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
 - $\mathit{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
@@ -213,10 +213,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 
 ### Algorithm Steps
 
-1. **Initialization:**
-   - Initialize parameters: $\theta = \theta^{(0)}$
-
-2. **Iterative Optimization:**
+   - $\theta = \theta^{(0)}$ (initialize parameters)
    - for $m = 1:M$ do:
      - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$ (compute the initial Wasserstein distance)
      - for each $\theta_i$: (gradient calculation and parameter update)
@@ -225,6 +222,8 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
        - $loss_i = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
        - $g_i = \frac{loss_i - base}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
+   - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
+
 
 with:
 - $W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta)) = \inf_{\gamma \in \Gamma(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
@@ -234,9 +233,6 @@ where:
 - $c(s,a) \rightarrow$ the cost function
 
 The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
-
-3. **Update Simulation Data**
-   - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
 
 ## Example of Training
 
