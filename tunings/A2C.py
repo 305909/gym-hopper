@@ -30,7 +30,7 @@ def train(seed: int,
 	  device: str = 'cpu',  
           train_episodes: int = 10000, 
           train_env: str = 'CustomHopper-source-v0', **kwargs) -> A2C:
-    """ trains the agent in the training environment """ 
+    """ trains the agent in the source environment """ 
     env = gym.make(train_env)
 		  
     env.seed(seed)
@@ -63,8 +63,8 @@ def train(seed: int,
 
 def test(seed: int, agent: A2C, 
 	 test_episodes: int = 100, 
-	 test_env: str = 'CustomHopper-source-v0') -> float:
-    """ tests the agent in the testing environment """
+	 test_env: str = 'CustomHopper-target-v0') -> float:
+    """ tests the agent in the target environment """
     env = gym.make(test_env)
 		  
     env.seed(seed)
