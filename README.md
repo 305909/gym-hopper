@@ -213,8 +213,10 @@ This section presents a mathematical description of the DROID algorithm to optim
    - Initialize parameters: $\theta = \theta^{(0)}$
 
 2. **Iterative Optimization:**
-   ```markdown
-   For \( t = 1 \) to \( \maxit \):
+   - for $m = 1:M$ do:
+
+3. **Base Wasserstein Distance Calculation**
+   - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
 
 #### Step 2: Iterative Optimization Loop
 
