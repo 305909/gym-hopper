@@ -189,11 +189,11 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
 
 ### Algorithm Steps
 
-   - $\theta = \theta^{(0)}$ initialize parameters
+   - initialize parameters $\theta = \theta^{(0)}$
    - $\mathcal{D}_{\text{real}}$ collect real trajectories
    - $\mathcal{D}_{\text{sim}}(\theta)$ collect simulation trajectories
    - for $m = 1:M$ do:
-     - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) \rightarrow$ compute the base distance
+     - compute the base distance $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$
      - for each $\theta_i \in \theta$:
        - $\theta_i \leftarrow \theta_i + \eta \rightarrow$ perturb the parameter
        - $\mathcal{D_{\text{sim}}}(\theta_i) = \\{(s_j', a_j')\\}_{j=1, \theta_i}^{N} \rightarrow$ update simulation environment
