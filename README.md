@@ -205,7 +205,7 @@ with:
 - $W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta)) = inf_{\gamma \in \Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
 
 where:
-- $\Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathcal{D_{\text{real}}}$ and $\mathcal{D_{\text{sim}}}(\theta)$;
+- $\Gamma(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathcal{D_{\text{real}}}$ and $\mathcal{D_{\text{sim}}}(\theta)$
 - $c(s,a) \rightarrow$ the cost function
 
 The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
