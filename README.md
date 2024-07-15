@@ -24,7 +24,7 @@
 
 This project aims to enhance reinforcement learning (RL) agents within the Gym Hopper environment by utilizing the MuJoCo physics engine for accurate modeling. The Hopper, a one-legged robot, must learn and master jumping and maintaining balance while optimizing horizontal speed. Our approach includes implementing and comparing several RL algorithms: REINFORCE (Vanilla Policy Gradient), Advantage-Actor-Critic (A2C), and Proximal Policy Optimization (PPO). To improve the agent’s performance and robustness, we introduced Uniform Domain Randomization (UDR). UDR involves varying the link masses of the Hopper robot during training, with the exception of the fixed torso mass, to expose the agent to a range of dynamic conditions. This method encourages the agent to generalize its policy across different environments, enhancing adaptability and performance.
 
-Additionally, we implemented a novel domain randomization approach called DROID. DROID involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization. By searching for the optimal domain parameters, DROID effectively reduces the sim-to-real transfer gap, enhancing the agent's ability to perform reliably in real-world conditions.
+Additionally, we implemented a novel domain randomization approach called DROID. Domain Randomization Optimization IDentification (DROID) involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization. By searching for the optimal domain parameters, DROID effectively reduces the sim-to-real transfer gap, enhancing the agent's ability to perform reliably in real-world conditions.
 
 Preliminary results indicate that combining domain randomization techniques with advanced RL algorithms significantly improves the Hopper’s stability and speed across diverse scenarios. This work demonstrates the effectiveness of domain randomization in developing resilient robotic control strategies, contributing to the advancement of RL applications in uncertain and dynamic environments. Our findings hold the potential to inform future research and applications in robotic control and autonomous systems.
 
@@ -197,7 +197,7 @@ To enable Uniform Domain Randomization, set the custom environment `CustomHopper
 
 ## DROID
 
-This section presents the mathematical description of DROID. DROID involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization.
+This section presents the mathematical description of DROID. Domain Randomization Optimization IDentification (DROID) involves collecting trajectories from both the real world and simulation environments to optimize the physical parameters (masses) of the simulation for domain randomization.
 
 ### Problem Formulation
 
