@@ -201,7 +201,7 @@ This section presents the mathematical description of DROID. DROID involves coll
 
 ### Problem Formulation
 
-This algorithm iteratively adjusts the phisical parameter $\theta = \\{\theta_torso, \theta_thigh, \theta_leg, \theta_foot\\}$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
+This algorithm iteratively adjusts the phisical parameter $\theta = \\{\theta_\text{torso}, \theta_\text{thigh}, \theta_\text{leg}, \theta_\text{foot}\\}$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
 - $\mathcal{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
 - $\mathcal{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1, \theta}^{N} \rightarrow$ simulation trajectory distribution parameterized by $\theta$;
