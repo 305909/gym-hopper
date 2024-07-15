@@ -201,6 +201,8 @@ This section presents a mathematical description of the DROID algorithm to optim
 
 ### Problem Formulation
 
+This algorithm iteratively adjusts the physical parameters $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the fidelity and accuracy of the simulation model.
+
 - $\mathit{D_{\text{real}}} \rightarrow$ real-world trajectory distribution;
 - $\mathit{D_{\text{sim}}}(\theta) \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
@@ -222,55 +224,8 @@ This section presents a mathematical description of the DROID algorithm to optim
        - $g_i = \frac{loss_i - base}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
 
-3. **Base Wasserstein Distance Calculation**
-   - $base = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))$
-
-#### Step 2: Iterative Optimization Loop
-
-For $t = 1$ to $maxit$:
-
-##### Step 2.1: Base Wasserstein Distance Calculation
-
-Compute the initial Wasserstein distance:
-\[ \text{base} = W(\mathcal{D}_{\text{real}}, \mathcal{D}_{\text{sim}}(\boldsymbol{\theta})) \]
-
-##### Step 2.2: Gradient Calculation and Parameter Update
-
-For each parameter \( \theta_i \):
-
-- Perturb the parameter slightly: \( \theta_i^{+} = \theta_i + \eta \)
-- Update simulation environment: \( \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{+}) \)
-- Collect data from updated simulation: \( \mathcal{D}_{\text{sim}}^{+} = \text{collect}(\mathcal{D}_{\text{sim}}(\boldsymbol{\theta}^{+})) \)
-- Compute Wasserstein distance: \( \text{loss}_i = W(\mathcal{D}_{\text{real}}, \mathcal{D}_{\text{sim}}^{+}) \)
-
-Approximate gradient:
-\[ g_i = \frac{\text{loss}_i - \text{base}}{\eta} \]
-
-Update parameters:
-\[ \theta_i \leftarrow \theta_i - \eta \cdot g_i \]
-
-Ensure parameters stay within valid bounds:
-\[ \theta_i \leftarrow \text{clip}(\theta_i, 0.01, 10.0) \]
-
-##### Step 2.3: Update Simulation Data
-
-Update simulation data with new parameters:
-\[ \mathcal{D}_{\text{sim}}(\boldsymbol{\theta}) \leftarrow \text{collect}(\mathcal{D}_{\text{sim}}(\boldsymbol{\theta})) \]
-
-##### Step 2.4: Verbose Printing (Optional)
-
-If \( \text{verbose} = \text{True} \):
-- Print iteration details: \( t \), \( \boldsymbol{\theta} \), \( \text{loss}_i \), \( g_i \).
-
-#### Step 3: Output Results
-
-Print optimal physical parameters after optimization:
-- Print final values of \( \boldsymbol{\theta} \).
-
-### Conclusion
-
-This algorithm iteratively adjusts the physical parameters \( \boldsymbol{\theta} \) of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulated trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the fidelity and accuracy of the simulation model.
-
+3. **Update Simulation Data**
+   - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
 
 ## Example of Training
 
