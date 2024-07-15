@@ -223,5 +223,5 @@ Extract of monitoring during training for performance comparison of different al
 
 <div style="display: flex; justify-content: space-between;">
     <img src="images/PPO-25.000-3.png" alt="Alt text" width="300"/>
-    <img src="images/MCP-10.000-5.png" alt="Alt text" width="350"/>
+    <img src="images/MCP-10.000-5.png" alt="Alt text" width="300"/>
 </div>
