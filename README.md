@@ -220,7 +220,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
        - $\theta_{i^{+}} = \theta_i + \eta$ (perturb the parameter slightly)
        - $\mathit{D_{\text{sim}}^{+}} = simulate(\theta_{i^{+}})$ (update simulation environment)
        - $\mathit{L_i} = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
-       - $g_i = \frac{\Delta_{\theta_i}\mathit{L_i}}{\eta}$ (compute gradient by finite difference approximation)
+       - $g_i = \frac{∇_{\theta_i}\mathit{L_i}}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
    - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
 
