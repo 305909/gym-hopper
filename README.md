@@ -15,9 +15,6 @@
 - [Uniform Domain Randomization](#uniform-domain-randomization)
 - [Domain Randomization Optimization IDentification](#domain-randomization-optimization-identification)
 - [Example of Training](#example-of-training)
-- [About](#about)
-- [License](#license)
-- [Contributors](#contributors)
 
 ## Report Abstract
 
