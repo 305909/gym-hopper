@@ -218,7 +218,7 @@ Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the resp
      - $base = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}}(\theta))$ \rightarrow compute the initial Wasserstein distance
      - for each $\theta_i$:
        - $\theta_{i^{+}} = \theta_i + \eta$ \rightarrow perturb the parameter
-       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_i^{\theta_{i^{+}}, a_i^{\theta_{i^{+}})\\}_{i=1}^{N}$  \rightarrow update simulation environment
+       - $\mathcal{D_{\text{sim}}^{+}} = \\{(s_i^\theta_i^{+}, a_i^\theta_i^{+})\\}_{i=1}^{N}$  \rightarrow update simulation environment
        - $\mathcal{L_i} = W(\mathcal{D_{\text{real}}}, \mathcal{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
        - $g_i = \frac{∇_{\theta_i}\mathcal{L_i}}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
