@@ -204,10 +204,12 @@ This section presents a mathematical description of the DROID algorithm to optim
 This algorithm iteratively adjusts the physical parameters $\theta$ of the simulation environment to minimize the Wasserstein distance between the real-world trajectory distribution and the simulation trajectory distribution. By updating parameters based on gradient approximations of the distance metric, the algorithm aims to improve the accuracy of the simulation model.
 
 - $\mathit{D_{\text{real}}} = \\{(s_i, a_i)\\}_{i=1}^{N} \rightarrow$ real-world trajectory distribution;
-- $\mathit{D_{\text{sim}}}(\theta) \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
+- $\mathit{D_{\text{sim}}}(\theta) = \\{(s_j', a_j')\\}_{j=1}^{N} \rightarrow$ simulation trajectory distribution parameterized by physical parameters $\theta = [\theta_1, \theta_2, \ldots, \theta_n]$;
 - $\theta^{(0)} \rightarrow$ initial guess for parameters;
 - $\mathit{D_{\text{sim}}}(\theta^{(0)}) \rightarrow$ initial simulation data distribution;
 - $\eta \rightarrow$ learning rate for parameter updates.
+
+Here, $(s_i, a_i)$ and $(s_j', a_j')$ represent state-action pairs from the respective distributions.
 
 ### Algorithm Steps
 
@@ -223,6 +225,15 @@ This algorithm iteratively adjusts the physical parameters $\theta$ of the simul
        - $loss_i = W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}^{+}})$ (compute loss via Wasserstein distance)
        - $g_i = \frac{loss_i - base}{\eta}$ (compute gradient by finite difference approximation)
        - $\theta_i \leftarrow clip(\theta_i, 0.01, 10.0)$ (clip parameters to range within valid bounds)
+
+with:
+- $W(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta)) = \inf_{\gamma \in \Gamma(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))} \mathit{E}_{(s,a) \sim \gamma} [c(s,a)] \]$
+
+where:
+- $\Gamma(\mathit{D_{\text{real}}}, \mathit{D_{\text{sim}}}(\theta))) \rightarrow$ the set joint distributions $\gamma(s,a,s',a')$ with marginals $\mathit{D_{\text{real}}}$ and $\mathit{D_{\text{sim}}}(\theta)$;
+- $c(s,a) \rightarrow$ the cost function
+
+The Wasserstein distance minimizes the total cost of transforming the distribution $\mathit{D_{\text{real}}}$ into $\mathit{D_{\text{sim}}}(\theta)$, measuring the cost in terms of the distance between state-action pairs $(s_i, a_i)$ and $(s_j', a_j')$.
 
 3. **Update Simulation Data**
    - $\mathit{D_{\text{sim}}}(\theta) \leftarrow simulate(\theta_)$
