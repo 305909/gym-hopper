@@ -169,7 +169,7 @@ def main():
         raise ValueError(f'ERROR: environment {test_env} not found')
     
     prime = gridsearch(args, params, train_env, test_env)
-    print(f'\nmaximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal parameters: {prime[3]}')
+    print(f'\nmaximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal params: {prime[3]}')
     print("-------------")
 
 
