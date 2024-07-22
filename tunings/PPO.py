@@ -129,8 +129,7 @@ def gridsearch(args, params, train_env, test_env, seeds = [1, 2, 3]):
                             train_env = train_env, 
                             test_env = test_env)
             pool.append(er)
-        pool = np.array(pool)
-        res = np.mean(pool, axis = 0)
+        res = np.array(pool)
         cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
         print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}')
