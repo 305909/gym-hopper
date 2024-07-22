@@ -139,7 +139,7 @@ def main():
         args.device = 'cpu'
 	    
     prime = gridsearch(args, params)
-    print(f'\nmaximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal parameters: {prime[3]}')
+    print(f'\nmaximum score: {prime[0]:.2f} | reward: {prime[1]:.2f} +/- {prime[2]:.2f} | optimal params: {prime[3]}')
     print("-------------")
 
 
