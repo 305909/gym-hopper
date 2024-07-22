@@ -184,7 +184,7 @@ def wasserstein_distance(real_data, sim_data):
 
 def optimize_params(real_data, sim_data, seed, 
 		    maxit: int = 100, dist: str = 'uniform', 
-		    learning_rate: float = 1e-4, verbose: bool = False):
+		    learning_rate: float = 2.5e-4, verbose: bool = False):
     """ optimizes the physical parameters (masses) of a simulation environment 
     to minimize the Wasserstein distance between the real and simulation trajectory distributions
     """
