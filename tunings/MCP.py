@@ -130,7 +130,6 @@ def main():
     args = parse_args()
     warnings.filterwarnings("ignore")
     params = {
-        'gamma': [0.97, 0.99],
         'hidden': [64, 128, 256],
         'learning_rate': [1e-3, 7.5e-4, 5e-4, 2.5e-4, 1e-4]
     }
