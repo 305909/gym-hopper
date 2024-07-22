@@ -221,7 +221,7 @@ def main():
         raise FileNotFoundError(f'ERROR: model file {args.input_model} not found')
         
     if args.train:
-        pool = multiprocess(args, train_env, test_env, train, seeds = [1, 1, 2, 3, 5])
+        pool = multiprocess(args, train_env, test_env, train, seeds = [1, 2, 3])
         for metric, records in zip(('reward', 'length'), (pool['rewards'], pool['lengths'])):
             metric, xs, ys, sigmas = stack(args, metric, records)
             if metric == 'reward':
