@@ -114,14 +114,14 @@ def gridsearch(args, params, seeds = [1, 2, 3]):
         res = np.array(pool)
         cov = res.std() / res.mean()  # coefficient of variation
         score = res.mean() * (1 - cov)
-        print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | parameters: {kwargs}')
+        # print(f'score: {score:.2f} | reward: {res.mean():.2f} +/- {res.std():.2f} | params: {kwargs}')
         results.append([score, res.mean(), res.std(), kwargs])
 
     results.sort(key = lambda x: x[0], reverse = True)
     print(f'\ngrid search - ranking scores:')
     print("----------------------------")
     for rank, candidate in enumerate(results):
-        print(f'{rank + 1} | score: {candidate[0]:.2f} | reward: {candidate[1]:.2f} +/- {candidate[2]:.2f} | parameters: {candidate[3]}')
+        print(f'{rank + 1} | score: {candidate[0]:.2f} | reward: {candidate[1]:.2f} +/- {candidate[2]:.2f} | params: {candidate[3]}')
 
     return max(results, key = lambda x: x[0])
 
