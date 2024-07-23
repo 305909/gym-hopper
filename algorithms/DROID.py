@@ -48,7 +48,7 @@ def parse_args():
                         help = 'number of testing episodes')
     parser.add_argument('--eval-frequency', default = 100, type = int, 
                         help = 'evaluation frequency over training iterations')
-    parser.add_argument('--learning-rate', default = 2.5e-4, type = float, 
+    parser.add_argument('--learning-rate', default = 2.5e-5, type = float, 
                         help = 'learning rate for domain randomization')
     parser.add_argument('--dist', default = 'uniform', type = str,
                         help = 'distribution for domain randomization')
